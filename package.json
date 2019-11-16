@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "ts-node --project tsconfig.server.json ./src/server/server.ts",
     "build": "next build",
-    "start": "next start"
+    "install": "next build",
+    "start": "NODE_ENV=production ts-node --project tsconfig.server.json ./src/server/server.ts"
   },
   "dependencies": {
     "@chakra-ui/core": "^0.4.1",
