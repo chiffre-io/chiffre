@@ -6,7 +6,7 @@ import { createServer } from 'http'
 import { ServerContext } from './storage'
 import { b64 } from '../client/engine/codec'
 
-export const context: ServerContext = {
+const context: ServerContext = {
   publicKey: null,
   socket: null,
   dataPoints: []

@@ -21,7 +21,9 @@ const useDataPointsFeed = () => {
 
   React.useEffect(() => {
     const keyPair = nacl.box.keyPair()
-    const socket = socketIo('http://localhost:3000', {
+    const url = process.env.APP_URL || 'http://localhost:3000'
+    console.log(url)
+    const socket = socketIo(url, {
       query: {
         publicKey: b64.encode(keyPair.publicKey)
       }
