@@ -21,7 +21,7 @@ const useDataPointsFeed = () => {
 
   React.useEffect(() => {
     const keyPair = nacl.box.keyPair()
-    const socket = socketIo('http://localhost:3001', {
+    const socket = socketIo('http://localhost:3000', {
       query: {
         publicKey: b64.encode(keyPair.publicKey)
       }
@@ -29,8 +29,12 @@ const useDataPointsFeed = () => {
     socket.on('connect', () => console.log('Socket connected'))
     socket.on('disconnect', () => console.log('Socket disconnected'))
     socket.on('data-point', (data: DataPoint) => {
+      console.log(data)
       const d = decryptDataPoint(data, keyPair.secretKey)
-      pushData(d)
+      if (d) {
+        // Can fail if visitor used an old public key to encrypt
+        pushData(d)
+      }
     })
     return () => {
       socket.close()

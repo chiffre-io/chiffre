@@ -1,1 +1,10 @@
-{"apps":[{"app_id":"app_ca6bd8f2-1e82-45cf-bb16-602917b4872d","deploy_url":"https://push-par-clevercloud-customers.services.clever-cloud.com/app_ca6bd8f2-1e82-45cf-bb16-602917b4872d.git","name":"plant-a-tree","alias":"plant-a-tree"},{"app_id":"app_5420ed9a-17ba-405e-8b70-914ae5404ad5","deploy_url":"https://push-par-clevercloud-customers.services.clever-cloud.com/app_5420ed9a-17ba-405e-8b70-914ae5404ad5.git","name":"chiffre-mvp","alias":"chiffre-mvp"}]}
+{
+  "apps": [
+    {
+      "app_id": "app_5420ed9a-17ba-405e-8b70-914ae5404ad5",
+      "deploy_url": "https://push-par-clevercloud-customers.services.clever-cloud.com/app_5420ed9a-17ba-405e-8b70-914ae5404ad5.git",
+      "name": "chiffre-mvp",
+      "alias": "chiffre-mvp"
+    }
+  ]
+}

@@ -1,13 +1,10 @@
-import { NextApiRequest, NextApiResponse } from 'next'
-import { FakeDB } from '../../../src/server/storage'
+import { NextApiResponse } from 'next'
+import { NextApiRequestWithContext } from '../../../src/server/storage'
 
-export default (
-  req: NextApiRequest & { fakeDb: FakeDB },
-  res: NextApiResponse
-) => {
-  if (req.fakeDb.socket) {
-    console.log('emit data-point', req.fakeDb.socket.id, req.body)
-    req.fakeDb.socket.emit('data-point', req.body)
+export default (req: NextApiRequestWithContext, res: NextApiResponse) => {
+  if (req.context.socket) {
+    console.log('emit data-point', req.context.socket.id, req.body)
+    req.context.socket.emit('data-point', req.body)
   }
   res.json({})
 }

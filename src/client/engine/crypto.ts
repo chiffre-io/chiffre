@@ -28,7 +28,6 @@ export const encryptDataPoint = (
   const keyPair = nacl.box.keyPair()
   const clearText = utf8.encode(JSON.stringify(data))
   const nonce = nacl.randomBytes(nacl.box.nonceLength)
-  console.log({ clearText, nonce, publicKey, secretKey: keyPair.secretKey })
   const cipher = nacl.box(clearText, nonce, publicKey, keyPair.secretKey)
   return {
     message: b64.encode(cipher),
