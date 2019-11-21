@@ -51,7 +51,7 @@ const LoginForm: React.FC<Props> = ({ onSubmit }) => {
             variantColor="blue"
             mt={6}
           >
-            Create account
+            Sign in to your account
           </Button>
           <Text
             textAlign="center"
