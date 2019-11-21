@@ -1,5 +1,6 @@
 import React from 'react'
-import { Box, Grid, Text, Flex, Link, useColorMode } from '@chakra-ui/core'
+import { Grid, Text, Flex, Link, useColorMode, Collapse } from '@chakra-ui/core'
+import { Bar } from './PasswordStrengthSkeleton'
 import usePasswordStrength, {
   PasswordStrength
 } from '../hooks/usePasswordStrength'
@@ -48,17 +49,17 @@ const useTextAndColor = (strength: PasswordStrength) => {
   switch (strength) {
     default:
     case PasswordStrength.empty:
-      return { text: null, color: null }
+      return { show: false, text: 'Too short', color: red }
     case PasswordStrength.tooShort:
-      return { text: 'Too short', color: red }
+      return { show: true, text: 'Too short', color: red }
     case PasswordStrength.weak:
-      return { text: 'Weak password', color: orange }
+      return { show: true, text: 'Weak password', color: orange }
     case PasswordStrength.good:
-      return { text: 'Good password', color: teal }
+      return { show: true, text: 'Good password', color: teal }
     case PasswordStrength.strong:
-      return { text: 'Strong password', color: green }
+      return { show: true, text: 'Strong password', color: green }
     case PasswordStrength.pwned:
-      return { text: 'Unsafe password !', color: red }
+      return { show: true, text: 'Unsafe password !', color: red }
   }
 }
 
@@ -67,17 +68,17 @@ const PasswordStrengthIndicator: React.SFC<Props> = ({ password }) => {
   const colors = useSegmentColors(strength)
   const dark = useColorMode().colorMode === 'dark'
 
-  const { text, color: textColor } = useTextAndColor(strength)
+  const { show: showText, text, color: textColor } = useTextAndColor(strength)
 
   return (
     <>
       <Grid gridTemplateColumns="repeat(4, 1fr)" gridGap={2}>
-        <Box backgroundColor={colors[0]} borderRadius={3} h="0.35rem" />
-        <Box backgroundColor={colors[1]} borderRadius={3} h="0.35rem" />
-        <Box backgroundColor={colors[2]} borderRadius={3} h="0.35rem" />
-        <Box backgroundColor={colors[3]} borderRadius={3} h="0.35rem" />
+        <Bar color={colors[0]} />
+        <Bar color={colors[1]} />
+        <Bar color={colors[2]} />
+        <Bar color={colors[3]} />
       </Grid>
-      {text && (
+      <Collapse isOpen={showText}>
         <Flex justifyContent="space-between" mt={1}>
           <Text
             color={textColor}
@@ -87,15 +88,16 @@ const PasswordStrengthIndicator: React.SFC<Props> = ({ password }) => {
           >
             {text}
           </Text>
-          {(strength === PasswordStrength.tooShort ||
+          {(strength === PasswordStrength.empty ||
+            strength === PasswordStrength.tooShort ||
             strength === PasswordStrength.weak) && (
             <Text fontSize="xs" color="gray.500" ml={4} textAlign="right">
               consider using a password manager
             </Text>
           )}
         </Flex>
-      )}
-      {strength === PasswordStrength.pwned && (
+      </Collapse>
+      <Collapse isOpen={strength === PasswordStrength.pwned}>
         <>
           <Text
             color={dark ? 'gray.500' : 'gray.700'}
@@ -119,7 +121,7 @@ const PasswordStrengthIndicator: React.SFC<Props> = ({ password }) => {
             </Link>
           </Text>
         </>
-      )}
+      </Collapse>
     </>
   )
 }
