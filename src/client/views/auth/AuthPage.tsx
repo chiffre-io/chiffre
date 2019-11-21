@@ -7,7 +7,7 @@ interface Props {
   solidBackground?: boolean
 }
 
-const AuthPage: React.SFC<Props> = ({ solidBackground = false, children }) => {
+const AuthPage: React.FC<Props> = ({ solidBackground = false, children }) => {
   const dark = useColorMode().colorMode === 'dark'
 
   return (

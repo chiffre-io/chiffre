@@ -7,7 +7,7 @@ interface Props extends SvgBoxProps {
   dark?: boolean
 }
 
-const Logo: React.SFC<Props> = ({ light, dark, ...props }) => {
+const Logo: React.FC<Props> = ({ light, dark, ...props }) => {
   const theme = useTheme()
   const lightTheme = light || !dark
 
