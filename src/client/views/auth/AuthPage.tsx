@@ -1,6 +1,6 @@
 import React from 'react'
 import { Box, Flex, useColorMode } from '@chakra-ui/core'
-import Logo from '../Logo'
+import Logo from '../../components/Logo'
 import theme from '../../ui/theme'
 
 interface Props {
