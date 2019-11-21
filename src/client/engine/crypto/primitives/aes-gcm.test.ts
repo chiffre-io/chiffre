@@ -1,5 +1,5 @@
 import nacl from 'tweetnacl'
-import webcrypto from '../webcrypto'
+import webcrypto from './webcrypto'
 import {
   AesCipher,
   serializeAesCipher,

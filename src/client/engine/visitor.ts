@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { encryptDataPoint } from './crypto'
-import { b64 } from './codec'
+import { b64 } from './crypto/primitives/codec'
 
 export interface VisitorConfig {
   publicKey: Uint8Array

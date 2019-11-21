@@ -1,9 +1,9 @@
-import webcrypto from '../webcrypto'
-import { b64, utf8 } from '../codec'
+import webcrypto from './webcrypto'
+import { b64, utf8 } from './codec'
 
 export interface AesCipher {
-  text: Uint8Array
   iv: Uint8Array
+  text: Uint8Array
 }
 
 // --

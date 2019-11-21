@@ -1,5 +1,5 @@
-import webcrypto from '../webcrypto'
-import { b64 } from '../codec'
+import webcrypto from './webcrypto'
+import { b64 } from './codec'
 
 /**
  * Generate a salt for PBKDF2 operations.

@@ -7,7 +7,7 @@ import {
 import { encryptAesGcm, decryptAesGcm } from './aes-gcm'
 
 describe('WebCrypto PBKDF2', () => {
-  test('Salt', () => {
+  test('salt', () => {
     const expected = generateSalt()
     const received = deserializeSalt(serializeSalt(expected))
     expect(expected).toHaveLength(16)

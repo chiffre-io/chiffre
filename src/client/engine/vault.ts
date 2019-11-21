@@ -1,5 +1,5 @@
 import nacl, { BoxKeyPair } from 'tweetnacl'
-import { utf8 } from './codec'
+import { utf8 } from './crypto/primitives/codec'
 import { Cipher } from './crypto'
 
 export interface Vault {
