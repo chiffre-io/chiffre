@@ -19,10 +19,12 @@ const LoginPage = () => {
 
   return (
     <AuthPage>
-      <Label>Account</Label>
+      <Label htmlFor="email">Account</Label>
       <InputGroup>
         <InputLeftElement children={<Icon name="at-sign" color="gray.500" />} />
         <Input
+          id="email"
+          name="email"
           type="email"
           placeholder="email address"
           _placeholder={{
@@ -32,8 +34,10 @@ const LoginPage = () => {
           borderColor={dark ? 'gray.700' : 'gray.400'}
         />
       </InputGroup>
-      <Label>Master Password</Label>
+      <Label htmlFor="password">Master Password</Label>
       <PasswordInput
+        id="password"
+        name="password"
         onPasswordChange={setPassword}
         value={password}
         mb={2}

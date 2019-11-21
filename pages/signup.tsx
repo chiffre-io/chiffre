@@ -71,10 +71,12 @@ const SignupPage = () => {
 
   return (
     <AuthPage>
-      <Label>Account</Label>
+      <Label htmlFor="email">Account</Label>
       <InputGroup>
         <InputLeftElement children={<Icon name="at-sign" color="gray.500" />} />
         <Input
+          id="email"
+          name="email"
           type="email"
           placeholder="email address"
           _placeholder={{
@@ -84,7 +86,11 @@ const SignupPage = () => {
           borderColor={dark ? 'gray.700' : 'gray.400'}
         />
       </InputGroup>
-      <Label justifyContent="space-between" alignItems="center">
+      <Label
+        justifyContent="space-between"
+        alignItems="center"
+        htmlFor="password"
+      >
         <span>Master Password</span>
         <LabelAside>
           <Link
@@ -97,6 +103,8 @@ const SignupPage = () => {
       </Label>
       <AboutPasswords revealed={aboutPasswordsVisible} />
       <PasswordInput
+        id="password"
+        name="password"
         onPasswordChange={setPassword}
         value={password}
         mb={2}
