@@ -2,18 +2,7 @@ import React from 'react'
 import { pwnedPassword } from 'hibp'
 import { useDebounce } from 'react-use'
 import zxcvbn from 'zxcvbn'
-
-// Settings
-export const PASSWORD_MIN_LENGTH = 8
-
-export enum PasswordStrength {
-  pwned = -1,
-  empty = 0,
-  tooShort,
-  weak,
-  good,
-  strong
-}
+import { PasswordStrength, PASSWORD_MIN_LENGTH } from './passwordSettings'
 
 // --
 

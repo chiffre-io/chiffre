@@ -18,7 +18,7 @@ import PasswordStrengthSkeleton from './signup/PasswordStrengthSkeleton'
 import { RouteLink } from '../../components/Links'
 import AboutPasswords from './signup/AboutPasswords'
 import Debug from '../../components/form/Debug'
-import { PasswordStrength } from './signup/usePasswordStrength'
+import { PasswordStrength } from './signup/passwordSettings'
 
 const PasswordStrengthIndicator = dynamic(
   () => import('./signup/PasswordStrengthIndicator'),
