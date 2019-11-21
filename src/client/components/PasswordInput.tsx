@@ -35,9 +35,21 @@ const PasswordInput: React.FC<Props> = ({
       <InputRightElement
         children={
           <IconButton
-            aria-label="Show/hide password"
-            icon="view"
-            variant="link"
+            aria-label={revealed ? 'Hide password' : 'Show password'}
+            icon={revealed ? 'view-off' : 'view'}
+            variant="ghost"
+            _hover={{
+              color: 'gray.600',
+              backgroundColor: 'transparent'
+            }}
+            _pressed={{
+              color: 'gray.700',
+              backgroundColor: 'transparent'
+            }}
+            _active={{
+              color: 'gray.700',
+              backgroundColor: 'transparent'
+            }}
             color="gray.500"
             onClick={() => setRevealed(!revealed)}
           />
