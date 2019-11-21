@@ -3,7 +3,11 @@ import { Box, Flex, useColorMode } from '@chakra-ui/core'
 import Logo from '../Logo'
 import theme from '../../ui/theme'
 
-const AuthPage = ({ children }) => {
+interface Props {
+  solidBackground?: boolean
+}
+
+const AuthPage: React.SFC<Props> = ({ solidBackground = false, children }) => {
   const dark = useColorMode().colorMode === 'dark'
 
   return (
@@ -18,12 +22,17 @@ const AuthPage = ({ children }) => {
         _: 'stretch',
         sm: 'center'
       }}
-      // backgroundColor={dark ? 'gray.900' : 'gray.200'}
-      background={`linear-gradient(90deg, ${
-        theme.colors.gray[dark ? 900 : 200]
-      } 19px,transparent 1%) center,linear-gradient(${
-        theme.colors.gray[dark ? 900 : 200]
-      } 19px,transparent 1%) center, ${theme.colors.gray[dark ? 800 : 400]}`}
+      background={
+        solidBackground
+          ? theme.colors.gray[dark ? 900 : 200]
+          : `linear-gradient(90deg, ${
+              theme.colors.gray[dark ? 900 : 200]
+            } 19px,transparent 1%) center,linear-gradient(${
+              theme.colors.gray[dark ? 900 : 200]
+            } 19px,transparent 1%) center, ${
+              theme.colors.gray[dark ? 800 : 400]
+            }`
+      }
       backgroundSize="20px 20px"
     >
       <Box
@@ -48,7 +57,7 @@ const AuthPage = ({ children }) => {
           borderBottomColor={dark ? 'gray.600' : 'gray.300'}
           borderBottomWidth="1px"
         >
-          <Logo mx="auto" dark={dark} />
+          <Logo dark={dark} mx="auto" />
         </Box>
         <Box p={4}>{children}</Box>
       </Box>

@@ -1,9 +1,8 @@
 import React from 'react'
-import styled from '@emotion/styled'
-import { space } from 'styled-system'
 import { useTheme } from '@chakra-ui/core'
+import SvgBox, { SvgBoxProps } from './primitives/SvgBox'
 
-interface Props {
+interface Props extends SvgBoxProps {
   light?: boolean
   dark?: boolean
 }
@@ -18,11 +17,9 @@ const Logo: React.SFC<Props> = ({ light, dark, ...props }) => {
   }
 
   return (
-    <svg
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      width="100"
-      height="25"
+    <SvgBox
+      width="100px"
+      height="25px"
       viewBox="0 0 100 25"
       aria-label="Chiffre.io"
       {...props}
@@ -35,10 +32,8 @@ const Logo: React.SFC<Props> = ({ light, dark, ...props }) => {
         d="M73.7 14.7c.32-.06.62-.1.9-.12a7.82 7.82 0 012.6.12 12.4 12.4 0 01-.6 3.5c-.32.07-.62.11-.91.13a7.82 7.82 0 01-2.6-.12 10.5 10.5 0 01.6-3.5zM82.36 8.39h-1.51c0-.05 0-.1-.02-.14v-.17a5.2 5.2 0 01.48-2.28h4.84l-2.18 12.4a9.82 9.82 0 01-3.34 0l1.73-9.81zm.7-4.68a8.43 8.43 0 01.53-3.2c.28-.06.59-.1.9-.11a8.77 8.77 0 012.6.12 8.71 8.71 0 01-.58 3.19c-.28.05-.59.08-.9.1a16.07 16.07 0 01-1.69 0c-.32-.02-.6-.05-.86-.1zM92.45 18.5c-1.64 0-2.86-.44-3.64-1.3a5.16 5.16 0 01-1.16-3.55c0-.96.15-1.92.44-2.88.28-.98.72-1.85 1.3-2.62a6.66 6.66 0 012.15-1.9c.88-.5 1.9-.74 3.07-.74 1.67 0 2.88.44 3.65 1.32a5.18 5.18 0 011.18 3.58c0 .99-.15 1.96-.43 2.92s-.7 1.83-1.28 2.6a6.7 6.7 0 01-2.18 1.87c-.88.46-1.91.7-3.1.7zm.32-2.6c.6 0 1.12-.19 1.53-.57.42-.39.75-.86 1.01-1.42.27-.58.46-1.18.58-1.8.1-.64.16-1.22.16-1.73 0-1.47-.6-2.2-1.8-2.2-.6 0-1.1.2-1.5.6-.4.4-.74.88-1 1.46a7.77 7.77 0 00-.54 1.82c-.1.64-.15 1.21-.15 1.7 0 1.43.57 2.14 1.7 2.14z"
         fill={colors.dotIo}
       />
-    </svg>
+    </SvgBox>
   )
 }
 
-export default styled(Logo)`
-  ${space}
-`
+export default Logo
