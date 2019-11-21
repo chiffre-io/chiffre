@@ -11,7 +11,7 @@
     "start": "NODE_ENV=production ts-node --project tsconfig.server.json ./src/server/server.ts",
     "clean": "rm -rf ./out ./.next",
     "export": "next export",
-    "deploy": "surge -p ./out -d https://password-strength.surge.sh",
+    "deploy": "surge -p ./out -d https://chiffre.surge.sh",
     "release": "yarn clean && yarn build && yarn export && yarn deploy"
   },
   "dependencies": {
