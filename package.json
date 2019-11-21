@@ -6,7 +6,7 @@
     "dev": "ts-node --project tsconfig.server.json ./src/server/server.ts",
     "build": "next build",
     "install": "next build",
-    "test": "jest",
+    "test": "jest --verbose",
     "test:watch": "jest --watch",
     "start": "NODE_ENV=production ts-node --project tsconfig.server.json ./src/server/server.ts",
     "clean": "rm -rf ./out ./.next",
@@ -43,6 +43,7 @@
     "@types/zxcvbn": "^4.4.0",
     "dotenv": "^8.2.0",
     "jest": "^24.9.0",
+    "node-webcrypto-ossl": "^1.0.48",
     "ts-jest": "^24.1.0",
     "ts-node": "^8.5.2",
     "typescript": "^3.7.2"
