@@ -10,7 +10,7 @@ import {
 } from '@chakra-ui/core'
 import { Formik, Form, FormikErrors, Field } from 'formik'
 
-import Label, { LabelAside } from '../../components/form/Label'
+import Label, { LabelWithAside } from '../../components/form/Label'
 import EmailField from '../../components/form/EmailField'
 import FieldHelpText from '../../components/form/FieldHelpText'
 import { ControlledPasswordInput } from '../../components/form/PasswordInput'
@@ -111,13 +111,11 @@ const SignupForm: React.FC<Props> = ({ onSubmit }) => {
             <EmailField />
           </Box>
           <Box mb={4}>
-            <Label
+            <LabelWithAside
               justifyContent="space-between"
               alignItems="center"
               htmlFor="password"
-            >
-              <span>Master Password</span>
-              <LabelAside>
+              aside={() => (
                 <Link
                   href="#"
                   onClick={() =>
@@ -126,8 +124,10 @@ const SignupForm: React.FC<Props> = ({ onSubmit }) => {
                 >
                   About passwords
                 </Link>
-              </LabelAside>
-            </Label>
+              )}
+            >
+              Master Password
+            </LabelWithAside>
             <AboutPasswords revealed={aboutPasswordsVisible} />
             <ControlledPasswordInput
               lockColor={getMainLockColor(values)}

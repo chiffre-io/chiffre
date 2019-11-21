@@ -1,10 +1,10 @@
 import React from 'react'
-import { Text } from '@chakra-ui/core'
+import { Flex, Text } from '@chakra-ui/core'
 
-export const LabelAside = ({ children, ...props }) => (
+const LabelAside = ({ children, ...props }) => (
   <Text
     as="aside"
-    display="inline"
+    display="block"
     fontSize="xs"
     fontWeight="normal"
     color="gray.600"
@@ -14,8 +14,23 @@ export const LabelAside = ({ children, ...props }) => (
   </Text>
 )
 
+export const LabelWithAside = ({ children, aside, htmlFor, ...props }) => (
+  <Flex justifyContent="space-between" alignItems="center" mb={2} {...props}>
+    <Label htmlFor={htmlFor} mb={0}>
+      {children}
+    </Label>
+    <LabelAside>{aside()}</LabelAside>
+  </Flex>
+)
+
 const Label = ({ children, ...props }) => (
-  <Text as="label" fontWeight="semibold" display="flex" mb={2} {...props}>
+  <Text
+    as="label"
+    fontWeight="semibold"
+    display="inline-flex"
+    mb={2}
+    {...props}
+  >
     {children}
   </Text>
 )
