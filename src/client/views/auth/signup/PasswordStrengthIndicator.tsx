@@ -3,9 +3,11 @@ import { Box, Grid, Text, Flex, useColorMode, Collapse } from '@chakra-ui/core'
 import { Bar } from './PasswordStrengthSkeleton'
 import usePasswordStrength, { PasswordStrength } from './usePasswordStrength'
 import { AnchorLink } from '../../../components/Links'
+import { useDebounce } from 'react-use'
 
 export interface Props {
   password: string
+  onStrengthChange: (strength: PasswordStrength) => void
 }
 
 const useColors = () => {
@@ -62,12 +64,20 @@ const useTextAndColor = (strength: PasswordStrength) => {
   }
 }
 
-const PasswordStrengthIndicator = ({ password, ...props }) => {
+const PasswordStrengthIndicator: React.FC<Props> = ({
+  password,
+  onStrengthChange,
+  ...props
+}) => {
   const strength = usePasswordStrength(password)
   const colors = useSegmentColors(strength)
   const dark = useColorMode().colorMode === 'dark'
 
   const { show: showText, text, color: textColor } = useTextAndColor(strength)
+
+  React.useEffect(() => {
+    onStrengthChange(strength)
+  }, [strength])
 
   return (
     <Box {...props}>
@@ -83,7 +93,12 @@ const PasswordStrengthIndicator = ({ password, ...props }) => {
             color={textColor}
             flexShrink={0}
             fontSize="sm"
-            fontWeight={dark ? 'normal' : 'semibold'}
+            fontWeight={
+              strength === PasswordStrength.pwned && !dark
+                ? 'semibold'
+                : 'normal'
+            }
+            // fontWeight={dark ? 'normal' : 'semibold'}
           >
             {text}
           </Text>
