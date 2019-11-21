@@ -6,7 +6,8 @@ import {
   InputGroup,
   InputRightElement,
   IconButton,
-  InputLeftElement
+  InputLeftElement,
+  useColorMode
 } from '@chakra-ui/core'
 
 export interface Props extends InputProps {
@@ -14,12 +15,24 @@ export interface Props extends InputProps {
   onPasswordChange: (password: string) => void
 }
 
-const PasswordInput: React.FC<Props> = ({
+export interface ControlledProps extends Props {
+  revealed: boolean
+  onRevealedChanged: (revealed: boolean) => void
+}
+
+/**
+ * Password input with external state
+ * for the clear text reveal feature.
+ */
+export const ControlledPasswordInput: React.FC<ControlledProps> = ({
   value,
   onPasswordChange,
+  revealed = false,
+  onRevealedChanged,
   ...props
 }) => {
-  const [revealed, setRevealed] = React.useState(false)
+  const dark = useColorMode().colorMode === 'dark'
+
   return (
     <InputGroup>
       <InputLeftElement children={<Icon name="lock" color="gray.500" />} />
@@ -30,6 +43,12 @@ const PasswordInput: React.FC<Props> = ({
         type={revealed ? 'text' : 'password'}
         placeholder="password"
         pr={8}
+        mb={2}
+        _placeholder={{
+          color: 'gray.500'
+        }}
+        borderColor={dark ? 'gray.700' : 'gray.400'}
+        // letterSpacing={value.length > 0 ? '0.05em' : 'auto'}
         {...props}
       />
       <InputRightElement
@@ -51,11 +70,34 @@ const PasswordInput: React.FC<Props> = ({
               backgroundColor: 'transparent'
             }}
             color="gray.500"
-            onClick={() => setRevealed(!revealed)}
+            onClick={() => onRevealedChanged(!revealed)}
           />
         }
       />
+      )
     </InputGroup>
+  )
+}
+
+/**
+ * Password input with internal state
+ * for the clear text reveal feature.
+ */
+const PasswordInput: React.FC<Props> = ({
+  value,
+  onPasswordChange,
+  ...props
+}) => {
+  const [revealed, setRevealed] = React.useState(false)
+
+  return (
+    <ControlledPasswordInput
+      value={value}
+      onPasswordChange={onPasswordChange}
+      revealed={revealed}
+      onRevealedChanged={setRevealed}
+      {...props}
+    />
   )
 }
 

@@ -5,7 +5,7 @@ import SignupForm from '../src/client/views/auth/SignupForm'
 const SignupPage = () => {
   return (
     <AuthPage>
-      <SignupForm />
+      <SignupForm onSubmit={console.log} />
     </AuthPage>
   )
 }

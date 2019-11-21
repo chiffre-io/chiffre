@@ -4,7 +4,7 @@ import socketIO from 'socket.io'
 
 import { createServer } from 'http'
 import { ServerContext } from './storage'
-import { b64 } from '../client/engine/codec'
+import { b64 } from '../client/engine/crypto/primitives/codec'
 
 const context: ServerContext = {
   publicKey: null,

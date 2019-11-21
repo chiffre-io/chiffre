@@ -1,7 +1,7 @@
 import React from 'react'
-import PasswordStrengthIndicator from '../src/client/components/PasswordStrengthIndicator'
+import PasswordStrengthIndicator from '../src/client/views/auth/signup/PasswordStrengthIndicator'
 import { Box, Flex, Input, Text, Button, useColorMode } from '@chakra-ui/core'
-import PasswordInput from '../src/client/components/PasswordInput'
+import PasswordInput from '../src/client/components/form/PasswordInput'
 import useEvent from '../src/client/hooks/useEvents'
 import Logo from '../src/client/components/Logo'
 

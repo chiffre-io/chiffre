@@ -8,7 +8,7 @@ import {
   Icon,
   Text
 } from '@chakra-ui/core'
-import PasswordInput from '../../components/PasswordInput'
+import PasswordInput from '../../components/form/PasswordInput'
 import Label from '../../components/form/Label'
 import { RouteLink } from '../../components/Links'
 

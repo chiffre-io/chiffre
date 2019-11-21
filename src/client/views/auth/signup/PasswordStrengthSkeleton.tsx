@@ -5,7 +5,7 @@ export interface BarProps {
   color: string
 }
 
-export const Bar: React.SFC<BarProps> = ({ color, ...props }) => (
+export const Bar: React.FC<BarProps> = ({ color, ...props }) => (
   <Box
     backgroundColor={color}
     borderRadius={3}
@@ -15,7 +15,7 @@ export const Bar: React.SFC<BarProps> = ({ color, ...props }) => (
   />
 )
 
-const PasswordStrengthSkeleton: React.SFC = () => {
+const PasswordStrengthSkeleton: React.FC = () => {
   const dark = useColorMode().colorMode === 'dark'
   const gray = dark ? 'gray.700' : 'gray.200'
 
