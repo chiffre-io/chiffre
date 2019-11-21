@@ -1,5 +1,5 @@
 import React from 'react'
-import { Grid, Text, Flex, Link, useColorMode, Collapse } from '@chakra-ui/core'
+import { Box, Grid, Text, Flex, useColorMode, Collapse } from '@chakra-ui/core'
 import { Bar } from './PasswordStrengthSkeleton'
 import usePasswordStrength, {
   PasswordStrength
@@ -64,7 +64,7 @@ const useTextAndColor = (strength: PasswordStrength) => {
   }
 }
 
-const PasswordStrengthIndicator: React.SFC<Props> = ({ password }) => {
+const PasswordStrengthIndicator = ({ password, ...props }) => {
   const strength = usePasswordStrength(password)
   const colors = useSegmentColors(strength)
   const dark = useColorMode().colorMode === 'dark'
@@ -72,7 +72,7 @@ const PasswordStrengthIndicator: React.SFC<Props> = ({ password }) => {
   const { show: showText, text, color: textColor } = useTextAndColor(strength)
 
   return (
-    <>
+    <Box {...props}>
       <Grid gridTemplateColumns="repeat(4, 1fr)" gridGap={2}>
         <Bar color={colors[0]} />
         <Bar color={colors[1]} />
@@ -91,7 +91,7 @@ const PasswordStrengthIndicator: React.SFC<Props> = ({ password }) => {
           </Text>
           {(strength === PasswordStrength.tooShort ||
             strength === PasswordStrength.weak) && (
-            <Text fontSize="xs" color="gray.500" ml={4} textAlign="right">
+            <Text fontSize="xs" color="gray.600" ml={4} textAlign="right">
               consider using a password manager
             </Text>
           )}
@@ -118,7 +118,7 @@ const PasswordStrengthIndicator: React.SFC<Props> = ({ password }) => {
           </Text>
         </>
       </Collapse>
-    </>
+    </Box>
   )
 }
 

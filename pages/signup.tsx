@@ -37,12 +37,25 @@ const Paragraph = ({ children, ...props }) => {
   )
 }
 
+const HelpText = ({ children }) => {
+  const dark = useColorMode().colorMode === 'dark'
+  return (
+    <Text fontSize="sm" color={dark ? 'gray.400' : 'gray.600'} mb={4}>
+      {children}
+    </Text>
+  )
+}
+
 const AboutPasswords = ({ revealed }) => {
   return (
     <Collapse isOpen={revealed}>
       <Paragraph>Your master password is the key to your account.</Paragraph>
       <Paragraph>
-        It is not sent to us, so we have <b>no way</b> to reset it for you.
+        It is never sent to us, so we have{' '}
+        <Text as="span" fontWeight="semibold">
+          no way
+        </Text>{' '}
+        to reset it for you.
       </Paragraph>
       <Paragraph>
         We recommend you use a secure password manager to generate a long and
@@ -83,10 +96,11 @@ const SignupPage = () => {
             _placeholder={{
               color: 'gray.500'
             }}
-            mb={4}
+            mb={1}
             borderColor={dark ? 'gray.700' : 'gray.400'}
           />
         </InputGroup>
+        <HelpText>You'll use your email address to log in.</HelpText>
         <Label
           justifyContent="space-between"
           alignItems="center"
@@ -116,16 +130,35 @@ const SignupPage = () => {
           borderColor={dark ? 'gray.700' : 'gray.400'}
           letterSpacing={password.length > 0 ? '0.05em' : 'auto'}
         />
-        <PasswordStrengthIndicator password={password} />
+        <PasswordStrengthIndicator password={password} mb={4} />
+        <Label htmlFor="passwordConfirm">Confirm Master Password</Label>
+        <PasswordInput
+          id="passwordConfirm"
+          name="passwordConfirm"
+          autoComplete="new-password"
+          onPasswordChange={setPassword}
+          value={password}
+          mb={2}
+          _placeholder={{
+            color: 'gray.500'
+          }}
+          borderColor={dark ? 'gray.700' : 'gray.400'}
+          letterSpacing={password.length > 0 ? '0.05em' : 'auto'}
+        />
 
         <Checkbox pt={4} variantColor="green">
-          <Text fontSize="sm" color={dark ? 'gray.500' : 'gray.600'}>
-            I accept the{' '}
-            <RouteLink to="#todo-url">Terms &amp; Conditions</RouteLink> and the{' '}
-            <RouteLink to="#todo-url">Privacy Policy</RouteLink>.
+          <Text fontSize="sm">
+            I accept the <RouteLink to="#todo-url">Terms of Service</RouteLink>{' '}
+            and the <RouteLink to="#todo-url">Privacy Policy</RouteLink>.
           </Text>
         </Checkbox>
-        <Button width="100%" variantColor="green" mt={6}>
+        <Button
+          width="100%"
+          variantColor="green"
+          mt={6}
+          // isLoading
+          // loadingText="Generating keys..."
+        >
           Create account
         </Button>
         <Text
