@@ -1,22 +1,19 @@
 import React from 'react'
 import dynamic from 'next/dynamic'
 import {
-  Box,
-  Flex,
   Input,
   Button,
   Text,
   Link,
   Collapse,
-  useColorMode,
   InputGroup,
   InputLeftElement,
   Icon,
-  Checkbox
+  Checkbox,
+  useColorMode
 } from '@chakra-ui/core'
 import AuthPage from '../src/client/components/auth/AuthPage'
 import PasswordInput from '../src/client/components/PasswordInput'
-import Logo from '../src/client/components/Logo'
 import Label, { LabelAside } from '../src/client/components/form/Label'
 import PasswordStrengthSkeleton from '../src/client/components/PasswordStrengthSkeleton'
 
@@ -25,11 +22,19 @@ const PasswordStrengthIndicator = dynamic(
   { loading: () => <PasswordStrengthSkeleton /> }
 )
 
-const Paragraph = ({ children, ...props }) => (
-  <Text fontSize="sm" color="gray.700" mb={2} {...props}>
-    {children}
-  </Text>
-)
+const Paragraph = ({ children, ...props }) => {
+  const dark = useColorMode().colorMode === 'dark'
+  return (
+    <Text
+      fontSize="sm"
+      color={dark ? 'gray.500' : 'gray.700'}
+      mb={2}
+      {...props}
+    >
+      {children}
+    </Text>
+  )
+}
 
 const AboutPasswords = ({ revealed }) => {
   return (
@@ -103,8 +108,8 @@ const SignupPage = () => {
       />
       <PasswordStrengthIndicator password={password} />
 
-      <Checkbox pt={4}>
-        <Text fontSize="xs" color="gray.600">
+      <Checkbox pt={4} variantColor="green">
+        <Text fontSize="xs" color={dark ? 'gray.500' : 'gray.600'}>
           I accept the{' '}
           <Link textDecoration="underline" href="#todo-url">
             Terms &amp; Conditions
@@ -116,12 +121,21 @@ const SignupPage = () => {
           .
         </Text>
       </Checkbox>
-      <Button width="100%" variantColor="blue" mt={6}>
+      <Button width="100%" variantColor="green" mt={6}>
         Create account
       </Button>
-      <Text textAlign="center" mt={4} fontSize="sm" color="gray.600">
+      <Text
+        textAlign="center"
+        mt={4}
+        fontSize="sm"
+        color={dark ? 'gray.500' : 'gray.600'}
+      >
         Already have an account ?{' '}
-        <Link href="/login" textDecoration="underline" color="gray.700">
+        <Link
+          href="/login"
+          textDecoration="underline"
+          color={dark ? 'gray.400' : 'gray.700'}
+        >
           Sign in
         </Link>
       </Text>

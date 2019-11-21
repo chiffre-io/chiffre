@@ -1,6 +1,6 @@
-import { theme as chakraTheme, ITheme } from '@chakra-ui/core'
+import { theme as chakraTheme } from '@chakra-ui/core'
 
-const theme: ITheme = {
+const theme = {
   ...chakraTheme,
   fonts: {
     ...chakraTheme.fonts,

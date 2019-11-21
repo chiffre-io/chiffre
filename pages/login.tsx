@@ -46,9 +46,18 @@ const LoginPage = () => {
       <Button width="100%" variantColor="blue" mt={6}>
         Sign in to your account
       </Button>
-      <Text textAlign="center" mt={4} fontSize="sm" color="gray.600">
+      <Text
+        textAlign="center"
+        mt={4}
+        fontSize="sm"
+        color={dark ? 'gray.500' : 'gray.600'}
+      >
         Don't have an account ?{' '}
-        <Link href="/signup" textDecoration="underline" color="gray.700">
+        <Link
+          href="/signup"
+          textDecoration="underline"
+          color={dark ? 'gray.400' : 'gray.700'}
+        >
           Sign up
         </Link>
       </Text>

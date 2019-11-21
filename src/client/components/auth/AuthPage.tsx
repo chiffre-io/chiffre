@@ -1,6 +1,7 @@
 import React from 'react'
 import { Box, Flex, useColorMode } from '@chakra-ui/core'
 import Logo from '../Logo'
+import theme from '../../ui/theme'
 
 const AuthPage = ({ children }) => {
   const dark = useColorMode().colorMode === 'dark'
@@ -17,7 +18,13 @@ const AuthPage = ({ children }) => {
         _: 'stretch',
         sm: 'center'
       }}
-      backgroundColor={dark ? 'gray.900' : 'gray.200'}
+      // backgroundColor={dark ? 'gray.900' : 'gray.200'}
+      background={`linear-gradient(90deg, ${
+        theme.colors.gray[dark ? 900 : 200]
+      } 19px,transparent 1%) center,linear-gradient(${
+        theme.colors.gray[dark ? 900 : 200]
+      } 19px,transparent 1%) center, ${theme.colors.gray[dark ? 800 : 400]}`}
+      backgroundSize="20px 20px"
     >
       <Box
         w={{
