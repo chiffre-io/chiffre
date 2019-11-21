@@ -24,6 +24,7 @@ const Logo: React.SFC<Props> = ({ light, dark, ...props }) => {
       width="100"
       height="25"
       viewBox="0 0 100 25"
+      aria-label="Chiffre.io"
       {...props}
     >
       <path

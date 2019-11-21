@@ -4,6 +4,7 @@ import { Bar } from './PasswordStrengthSkeleton'
 import usePasswordStrength, {
   PasswordStrength
 } from '../hooks/usePasswordStrength'
+import { AnchorLink } from './Links'
 
 export interface Props {
   password: string
@@ -78,7 +79,7 @@ const PasswordStrengthIndicator: React.SFC<Props> = ({ password }) => {
         <Bar color={colors[2]} />
         <Bar color={colors[3]} />
       </Grid>
-      <Collapse isOpen={showText}>
+      {showText && (
         <Flex justifyContent="space-between" mt={1}>
           <Text
             color={textColor}
@@ -88,15 +89,14 @@ const PasswordStrengthIndicator: React.SFC<Props> = ({ password }) => {
           >
             {text}
           </Text>
-          {(strength === PasswordStrength.empty ||
-            strength === PasswordStrength.tooShort ||
+          {(strength === PasswordStrength.tooShort ||
             strength === PasswordStrength.weak) && (
             <Text fontSize="xs" color="gray.500" ml={4} textAlign="right">
               consider using a password manager
             </Text>
           )}
         </Flex>
-      </Collapse>
+      )}
       <Collapse isOpen={strength === PasswordStrength.pwned}>
         <>
           <Text
@@ -112,13 +112,9 @@ const PasswordStrengthIndicator: React.SFC<Props> = ({ password }) => {
           </Text>
           <Text color={dark ? 'gray.500' : 'gray.700'} fontSize="sm">
             Learn more :{' '}
-            <Link
-              href="https://haveibeenpwned.com/"
-              target="_blank"
-              textDecoration="underline"
-            >
+            <AnchorLink href="https://haveibeenpwned.com/" target="_blank">
               haveibeenpwned.com
-            </Link>
+            </AnchorLink>
           </Text>
         </>
       </Collapse>

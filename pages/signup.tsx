@@ -16,6 +16,7 @@ import AuthPage from '../src/client/components/auth/AuthPage'
 import PasswordInput from '../src/client/components/PasswordInput'
 import Label, { LabelAside } from '../src/client/components/form/Label'
 import PasswordStrengthSkeleton from '../src/client/components/PasswordStrengthSkeleton'
+import { RouteLink } from '../src/client/components/Links'
 
 const PasswordStrengthIndicator = dynamic(
   () => import('../src/client/components/PasswordStrengthIndicator'),
@@ -49,10 +50,7 @@ const AboutPasswords = ({ revealed }) => {
       </Paragraph>
       <Paragraph>
         Learn more about our{' '}
-        <Link textDecoration="underline" href="#todo-url">
-          security policy
-        </Link>
-        .
+        <RouteLink to="#todo-url">Security Policy</RouteLink>.
       </Paragraph>
       <Paragraph mb={4}>
         * <i>Recommended : 64+ characters of all sorts</i>
@@ -71,82 +69,77 @@ const SignupPage = () => {
 
   return (
     <AuthPage>
-      <Label htmlFor="email">Account</Label>
-      <InputGroup>
-        <InputLeftElement children={<Icon name="at-sign" color="gray.500" />} />
-        <Input
-          id="email"
-          name="email"
-          type="email"
-          placeholder="email address"
+      <form autoComplete="off">
+        <Label htmlFor="email">Account</Label>
+        <InputGroup>
+          <InputLeftElement
+            children={<Icon name="at-sign" color="gray.500" />}
+          />
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="email address"
+            _placeholder={{
+              color: 'gray.500'
+            }}
+            mb={4}
+            borderColor={dark ? 'gray.700' : 'gray.400'}
+          />
+        </InputGroup>
+        <Label
+          justifyContent="space-between"
+          alignItems="center"
+          htmlFor="password"
+        >
+          <span>Master Password</span>
+          <LabelAside>
+            <Link
+              href="#"
+              onClick={() => setAboutPasswordsVisible(!aboutPasswordsVisible)}
+            >
+              About passwords
+            </Link>
+          </LabelAside>
+        </Label>
+        <AboutPasswords revealed={aboutPasswordsVisible} />
+        <PasswordInput
+          id="password"
+          name="password"
+          autoComplete="new-password"
+          onPasswordChange={setPassword}
+          value={password}
+          mb={2}
           _placeholder={{
             color: 'gray.500'
           }}
-          mb={4}
           borderColor={dark ? 'gray.700' : 'gray.400'}
+          letterSpacing={password.length > 0 ? '0.05em' : 'auto'}
         />
-      </InputGroup>
-      <Label
-        justifyContent="space-between"
-        alignItems="center"
-        htmlFor="password"
-      >
-        <span>Master Password</span>
-        <LabelAside>
-          <Link
-            href="#"
-            onClick={() => setAboutPasswordsVisible(!aboutPasswordsVisible)}
-          >
-            About passwords
-          </Link>
-        </LabelAside>
-      </Label>
-      <AboutPasswords revealed={aboutPasswordsVisible} />
-      <PasswordInput
-        id="password"
-        name="password"
-        onPasswordChange={setPassword}
-        value={password}
-        mb={2}
-        _placeholder={{
-          color: 'gray.500'
-        }}
-        borderColor={dark ? 'gray.700' : 'gray.400'}
-        letterSpacing={password.length > 0 ? '0.05em' : 'auto'}
-      />
-      <PasswordStrengthIndicator password={password} />
+        <PasswordStrengthIndicator password={password} />
 
-      <Checkbox pt={4} variantColor="green">
-        <Text fontSize="xs" color={dark ? 'gray.500' : 'gray.600'}>
-          I accept the{' '}
-          <Link textDecoration="underline" href="#todo-url">
-            Terms &amp; Conditions
-          </Link>{' '}
-          and the{' '}
-          <Link textDecoration="underline" href="#todo-url">
-            Privacy Policy
-          </Link>
-          .
-        </Text>
-      </Checkbox>
-      <Button width="100%" variantColor="green" mt={6}>
-        Create account
-      </Button>
-      <Text
-        textAlign="center"
-        mt={4}
-        fontSize="sm"
-        color={dark ? 'gray.500' : 'gray.600'}
-      >
-        Already have an account ?{' '}
-        <Link
-          href="/login"
-          textDecoration="underline"
-          color={dark ? 'gray.400' : 'gray.700'}
+        <Checkbox pt={4} variantColor="green">
+          <Text fontSize="sm" color={dark ? 'gray.500' : 'gray.600'}>
+            I accept the{' '}
+            <RouteLink to="#todo-url">Terms &amp; Conditions</RouteLink> and the{' '}
+            <RouteLink to="#todo-url">Privacy Policy</RouteLink>.
+          </Text>
+        </Checkbox>
+        <Button width="100%" variantColor="green" mt={6}>
+          Create account
+        </Button>
+        <Text
+          textAlign="center"
+          mt={4}
+          fontSize="sm"
+          color={dark ? 'gray.500' : 'gray.600'}
         >
-          Sign in
-        </Link>
-      </Text>
+          Already have an account ?{' '}
+          <RouteLink to="/login" color={dark ? 'gray.400' : 'gray.700'}>
+            Sign in
+          </RouteLink>
+        </Text>
+      </form>
     </AuthPage>
   )
 }

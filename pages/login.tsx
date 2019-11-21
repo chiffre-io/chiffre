@@ -6,12 +6,12 @@ import {
   InputGroup,
   InputLeftElement,
   Icon,
-  Link,
   Text
 } from '@chakra-ui/core'
 import AuthPage from '../src/client/components/auth/AuthPage'
 import PasswordInput from '../src/client/components/PasswordInput'
 import Label from '../src/client/components/form/Label'
+import { RouteLink } from '../src/client/components/Links'
 
 const LoginPage = () => {
   const [password, setPassword] = React.useState('')
@@ -57,13 +57,9 @@ const LoginPage = () => {
         color={dark ? 'gray.500' : 'gray.600'}
       >
         Don't have an account ?{' '}
-        <Link
-          href="/signup"
-          textDecoration="underline"
-          color={dark ? 'gray.400' : 'gray.700'}
-        >
+        <RouteLink to="/signup" color={dark ? 'gray.400' : 'gray.700'}>
           Sign up
-        </Link>
+        </RouteLink>
       </Text>
     </AuthPage>
   )
