@@ -1,5 +1,5 @@
 import React from 'react'
-import { Box, Grid, Text, Flex, Link } from '@chakra-ui/core'
+import { Box, Grid, Text, Flex, Link, useColorMode } from '@chakra-ui/core'
 import usePasswordStrength, {
   PasswordStrength
 } from '../hooks/usePasswordStrength'
@@ -8,47 +8,66 @@ export interface Props {
   password: string
 }
 
-const getColors = (strength: PasswordStrength) => {
-  switch (strength) {
-    default:
-    case PasswordStrength.empty:
-      return ['gray.200', 'gray.200', 'gray.200', 'gray.200']
-    case PasswordStrength.tooShort:
-      return ['red.600', 'gray.200', 'gray.200', 'gray.200']
-    case PasswordStrength.weak:
-      return ['orange.500', 'orange.500', 'gray.200', 'gray.200']
-    case PasswordStrength.good:
-      return ['teal.500', 'teal.500', 'teal.500', 'gray.200']
-    case PasswordStrength.strong:
-      return ['green.500', 'green.500', 'green.500', 'green.500']
-    case PasswordStrength.pwned:
-      return ['red.600', 'red.600', 'red.600', 'red.600']
+const useColors = () => {
+  const dark = useColorMode().colorMode === 'dark'
+  const gray = dark ? 'gray.700' : 'gray.200'
+  const red = dark ? 'red.500' : 'red.600'
+  const green = dark ? 'green.400' : 'green.500'
+  const teal = dark ? 'teal.400' : 'teal.500'
+  const orange = dark ? 'orange.400' : 'orange.500'
+  return {
+    gray,
+    red,
+    green,
+    teal,
+    orange
   }
 }
 
-const getTextAndColor = (strength: PasswordStrength) => {
+const useSegmentColors = (strength: PasswordStrength) => {
+  const { gray, red, orange, teal, green } = useColors()
+  switch (strength) {
+    default:
+    case PasswordStrength.empty:
+      return [gray, gray, gray, gray]
+    case PasswordStrength.tooShort:
+      return [red, gray, gray, gray]
+    case PasswordStrength.weak:
+      return [orange, orange, gray, gray]
+    case PasswordStrength.good:
+      return [teal, teal, teal, gray]
+    case PasswordStrength.strong:
+      return [green, green, green, green]
+    case PasswordStrength.pwned:
+      return [red, red, red, red]
+  }
+}
+
+const useTextAndColor = (strength: PasswordStrength) => {
+  const { red, orange, teal, green } = useColors()
   switch (strength) {
     default:
     case PasswordStrength.empty:
       return { text: null, color: null }
     case PasswordStrength.tooShort:
-      return { text: 'Too short', color: 'red.600' }
+      return { text: 'Too short', color: red }
     case PasswordStrength.weak:
-      return { text: 'Weak password', color: 'orange.500' }
+      return { text: 'Weak password', color: orange }
     case PasswordStrength.good:
-      return { text: 'Good password', color: 'teal.500' }
+      return { text: 'Good password', color: teal }
     case PasswordStrength.strong:
-      return { text: 'Strong password', color: 'green.500' }
+      return { text: 'Strong password', color: green }
     case PasswordStrength.pwned:
-      return { text: 'Unsafe password !', color: 'red.600' }
+      return { text: 'Unsafe password !', color: red }
   }
 }
 
 const PasswordStrengthIndicator: React.SFC<Props> = ({ password }) => {
   const strength = usePasswordStrength(password)
-  const colors = getColors(strength)
+  const colors = useSegmentColors(strength)
+  const dark = useColorMode().colorMode === 'dark'
 
-  const { text, color: textColor } = getTextAndColor(strength)
+  const { text, color: textColor } = useTextAndColor(strength)
 
   return (
     <>
@@ -60,7 +79,12 @@ const PasswordStrengthIndicator: React.SFC<Props> = ({ password }) => {
       </Grid>
       {text && (
         <Flex justifyContent="space-between" mt={1}>
-          <Text color={textColor} flexShrink={0}>
+          <Text
+            color={textColor}
+            flexShrink={0}
+            fontSize="sm"
+            fontWeight={dark ? 'normal' : 'semibold'}
+          >
             {text}
           </Text>
           {(strength === PasswordStrength.tooShort ||
@@ -73,13 +97,18 @@ const PasswordStrengthIndicator: React.SFC<Props> = ({ password }) => {
       )}
       {strength === PasswordStrength.pwned && (
         <>
-          <Text color="gray.700" fontSize="sm" mt={4} mb={2}>
+          <Text
+            color={dark ? 'gray.500' : 'gray.700'}
+            fontSize="sm"
+            mt={4}
+            mb={2}
+          >
             This password has leaked on the internet and should not be used. If
             you use it somewhere else, go change it now.
             <br />
             We recommend you use a secure password manager.
           </Text>
-          <Text color="gray.700" fontSize="sm">
+          <Text color={dark ? 'gray.500' : 'gray.700'} fontSize="sm">
             Learn more :{' '}
             <Link
               href="https://haveibeenpwned.com/"

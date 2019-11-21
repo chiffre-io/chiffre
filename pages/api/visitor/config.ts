@@ -7,7 +7,7 @@ const handler = nextConnect()
 
 handler.get((req: NextApiRequestWithContext, res: NextApiResponse) => {
   const data = {
-    publicKey: b64.encode(req.context.publicKey)
+    publicKey: req.context.publicKey ? b64.encode(req.context.publicKey) : null
   }
   res.json(data)
 })

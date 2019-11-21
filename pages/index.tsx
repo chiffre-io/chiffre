@@ -1,38 +1,91 @@
 import React from 'react'
-import Head from 'next/head'
+import PasswordStrengthIndicator from '../src/client/components/PasswordStrengthIndicator'
+import { Box, Flex, Input, Text, Button, useColorMode } from '@chakra-ui/core'
+import PasswordInput from '../src/client/components/PasswordInput'
+import useEvent from '../src/client/hooks/useEvents'
+import Logo from '../src/client/components/Logo'
 
-const Home = () => (
-  <div>
-    <Head>
-      <title>Home</title>
-      <link rel="icon" href="/favicon.ico" />
-    </Head>
-
-    <div className="hero">
-      <h1 className="title">Welcome to Next.js!</h1>
-      <p className="description">
-        To get started, edit <code>pages/index.js</code> and save to reload.
-      </p>
-
-      <div className="row">
-        <a href="https://nextjs.org/docs" className="card">
-          <h3>Documentation &rarr;</h3>
-          <p>Learn more about Next.js in the documentation.</p>
-        </a>
-        <a href="https://nextjs.org/learn" className="card">
-          <h3>Next.js Learn &rarr;</h3>
-          <p>Learn about Next.js by following an interactive tutorial!</p>
-        </a>
-        <a
-          href="https://github.com/zeit/next.js/tree/master/examples"
-          className="card"
-        >
-          <h3>Examples &rarr;</h3>
-          <p>Find other example boilerplates on the Next.js GitHub.</p>
-        </a>
-      </div>
-    </div>
-  </div>
+const FormLabel = ({ children, ...props }) => (
+  <Text fontSize="sm" fontWeight="semibold" color="gray.600" mb={2} {...props}>
+    {children}
+  </Text>
 )
+
+const Home = () => {
+  const [password, setPassword] = React.useState('')
+
+  useEvent('foo', null)
+
+  const dark = useColorMode().colorMode === 'dark'
+
+  return (
+    <Flex
+      h="100vh"
+      direction="column"
+      justifyContent={{
+        _: 'flex-start',
+        sm: 'center'
+      }}
+      alignItems={{
+        _: 'stretch',
+        sm: 'center'
+      }}
+      backgroundColor={dark ? 'gray.900' : 'gray.200'}
+    >
+      <Box
+        w={{
+          _: '100%',
+          sm: '400px'
+        }}
+        h={{
+          _: '100%',
+          sm: 'auto'
+        }}
+        minH="30vh"
+        boxShadow="sm"
+        backgroundColor={dark ? 'gray.800' : 'white'}
+        borderRadius="5px"
+        overflow="scroll"
+      >
+        <Box
+          backgroundColor={dark ? 'gray.700' : 'gray.100'}
+          pt={6}
+          pb={5}
+          borderBottomColor={dark ? 'gray.600' : 'gray.300'}
+          borderBottomWidth="1px"
+        >
+          <Logo mx="auto" dark={dark} />
+        </Box>
+        <Box p={4}>
+          <FormLabel>Account</FormLabel>
+          <Input
+            type="email"
+            placeholder="email address"
+            _placeholder={{
+              color: 'gray.500'
+            }}
+            mb={4}
+            borderColor={dark ? 'gray.700' : 'gray.400'}
+          />
+          <FormLabel>Password</FormLabel>
+          <PasswordInput
+            onPasswordChange={setPassword}
+            value={password}
+            mb={2}
+            _placeholder={{
+              color: 'gray.500'
+            }}
+            borderColor={dark ? 'gray.700' : 'gray.400'}
+            letterSpacing={password.length > 0 ? '0.05em' : 'auto'}
+          />
+          <PasswordStrengthIndicator password={password} />
+          <Button width="100%" variantColor="blue" mt={6}>
+            Login
+          </Button>
+        </Box>
+      </Box>
+    </Flex>
+  )
+}
 
 export default Home

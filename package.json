@@ -8,7 +8,11 @@
     "install": "next build",
     "test": "jest",
     "test:watch": "jest --watch",
-    "start": "NODE_ENV=production ts-node --project tsconfig.server.json ./src/server/server.ts"
+    "start": "NODE_ENV=production ts-node --project tsconfig.server.json ./src/server/server.ts",
+    "clean": "rm -rf ./out ./.next",
+    "export": "next export",
+    "deploy": "surge -p ./out -d https://password-strength.surge.sh",
+    "release": "yarn clean && yarn build && yarn export && yarn deploy"
   },
   "dependencies": {
     "@chakra-ui/core": "^0.4.1",

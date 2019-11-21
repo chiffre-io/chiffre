@@ -1,11 +1,12 @@
 import React from 'react'
 import {
+  Icon,
   Input,
   InputProps,
   InputGroup,
   InputRightElement,
-  Icon,
-  IconButton
+  IconButton,
+  InputLeftElement
 } from '@chakra-ui/core'
 
 export interface Props extends InputProps {
@@ -21,12 +22,14 @@ const PasswordInput: React.FC<Props> = ({
   const [revealed, setRevealed] = React.useState(false)
   return (
     <InputGroup>
+      <InputLeftElement children={<Icon name="lock" color="gray.500" />} />
       <Input
         value={value}
         fontFamily={revealed && value.length > 0 ? 'monospace' : 'inherit'}
         onChange={e => onPasswordChange(e.target.value)}
         type={revealed ? 'text' : 'password'}
         placeholder="password"
+        pr={8}
         {...props}
       />
       <InputRightElement

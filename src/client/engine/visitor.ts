@@ -10,7 +10,7 @@ export const fetchConfig = async (): Promise<VisitorConfig> => {
   const res = await axios.get('/api/visitor/config')
   console.log('recievevd data', res.data)
   return {
-    publicKey: b64.decode(res.data.publicKey)
+    publicKey: res.data.publicKey && b64.decode(res.data.publicKey)
   }
 }
 

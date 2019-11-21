@@ -14,7 +14,7 @@ import { DataPoint, decryptDataPoint } from '../src/client/engine/crypto'
 import { b64 } from '../src/client/engine/codec'
 
 const useDataPointsFeed = () => {
-  const [data, setData] = React.useState([])
+  const [data, setData] = React.useState<any[]>([])
 
   const pushData = (dataPoint: any) =>
     setData(existing => [...existing, dataPoint])
@@ -33,10 +33,11 @@ const useDataPointsFeed = () => {
     socket.on('data-point', (data: DataPoint) => {
       console.log(data)
       const d = decryptDataPoint(data, keyPair.secretKey)
-      if (d) {
+      if (!d) {
         // Can fail if visitor used an old public key to encrypt
-        pushData(d)
+        return
       }
+      pushData(d)
     })
     return () => {
       socket.close()

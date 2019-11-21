@@ -1,6 +1,20 @@
 import React from 'react'
 import App from 'next/app'
-import { ThemeProvider, CSSReset, ColorModeProvider } from '@chakra-ui/core'
+import Head from 'next/head'
+import {
+  ThemeProvider,
+  CSSReset,
+  ColorModeProvider,
+  DarkMode
+} from '@chakra-ui/core'
+import theme from '../src/client/ui/theme'
+import { Global, css } from '@emotion/core'
+
+const globalCss = css`
+  html {
+    font-family: ${theme.fonts['body']};
+  }
+`
 
 class MyApp extends App {
   // Only uncomment this method if you have blocking data requirements for
@@ -18,10 +32,19 @@ class MyApp extends App {
   render() {
     const { Component, pageProps } = this.props
     return (
-      <ThemeProvider>
+      <ThemeProvider theme={theme}>
         {/* <ColorModeProvider> */}
+        {/* <DarkMode> */}
         <CSSReset />
+        <Global styles={[globalCss]} />
+        <Head>
+          <link
+            href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i,600,600i,700,700i&display=swap"
+            rel="stylesheet"
+          />
+        </Head>
         <Component {...pageProps} />
+        {/* </DarkMode> */}
         {/* </ColorModeProvider> */}
       </ThemeProvider>
     )
