@@ -175,13 +175,6 @@ const SignupForm: React.FC<Props> = ({ onSubmit }) => {
           <Button
             type="submit"
             isLoading={isSubmitting}
-            isDisabled={
-              !(
-                values.passwordStrength >= PasswordStrength.good &&
-                values.password === values.passwordConfirmation &&
-                values.acceptToS
-              )
-            }
             width="100%"
             variantColor="green"
             mt={6}
