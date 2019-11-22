@@ -48,7 +48,7 @@ const AuthPage: React.FC<Props> = ({ solidBackground = false, children }) => {
         boxShadow="sm"
         backgroundColor={dark ? 'gray.800' : 'white'}
         borderRadius="5px"
-        overflow="scroll"
+        overflow="auto"
       >
         <Box
           backgroundColor={dark ? 'gray.700' : 'gray.100'}
