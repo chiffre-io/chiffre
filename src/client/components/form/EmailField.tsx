@@ -6,22 +6,58 @@ import {
   Icon,
   useColorMode
 } from '@chakra-ui/core'
-import { ErrorMessage, useField } from 'formik'
+import { ErrorMessage, useField, FieldMetaProps } from 'formik'
 import ErrorText from './ErrorText'
+import { leftIconColors } from './formIcons'
+
+// --
+
+const getAtSignColor = (meta: FieldMetaProps<string>) => {
+  if (!meta.touched) {
+    if (meta.value.length === 0) {
+      return 'gray'
+    }
+    // There is some text
+    if (!meta.error) {
+      return 'green'
+    }
+    // But it's not valid yet
+    return 'gray'
+  }
+  if (meta.error || meta.value.length === 0) {
+    return 'red'
+  }
+  return 'green'
+}
+
+// --
 
 interface Props {
+  colorValidation?: boolean
   name?: string
 }
 
-const EmailField: React.FC<Props> = ({ name = 'email', ...props }) => {
-  const [field] = useField(name)
+const EmailField: React.FC<Props> = ({
+  colorValidation = false,
+  name = 'email',
+  ...props
+}) => {
+  const [field, meta] = useField(name)
   const dark = useColorMode().colorMode === 'dark'
+  const atSignColor = colorValidation ? getAtSignColor(meta) : 'gray'
   return (
     <>
       <InputGroup>
         <InputLeftElement
           children={
-            <Icon name="at-sign" color={dark ? 'gray.600' : 'gray.500'} />
+            <Icon
+              name="at-sign"
+              color={
+                dark
+                  ? leftIconColors[atSignColor].dark
+                  : leftIconColors[atSignColor].light
+              }
+            />
           }
         />
         <Input

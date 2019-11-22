@@ -9,11 +9,11 @@ import {
   Text,
   Box
 } from '@chakra-ui/core'
-import PasswordInput from '../../components/form/PasswordInput'
+import PasswordField from '../../components/form/PasswordField'
 import Label from '../../components/form/Label'
 import { RouteLink } from '../../components/Links'
 import EmailField from '../../components/form/EmailField'
-import { Formik, Form } from 'formik'
+import { Formik, Form, FormikErrors } from 'formik'
 
 interface Values {
   email: string
@@ -33,8 +33,25 @@ const LoginForm: React.FC<Props> = ({ onSubmit }) => {
   }
 
   return (
-    <Formik initialValues={initialValues} onSubmit={onSubmit}>
-      {({ values, isSubmitting }) => (
+    <Formik
+      initialValues={initialValues}
+      onSubmit={onSubmit}
+      validate={values => {
+        const errors: FormikErrors<Values> = {}
+        if (!values.email) {
+          errors.email = 'Email address is required'
+        } else if (
+          !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)
+        ) {
+          errors.email = 'Invalid email address'
+        }
+        if (values.password.length === 0) {
+          errors.password = 'Password is required'
+        }
+        return errors
+      }}
+    >
+      {({ isSubmitting }) => (
         <Form>
           <Box mb={4}>
             <Label htmlFor="email">Account</Label>
@@ -42,7 +59,7 @@ const LoginForm: React.FC<Props> = ({ onSubmit }) => {
           </Box>
           <Box mb={4}>
             <Label htmlFor="password">Master Password</Label>
-            <PasswordInput name="password" />
+            <PasswordField name="password" />
           </Box>
           <Button
             type="submit"

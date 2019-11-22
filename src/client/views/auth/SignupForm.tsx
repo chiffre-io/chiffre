@@ -8,17 +8,17 @@ import {
   Checkbox,
   useColorMode
 } from '@chakra-ui/core'
-import { Formik, Form, FormikErrors, Field } from 'formik'
+import { Formik, Form, FormikErrors, Field, ErrorMessage } from 'formik'
 
 import Label, { LabelWithAside } from '../../components/form/Label'
 import EmailField from '../../components/form/EmailField'
 import FieldHelpText from '../../components/form/FieldHelpText'
-import { ControlledPasswordInput } from '../../components/form/PasswordInput'
+import { ControlledPasswordField } from '../../components/form/PasswordField'
 import PasswordStrengthSkeleton from './signup/PasswordStrengthSkeleton'
 import { RouteLink } from '../../components/Links'
 import AboutPasswords from './signup/AboutPasswords'
-import Debug from '../../components/form/Debug'
 import { PasswordStrength } from './signup/passwordSettings'
+import ErrorText from '../../components/form/ErrorText'
 
 const PasswordStrengthIndicator = dynamic(
   () => import('./signup/PasswordStrengthIndicator'),
@@ -45,7 +45,7 @@ const getMainLockColor = (values: Values) => {
     case PasswordStrength.pwned:
       return 'red'
     default:
-      return 'gray'
+      return undefined
   }
 }
 
@@ -92,11 +92,24 @@ const SignupForm: React.FC<Props> = ({ onSubmit }) => {
         ) {
           errors.email = 'Invalid email address'
         }
+        if (values.passwordStrength < PasswordStrength.good) {
+          errors.passwordStrength = 'Please use a stronger password'
+        }
+        if (values.passwordStrength === PasswordStrength.pwned) {
+          errors.passwordStrength = 'Please use a secure password'
+        }
+        if (values.password.length === 0) {
+          errors.password = 'Password is required'
+        }
+
         if (
           values.passwordConfirmation &&
           values.passwordConfirmation !== values.password
         ) {
           errors.passwordConfirmation = "Passwords don't match"
+        }
+        if (!values.acceptToS) {
+          errors.acceptToS = 'Please read and accept our terms'
         }
         return errors
       }}
@@ -105,19 +118,20 @@ const SignupForm: React.FC<Props> = ({ onSubmit }) => {
         <Form autoComplete="off">
           <Box mb="4">
             <Label htmlFor="email">Account</Label>
-            <FieldHelpText>
+            <FieldHelpText id="email-help-text">
               You'll use your email address to log in :
             </FieldHelpText>
-            <EmailField />
+            <EmailField aria-describedby="email-help-text" colorValidation />
           </Box>
           <Box mb={4}>
             <LabelWithAside
+              id="about-passwords"
               justifyContent="space-between"
               alignItems="center"
               htmlFor="password"
               aside={() => (
                 <Link
-                  href="#"
+                  href={aboutPasswordsVisible ? '#about-passwords' : '#'}
                   onClick={() =>
                     setAboutPasswordsVisible(!aboutPasswordsVisible)
                   }
@@ -129,30 +143,31 @@ const SignupForm: React.FC<Props> = ({ onSubmit }) => {
               Master Password
             </LabelWithAside>
             <AboutPasswords revealed={aboutPasswordsVisible} />
-            <ControlledPasswordInput
+            <ControlledPasswordField
               lockColor={getMainLockColor(values)}
               name="password"
               autoComplete="new-password"
               mb={2}
               revealed={revealPasswords}
               onRevealedChanged={setRevealPasswords}
-            />
-            <Field name="passwordStrength">
-              {({ field, form }) => (
-                <PasswordStrengthIndicator
-                  password={values.password}
-                  onStrengthChange={strength =>
-                    form.setFieldValue(field.name, strength, true)
-                  }
-                />
-              )}
-            </Field>
+            >
+              <Field name="passwordStrength">
+                {({ field, form }) => (
+                  <PasswordStrengthIndicator
+                    password={values.password}
+                    onStrengthChange={strength =>
+                      form.setFieldValue(field.name, strength, true)
+                    }
+                  />
+                )}
+              </Field>
+            </ControlledPasswordField>
           </Box>
           <Box>
             <Label htmlFor="passwordConfirmation">
               Confirm Master Password
             </Label>
-            <ControlledPasswordInput
+            <ControlledPasswordField
               lockColor={getConfirmationLockColor(values)}
               name="passwordConfirmation"
               autoComplete="new-password"
@@ -172,6 +187,26 @@ const SignupForm: React.FC<Props> = ({ onSubmit }) => {
               </Checkbox>
             )}
           </Field>
+          <ErrorMessage component={ErrorText} name="acceptToS" />
+          <ErrorMessage
+            render={message => (
+              <Box mt={4} mb={-2} textAlign="center">
+                <ErrorText fontSize="md" fontWeight="semibold" mb={0}>
+                  {message}
+                </ErrorText>
+                <Text fontSize="sm">
+                  <Link
+                    href="#about-passwords"
+                    textDecoration="underline"
+                    onClick={() => setAboutPasswordsVisible(true)}
+                  >
+                    Learn more
+                  </Link>
+                </Text>
+              </Box>
+            )}
+            name="passwordStrength"
+          />
           <Button
             type="submit"
             isLoading={isSubmitting}
@@ -192,7 +227,6 @@ const SignupForm: React.FC<Props> = ({ onSubmit }) => {
               Sign in
             </RouteLink>
           </Text>
-          {/* <Debug /> */}
         </Form>
       )}
     </Formik>

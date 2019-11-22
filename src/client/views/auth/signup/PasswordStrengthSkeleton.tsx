@@ -9,7 +9,7 @@ export const Bar: React.FC<BarProps> = ({ color, ...props }) => (
   <Box
     backgroundColor={color}
     borderRadius={3}
-    h="0.3rem"
+    h="4px"
     transition="background-color 0.15s ease"
     {...props}
   />

@@ -1,19 +1,26 @@
 import React from 'react'
 import {
-  Icon,
   Input,
   InputProps,
   InputGroup,
   InputRightElement,
   IconButton,
-  InputLeftElement,
-  useColorMode
+  useColorMode,
+  Icon,
+  InputLeftElement
 } from '@chakra-ui/core'
 import { useField, ErrorMessage } from 'formik'
 import ErrorText from './ErrorText'
+import { ThemeableColors } from '../../ui/colors'
+import { leftIconColors } from './formIcons'
 
-export interface ControlledProps extends InputProps {
-  lockColor?: string
+// --
+
+export interface Props extends InputProps {
+  lockColor?: keyof ThemeableColors
+}
+
+export interface ControlledProps extends Props {
   revealed: boolean
   onRevealedChanged: (revealed: boolean) => void
 }
@@ -22,10 +29,11 @@ export interface ControlledProps extends InputProps {
  * Password input with external state
  * for the clear text reveal feature.
  */
-export const ControlledPasswordInput: React.FC<ControlledProps> = ({
+export const ControlledPasswordField: React.FC<ControlledProps> = ({
   lockColor = 'gray',
   revealed = false,
   onRevealedChanged,
+  children,
   ...props
 }) => {
   const dark = useColorMode().colorMode === 'dark'
@@ -35,7 +43,14 @@ export const ControlledPasswordInput: React.FC<ControlledProps> = ({
       <InputGroup>
         <InputLeftElement
           children={
-            <Icon name="lock" color={`${lockColor}.${dark ? 600 : 500}`} />
+            <Icon
+              name="lock"
+              color={
+                dark
+                  ? leftIconColors[lockColor].dark
+                  : leftIconColors[lockColor].light
+              }
+            />
           }
         />
         <Input
@@ -74,6 +89,7 @@ export const ControlledPasswordInput: React.FC<ControlledProps> = ({
           }
         />
       </InputGroup>
+      {children}
       <ErrorMessage component={ErrorText} name={field.name} />
     </>
   )
@@ -83,11 +99,10 @@ export const ControlledPasswordInput: React.FC<ControlledProps> = ({
  * Password input with internal state
  * for the clear text reveal feature.
  */
-const PasswordInput: React.FC<InputProps> = ({ ...props }) => {
+const PasswordField: React.FC<Props> = ({ ...props }) => {
   const [revealed, setRevealed] = React.useState(false)
-
   return (
-    <ControlledPasswordInput
+    <ControlledPasswordField
       revealed={revealed}
       onRevealedChanged={setRevealed}
       {...props}
@@ -95,4 +110,4 @@ const PasswordInput: React.FC<InputProps> = ({ ...props }) => {
   )
 }
 
-export default PasswordInput
+export default PasswordField

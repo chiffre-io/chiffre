@@ -1,17 +1,18 @@
 import React from 'react'
-import { Text, useColorMode } from '@chakra-ui/core'
+import { useColorMode, FormHelperText } from '@chakra-ui/core'
 
 const FieldHelpText = ({ children, ...props }) => {
   const dark = useColorMode().colorMode === 'dark'
   return (
-    <Text
+    <FormHelperText
       fontSize="sm"
       color={dark ? 'gray.400' : 'gray.600'}
+      m="0"
       mb={2}
       {...props}
     >
       {children}
-    </Text>
+    </FormHelperText>
   )
 }
 
