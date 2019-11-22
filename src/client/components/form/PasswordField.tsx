@@ -59,6 +59,7 @@ export const ControlledPasswordField: React.FC<ControlledProps> = ({
           fontFamily={
             revealed && field.value.length > 0 ? theme.fonts.mono : 'inherit'
           }
+          transition="border 0.2s ease"
           type={revealed ? 'text' : 'password'}
           placeholder="password"
           pr={8}
