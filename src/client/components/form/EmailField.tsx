@@ -42,7 +42,7 @@ const EmailField: React.FC<Props> = ({
   name = 'email',
   ...props
 }) => {
-  const [field, meta] = useField(name)
+  const [{ onBlur: _, ...field }, meta] = useField(name)
   const dark = useColorMode().colorMode === 'dark'
   const atSignColor = colorValidation ? getAtSignColor(meta) : 'gray'
   return (

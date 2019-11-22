@@ -38,7 +38,7 @@ export const ControlledPasswordField: React.FC<ControlledProps> = ({
   ...props
 }) => {
   const dark = useColorMode().colorMode === 'dark'
-  const [field] = useField(props.name)
+  const [{ onBlur: _, ...field }] = useField(props.name)
   return (
     <>
       <InputGroup>
