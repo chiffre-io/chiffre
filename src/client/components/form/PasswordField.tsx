@@ -13,6 +13,7 @@ import { useField, ErrorMessage } from 'formik'
 import ErrorText from './ErrorText'
 import { ThemeableColors } from '../../ui/colors'
 import { leftIconColors } from './formIcons'
+import theme from '../../ui/theme'
 
 // --
 
@@ -56,7 +57,7 @@ export const ControlledPasswordField: React.FC<ControlledProps> = ({
         <Input
           id={field.name}
           fontFamily={
-            revealed && field.value.length > 0 ? 'monospace' : 'inherit'
+            revealed && field.value.length > 0 ? theme.fonts.mono : 'inherit'
           }
           type={revealed ? 'text' : 'password'}
           placeholder="password"

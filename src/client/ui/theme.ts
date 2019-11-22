@@ -4,7 +4,8 @@ const theme = {
   ...chakraTheme,
   fonts: {
     ...chakraTheme.fonts,
-    body: `"Source Sans Pro",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto, "Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji", "Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"`
+    body: `"Source Sans Pro",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"`,
+    mono: `"Source Code Pro",Consolas,Monaco,Menlo,monospace`
   },
   colors: {
     // Tailwind CSS colors

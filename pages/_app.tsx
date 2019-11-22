@@ -57,7 +57,7 @@ class MyApp extends App {
             crossOrigin="anonymous"
           />
           <link
-            href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i,600,600i,700,700i&display=swap"
+            href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i,600,600i,700,700i|Source+Code+Pro:400,500&display=swap"
             rel="stylesheet"
           />
         </Head>
