@@ -52,6 +52,11 @@ class MyApp extends App {
         {/* <DarkMode> */}
         <Head>
           <link
+            rel="preconnect"
+            href="https://fonts.gstatic.com/"
+            crossOrigin="anonymous"
+          />
+          <link
             href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i,600,600i,700,700i&display=swap"
             rel="stylesheet"
           />
