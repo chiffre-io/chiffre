@@ -10,7 +10,7 @@ export const leftIconColors: ThemeableColors = {
     light: 'green.500'
   },
   red: {
-    dark: 'red.400',
+    dark: 'red.500',
     light: 'red.600'
   }
 }
