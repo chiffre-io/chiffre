@@ -9,27 +9,8 @@ export type ThemeableColors = {
 
 // --
 
-export interface BrightnessPalette {
-  // Lights
-  100: string
-  200: string
-  300: string
-  // Mediums
-  400: string
-  500: string
-  600: string
-  // Darks
-  700: string
-  800: string
-  900: string
-}
-
-export interface ColorPalette {
-  [hue: string]: BrightnessPalette
-}
-
 // Tailwind CSS colors
-export const tailwindColors: ColorPalette = {
+export const tailwindColors = {
   gray: {
     100: '#f7fafc',
     200: '#edf2f7',

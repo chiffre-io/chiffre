@@ -24,13 +24,13 @@ const AuthPage: React.FC<Props> = ({ solidBackground = false, children }) => {
       }}
       background={
         solidBackground
-          ? theme.colors.gray[dark ? 900 : 200]
+          ? theme.colors['gray'][dark ? 900 : 200]
           : `linear-gradient(90deg, ${
-              theme.colors.gray[dark ? 900 : 200]
+              theme.colors['gray'][dark ? 900 : 200]
             } 19px,transparent 1%) center,linear-gradient(${
-              theme.colors.gray[dark ? 900 : 200]
+              theme.colors['gray'][dark ? 900 : 200]
             } 19px,transparent 1%) center, ${
-              theme.colors.gray[dark ? 800 : 400]
+              theme.colors['gray'][dark ? 800 : 400]
             }`
       }
       backgroundSize="20px 20px"
