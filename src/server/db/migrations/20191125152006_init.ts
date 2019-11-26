@@ -1,6 +1,7 @@
 import Knex from 'knex'
 import { createInitialUsersAuthSrpTable } from '../models/auth/UsersAuthSRP'
 import { createInitialLoginChallengesSrpTable } from '../models/auth/LoginChallengesSRP'
+import { createInitialSessionsTable } from '../models/auth/Sessions'
 
 export async function up(knex: Knex): Promise<any> {
   console.info('Setting up database from scratch...')
@@ -11,6 +12,7 @@ export async function up(knex: Knex): Promise<any> {
   // Create initial tables
   await createInitialUsersAuthSrpTable(knex)
   await createInitialLoginChallengesSrpTable(knex)
+  await createInitialSessionsTable(knex)
 }
 
 export async function down(knex: Knex): Promise<any> {
