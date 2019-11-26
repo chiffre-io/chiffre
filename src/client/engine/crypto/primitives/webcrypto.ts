@@ -1,4 +1,4 @@
-const webcryptoFactory = () => {
+const webcrypto: Crypto = (() => {
   if (typeof window === 'undefined') {
     // Server side
     const NodeWebCrypto = require('node-webcrypto-ossl')
@@ -6,6 +6,6 @@ const webcryptoFactory = () => {
   } else {
     return window.crypto
   }
-}
+})()
 
-export default webcryptoFactory()
+export default webcrypto
