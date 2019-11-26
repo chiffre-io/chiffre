@@ -1,19 +1,13 @@
 import Knex from 'knex'
-import serverRuntimeConfig from '../env'
 import { NextApiMiddleware } from '../types'
+import database from '../db/database'
 
 export interface Db {
   db: Knex
 }
 
-const db = Knex({
-  client: 'pg',
-  connection: serverRuntimeConfig.DATABASE_URI,
-  searchPath: ['knex', 'public']
-})
-
 const databaseMiddleware: NextApiMiddleware<Db> = (req, _, next) => {
-  req.db = db
+  req.db = database
   next()
 }
 

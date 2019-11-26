@@ -5,6 +5,7 @@ import socketIO from 'socket.io'
 import { createServer } from 'http'
 import { ServerContext } from './storage'
 import { b64 } from '../client/engine/crypto/primitives/codec'
+import setupCronTasks from './cron'
 
 const context: ServerContext = {
   publicKey: null,
@@ -46,4 +47,6 @@ app.prepare().then(() => {
       }
     })
   })
+
+  setupCronTasks()
 })

@@ -61,6 +61,18 @@ export const isChallengeExpired = (
 
 // --
 
+export const getAllExpiredLoginChallenges = async (
+  db: Knex,
+  before: Date = new Date()
+) => {
+  return await db
+    .select<LoginChallengeSrp[]>('*')
+    .from(LOGIN_CHALLENGES_SRP_TABLE)
+    .where('expiresAt', '<', before)
+}
+
+// --
+
 export const createInitialLoginChallengesSrpTable = async (db: Knex) => {
   await db.schema.createTable(LOGIN_CHALLENGES_SRP_TABLE, table => {
     table.timestamp('created_at').defaultTo(db.fn.now())
