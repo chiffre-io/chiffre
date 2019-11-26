@@ -12,7 +12,8 @@ import {
 import { serverLoginResponse } from '~/src/server/srp'
 import { deleteLoginChallenge } from '~/src/server/db/models/auth/LoginChallengesSRP'
 import { findUser } from '~/src/server/db/models/auth/UsersAuthSRP'
-import { Session } from 'secure-remote-password/server'
+import { Session as SrpSession } from 'secure-remote-password/server'
+import { createSession } from '~/src/server/db/models/auth/Sessions'
 
 export interface LoginResponseParameters {
   userID: string
@@ -25,6 +26,7 @@ export interface LoginResponseResponseBody {
   proof: string
   jwt?: string
   twoFactor?: boolean
+  sessionID: string
 }
 
 // --
@@ -78,7 +80,7 @@ handler.post(
       })
     }
 
-    let session: Session = null
+    let session: SrpSession = null
     try {
       session = serverLoginResponse(
         challenge.ephemeralSecret,
@@ -98,14 +100,20 @@ handler.post(
     }
 
     // todo: Generate JWT and store in sessions table
+    const sessionID = await createSession(req.db, userID)
 
     const body: LoginResponseResponseBody = {
       proof: session.proof,
-      jwt: session.key,
-      twoFactor: false
+      jwt: null,
+      twoFactor: true,
+      sessionID
     }
     res.json(body)
   }
 )
+
+handler.use((err, req, res, next) => {
+  console.error(err)
+})
 
 export default handler

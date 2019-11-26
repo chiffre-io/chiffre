@@ -48,14 +48,17 @@ export default function useSrpLogin() {
     const {
       proof: serverProof,
       jwt,
-      twoFactor
+      twoFactor,
+      sessionID
     }: LoginResponseResponseBody = res.data
 
     await clientVerifyLogin(serverProof, clientEphemeral, session)
 
     return {
+      userID,
       jwt,
-      twoFactor
+      twoFactor,
+      sessionID
     }
   }
 
