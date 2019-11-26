@@ -10,8 +10,8 @@ import {
 } from '@chakra-ui/core'
 
 import socketIo from 'socket.io-client'
-import { DataPoint, decryptDataPoint } from '../src/client/engine/crypto'
-import { b64 } from '../src/client/engine/crypto/primitives/codec'
+import { DataPoint, decryptDataPoint } from '~/src/client/engine/crypto'
+import { b64 } from '~/src/client/engine/crypto/primitives/codec'
 
 const useDataPointsFeed = () => {
   const [data, setData] = React.useState<any[]>([])

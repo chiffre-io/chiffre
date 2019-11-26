@@ -1,9 +1,9 @@
 import React from 'react'
 import { NextPage } from 'next'
 import { Button, Flex } from '@chakra-ui/core'
-import { VisitorConfig, fetchConfig } from '../src/client/engine/visitor'
-import ConsentManager from '../src/client/components/ConsentManager'
-import useEvent from '../src/client/hooks/useEvents'
+import { VisitorConfig, fetchConfig } from '~/src/client/engine/visitor'
+import ConsentManager from '~/src/client/components/ConsentManager'
+import useEvent from '~/src/client/hooks/useEvents'
 
 const useVisitorConfig = () => {
   const [config, setConfig] = React.useState<VisitorConfig | null>(null)

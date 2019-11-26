@@ -1,7 +1,7 @@
 import nextConnect from 'next-connect'
 import { NextApiResponse } from 'next'
-import { NextApiRequestWithContext } from '../../../src/server/storage'
-import { b64 } from '../../../src/client/engine/crypto/primitives/codec'
+import { NextApiRequestWithContext } from '~/src/server/storage'
+import { b64 } from '~/src/client/engine/crypto/primitives/codec'
 
 const handler = nextConnect()
 

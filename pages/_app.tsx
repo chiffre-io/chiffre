@@ -7,7 +7,7 @@ import {
   ColorModeProvider,
   DarkMode
 } from '@chakra-ui/core'
-import theme from '../src/client/ui/theme'
+import theme from '~/src/client/ui/theme'
 import { Global, css } from '@emotion/core'
 
 const globalCss = css`
