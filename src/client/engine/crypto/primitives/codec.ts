@@ -13,3 +13,17 @@ export const utf8 = {
   encode,
   decode
 }
+
+/**
+ * Hex-encoded byte array to base64url representation
+ */
+export const hexToBase64url = (hex: string) => {
+  return b64.encode(Buffer.from(hex, 'hex'))
+}
+
+/**
+ * Base64url-encoded byte array to hex representation
+ */
+export const base64ToHex = (base64: string) => {
+  return Buffer.from(b64.decode(base64)).toString('hex')
+}

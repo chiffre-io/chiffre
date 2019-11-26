@@ -4,9 +4,11 @@ import { b64 } from './codec'
 /**
  * Generate a salt for PBKDF2 operations.
  */
-export const generateSalt = () => webcrypto.getRandomValues(new Uint8Array(16))
+export const generateSalt = (): ArrayBuffer =>
+  webcrypto.getRandomValues(new Uint8Array(16))
 
-export const serializeSalt = (salt: Uint8Array) => b64.encode(salt)
+export const serializeSalt = (salt: Uint8Array | ArrayBuffer) =>
+  b64.encode(Buffer.from(salt))
 export const deserializeSalt = (salt: string) => b64.decode(salt)
 
 /**
@@ -19,13 +21,12 @@ export const deserializeSalt = (salt: string) => b64.decode(salt)
  */
 export const deriveAesGcmKeyFromPassword = async (
   password: string,
-  salt: Uint8Array,
+  salt: Uint8Array | ArrayBuffer,
   rounds: number = 100000
 ) => {
   let enc = new TextEncoder()
   const key = await webcrypto.subtle.importKey(
     'raw',
-
     enc.encode(password),
     'PBKDF2',
     false,
@@ -42,5 +43,32 @@ export const deriveAesGcmKeyFromPassword = async (
     { name: 'AES-GCM', length: 256 },
     true,
     ['encrypt', 'decrypt']
+  )
+}
+
+export const pbkdf2DeriveBytes = async (
+  password: string,
+  salt: Uint8Array | ArrayBuffer,
+  length: number,
+  hash: 'SHA-256' | 'SHA-384' | 'SHA-512' = 'SHA-256',
+  rounds: number = 10000
+): Promise<ArrayBuffer> => {
+  let enc = new TextEncoder()
+  const key = await webcrypto.subtle.importKey(
+    'raw',
+    enc.encode(password),
+    'PBKDF2',
+    false,
+    ['deriveBits']
+  )
+  return await webcrypto.subtle.deriveBits(
+    {
+      name: 'PBKDF2',
+      salt,
+      iterations: rounds,
+      hash
+    },
+    key,
+    length << 3 // bytes -> bits
   )
 }

@@ -2,7 +2,8 @@ import {
   generateSalt,
   serializeSalt,
   deserializeSalt,
-  deriveAesGcmKeyFromPassword
+  deriveAesGcmKeyFromPassword,
+  pbkdf2DeriveBytes
 } from './pbkdf2'
 import { encryptAesGcm, decryptAesGcm } from './aes-gcm'
 
@@ -44,6 +45,30 @@ describe('WebCrypto PBKDF2', () => {
       const cipherB = await encryptAesGcm(keyB, 'Hello, World !')
       await expect(decryptAesGcm(keyB, cipherA)).rejects.toThrow()
       await expect(decryptAesGcm(keyA, cipherB)).rejects.toThrow()
+    })
+  })
+
+  describe('pbkdf2DeriveBytes', () => {
+    test('same salt & password yield same data', async () => {
+      const salt = generateSalt()
+      const bytesA = Buffer.from(await pbkdf2DeriveBytes('P@ssw0rd!', salt, 32))
+      const bytesB = Buffer.from(await pbkdf2DeriveBytes('P@ssw0rd!', salt, 32))
+      expect(bytesA.toString('base64')).toEqual(bytesB.toString('base64'))
+    })
+
+    test('different salts (same pw) yield different data', async () => {
+      const saltA = generateSalt()
+      const saltB = generateSalt()
+      const bytesA = Buffer.from(await pbkdf2DeriveBytes('P@ssw0rd', saltA, 32))
+      const bytesB = Buffer.from(await pbkdf2DeriveBytes('P@ssw0rd', saltB, 32))
+      expect(bytesA.toString('base64')).not.toEqual(bytesB.toString('base64'))
+    })
+
+    test('different passwords (same salt) yield different keys', async () => {
+      const salt = generateSalt()
+      const bytesA = Buffer.from(await pbkdf2DeriveBytes('P@ssw0rd!', salt, 32))
+      const bytesB = Buffer.from(await pbkdf2DeriveBytes('NopeNope!', salt, 32))
+      expect(bytesA.toString('base64')).not.toEqual(bytesB.toString('base64'))
     })
   })
 })
