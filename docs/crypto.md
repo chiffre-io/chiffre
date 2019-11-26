@@ -12,6 +12,84 @@ What is encrypted ?
   Zero-Knowledge manner.
 - Team members use another layer of ECDH to exchange messages containing shared
   vault keys.
+- Sensitive information should probably be encrypted in the database, for when
+  it gets breached (eg: usernames/email addresses, TOTP secret keys, etc..)
+
+## Encrypting Database Fields
+
+Some information related to account management is still sent in clear text, as
+it needs to be used by the server. Examples include:
+
+- Usernames
+- Email addresses
+- 2FA TOTP private keys
+- 2FA recovery codes
+
+Those fields should be stored in an encrypted form in the database, for when
+(not if, it's only a matter of time) the database gets breached.
+
+> _**Note:** everything that is already E2EE by client-side keys (vault, keychain) probably does not need another layer of encryption._
+
+Encryption should use a fast symmetric cipher, like AES-GCM with a 256 bit key.
+
+The encrypted field should keep a record of:
+
+- The algorithm used for encryption
+- An identifier for the key
+- Any parameter needed for decryption (eg: nonce, IV)
+- The ciphertext
+
+One proposed format is as follows:
+
+```
+v1.aesgcm256.c368e482.RvVUEis{...}2mgLNw=.nEuhqy3{...}pP1J+Q==
+[].[   1   ].[  2   ].[        3        ].[        4         ]
+
+[0]: Key encoding version, defines text structure
+[1]: Algorithm + Parameters (here: AES-GCM, 256bit key)
+[2]: Key fingerprint (8 first characters of SHA-256(key))
+[3]: Nonce / IV
+[4]: Ciphertext
+```
+
+Example output:
+
+```
+v1.aesgcm256.c1f4d53c.M140NBtrhcygD_x7.uDJEkpydqvOfc7vZ7j6OwqTGsvrpk0GLgKbSKkqK
+```
+
+### Key Storage
+
+The key can be stored in the environment initially, until a rotation strategy
+is defined.
+
+### Key Acquisition
+
+Storing a key in the environment is not ideal, as it can leak through logs and
+general trust is required towards the application hosting service.
+
+For a zero-trust (or at least low-trust) environment, a key acquisition scenario
+must be evaluated.
+
+Hashicorp Vault uses the Shamir Secret Sharing method to split a secret into
+multiple fragments, each requiring cooperation with the others to retrieve and
+decode the original secret.
+
+### Key Rotation
+
+Once key acquisition has been solved, it may become possible to rotate keys
+securely.
+
+Key rotation requires the following operations:
+
+- Decrypt an existing field with the old key
+- Encrypt it the cleartext value with the new key
+- Update the encrypted record atomically
+
+This should be done in parallel of normal operation, as both keys should be
+available during rotation for the app to be able to work.
+
+Once all the records have been updated, the old key can be discarded.
 
 ## DataPoints Cryptography
 
@@ -44,6 +122,9 @@ the whole system falls apart.
 => 2FA is needed.
 
 _todo: Check how the others are doing_
+
+_=>_ Having the keychain as an intermediate key repository is also good for teams
+and scoping of protected content.
 
 Bitwarden uses RSA to encrypt/decrypt the vault, and encrypts the RSA keys with
 an AES key derived from the password.
@@ -88,7 +169,7 @@ an attacker/eavesdropper.
 SRP is defined in RFC-2945, it's a fairly standard and revised protocol.
 It's used by:
 
-- Bitwarden ?
+- Bitwarden ? => login does not look like an entire SRP, password is PBKDF2'd
 - ProtonMail
 - Telegram
 - RememBear
@@ -155,7 +236,46 @@ and email validation to see if there is some correlation.
 - **Client <- Server** Receive public key
 - **Client -> Server**
 
-### Change password
+### Sessions
+
+Stateful sessions are used to allow a user to revoke all other sessions.
+However, the system uses JWTs for session ID transport, to communicate some
+information to the client in a self-contained form (userID, sessionID).
+
+Sessions using 2FA are marked as active only when the TOTP code has been verified,
+or a backup code used.
+
+Sessions have a variable expiration date:
+
+- Session for user without 2FA: 7 days
+- Session for user with 2FA, unverified: 5 minutes
+- Session for user with 2FA, verified: 7 days
+
+The shorter span for 2FA verification prevents brute-forcing the 2FA token,
+along with rate-limiting of the API routes at play.
+
+See [Login with 2FA](#login-with-2fa)
+
+A valid authentication JWT should pass signature & expiration date verification,
+contain a valid sessionID which itself is not expired, and has a verified 2FA
+status if applicable.
+
+### Authenticating API Routes
+
+The JWT is passed in the `Authorization: Bearer {jwt}` header for all
+authenticated routes.
+Failure to do so or invalid JWT (expired, signature mismatch, other error) will
+result in a `401 Unauthorized` response. The client should then redirect to
+the login page.
+
+### Authenticating SSR Requests
+
+The JWT is accessed through a `authorization-bearer-jwt` cookie. This cookie
+should not be sent for API requests, nor for public routes.
+getInitialProps can then extract the JWT from the cookie and either perform an
+API call (for symmetry of data fetching) or verify it directly.
+
+### Reset Password
 
 Reset password via email is obviously impossible, as the master password is
 the central key to all the crypto.
@@ -175,13 +295,93 @@ masterPW --(derive)--> accountPW (resetable)
 Can it be possible to reset the accountPW without giving away all the keys to
 the system ? This needs more investigation.
 
+### Change password
+
+Rotating the password (changing to a new one when knowing the old one) should be
+an easy operation for a logged-in user. However, for more security, the old
+password should be required to change either the email or provide a new password.
+
+On the SRP side, changing the password will change the verifier. As a precaution,
+we should probably rotate the salt as well.
+
+Sending an authenticated POST request containing the new verifier and salt
+could be sufficient in theory, but does not include password verification.
+For that, we need to intertwine the signup and login flows.
+The client will post their new username, salt and verifier with an authenticated
+request.
+
+---
+
+> _**Note:** more details are needed on this_
+
+---
+
 ### Change email
+
+Changing the email should trigger the following actions:
+
+- Verify the new email address (see [Email Verification](#email-verification))
+- Send a notification email to the old email address (don't put any info there)
+
+Security-wise, it should follow a similar verification flow as changing the
+password.
 
 ### Activate 2FA
 
+Features:
+
+- Generate TOTP secret key server-side, mark it as pending, show it to the user
+- Ask the user for a TOTP code to confirm
+- Mark 2FA as active for the user in the backend
+- Generate some backup/recovery codes and send them to the user
+
+> _**Note**: the TOTP secret key should be stored in an encrypted form._
+>
+> _See [Encrypting Database Fields](#encrypting-database-fields)._
+
+Generation of the TOTP secret key is done server-side in the settings.
+Generate 8 recovery codes as UUIDv4, pass them through bcrypt/scrypt and store
+their hashes in the database.
+
 ### Disable 2FA
 
-### Login (with 2FA)
+Delete recovery codes
+
+### Login with 2FA
+
+When logging in without 2FA, the JWT authentication token is sent in the
+response part of the login process. If the user has 2FA activated however,
+that response part will not contain the JWT, but a field indicating the client
+that 2FA is activated for that account and entering a TOTP token is required.
+The client will give that option to the user, and send the token to
+`/api/auth/login/2fa`, which will return the JWT if the TOTP token is valid.
+
+Note: To avoid bruteforce attacks, the 2FA API route should be rate-limited
+and sessions where 2FA has not been validated should have a shorter TTL.
+
+Sessions should have a TTL of 5 minutes upon creation, then get extended to 7 days
+upon validation of the TOTP token, or simply deleted after 5 failed attempts,
+requiring the user/attacker to login again (which is slowed down due to PBKDF2
+and also uses rate-limited routes).
+
+### Login with 2FA Recovery Codes
+
+Recovery codes have been generated when 2FA is activated and sent to the user
+for safekeeping.
+
+For cases where the user may not have access to their TOTP authenticator
+(eg: lost/stolen phone), they can use a recovery code instead of the TOTP code
+to verify the 2FA step (this does not override a password check).
+
+If no TOTP token is sent during 2FA verification but a recoveryToken is present,
+use this instead.
+Verifying recovery tokens is done like a password, using bcrypt/scrypt. The
+database contains a list of hashed tokens for a given user, and any used token
+is removed from that list after verification.
+
+Generating 8 tokens should be sufficient in a first time, as the user can still
+deactivate and re-activate 2FA to re-generate 8 new tokens, which will replace
+the old ones which should have been deleted when deactivating 2FA.
 
 ### Interesting Links
 
@@ -191,13 +391,6 @@ the system ? This needs more investigation.
 - https://www.remembear.com/blog/get-to-know-your-new-device-key/
 - http://srp.stanford.edu/ndss.html
 - https://www.youtube.com/watch?v=RWksEY-Bf9I
-
-### Challenges
-
-- How to change username (ie: email address ?)
-  - => Changing an account’s email address requires more care than just SRP considerations, like new email confirmation, old email notification (although there is not much we can do in this case)
-- How to change password ?
-- How to implement 2FA on top of that ?
 
 ### DataPoints
 
@@ -221,3 +414,7 @@ Dashboard receives an encrypted Data Point:
 Dashboard side:
 
 - Projects have a X25519 key pair, the public key is sent to the server in clear text to be served to the visitors, the private key (and a copy of the public key) remain in the vault.
+
+```
+
+```
