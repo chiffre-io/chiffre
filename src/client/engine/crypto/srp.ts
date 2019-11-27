@@ -1,22 +1,21 @@
 import { SignupParameters } from '~/pages/api/auth/signup'
 import srpClient from 'secure-remote-password/client'
 import { pbkdf2DeriveBytes } from './primitives/pbkdf2'
-import { hexToBase64url, base64ToHex } from './primitives/codec'
+import { hex, b64, hexToBase64url, base64ToHex, utf8 } from './primitives/codec'
 
 const derivePrivateKey = async (
   username: string,
   password: string,
   salt: string
 ) => {
-  return Buffer.from(
-    await pbkdf2DeriveBytes(
-      Buffer.from([username, password].join(':')).toString('base64'),
-      Buffer.from(salt, 'hex'),
-      32, // 32 bytes key (256 bits)
-      'SHA-256',
-      20000
-    )
-  ).toString('hex')
+  const bytes = await pbkdf2DeriveBytes(
+    b64.encode(utf8.encode([username, password].join(':'))),
+    hex.decode(salt),
+    32, // 32 bytes key (256 bits)
+    'SHA-256',
+    20000
+  )
+  return hex.encode(bytes)
 }
 
 // --

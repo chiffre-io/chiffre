@@ -1150,6 +1150,11 @@
   resolved "https://registry.yarnpkg.com/@stablelib/base64/-/base64-0.7.2.tgz#fbbb8d60c26f514cdcb5b791cf911bfb1db4b4b4"
   integrity sha1-+7uNYMJvUUzctbeRz5Eb+x20tLQ=
 
+"@stablelib/hex@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@stablelib/hex/-/hex-0.5.0.tgz#f77a0ba6e7d61c48f06c806b57248c9916041da0"
+  integrity sha1-93oLpufWHEjwbIBrVySMmRYEHaA=
+
 "@stablelib/utf8@^0.10.1":
   version "0.10.1"
   resolved "https://registry.yarnpkg.com/@stablelib/utf8/-/utf8-0.10.1.tgz#eecf54884da7b2bee235e3c70efb8cd5c07ba5bd"

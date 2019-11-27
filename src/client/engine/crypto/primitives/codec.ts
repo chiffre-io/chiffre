@@ -1,29 +1,29 @@
 import { encodeURLSafe, decodeURLSafe } from '@stablelib/base64'
-import { encode, decode } from '@stablelib/utf8'
-
-const urlSafe = (str: string) => str.replace(/\+/g, '-').replace(/\//g, '_')
+import { encode as encodeUtf8, decode as decodeUtf8 } from '@stablelib/utf8'
+import { encode as encodeHex, decode as decodeHex } from '@stablelib/hex'
 
 export const b64 = {
-  urlSafe,
+  urlSafe: (str: string) => str.replace(/\+/g, '-').replace(/\//g, '_'),
   encode: encodeURLSafe,
-  decode: (base64: string) => decodeURLSafe(urlSafe(base64))
+  decode: (base64: string) => decodeURLSafe(b64.urlSafe(base64))
 }
 
 export const utf8 = {
-  encode,
-  decode
+  encode: encodeUtf8,
+  decode: decodeUtf8
 }
 
-/**
- * Hex-encoded byte array to base64url representation
- */
-export const hexToBase64url = (hex: string) => {
-  return b64.encode(Buffer.from(hex, 'hex'))
+export const hex = {
+  encode: (data: Uint8Array) => encodeHex(data, true),
+  decode: (hex: string) => decodeHex(hex)
 }
 
-/**
- * Base64url-encoded byte array to hex representation
- */
+// --
+
+export const hexToBase64url = (input: string) => {
+  return b64.encode(hex.decode(input))
+}
+
 export const base64ToHex = (base64: string) => {
-  return Buffer.from(b64.decode(base64)).toString('hex')
+  return hex.encode(b64.decode(base64))
 }
