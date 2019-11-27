@@ -6,7 +6,7 @@ import {
 } from './cloaking'
 
 describe('Cloaking', () => {
-  test('foo', async () => {
+  test('encrypt/decrypt simple text', async () => {
     const message = 'Hello, world !'
     const key = await generateKey()
     const fingerprint = await getKeyFingerprint(key)
@@ -14,7 +14,6 @@ describe('Cloaking', () => {
     const received = await decryptString(cipher, {
       [fingerprint]: key
     })
-    console.log({ key, fingerprint, cipher })
     expect(received).toEqual(message)
   })
 })

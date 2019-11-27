@@ -21,7 +21,9 @@ module.exports = withSourceMaps({
   serverRuntimeConfig: loadFromEnv([
     'DATABASE_URI',
     'JWT_SECRET',
-    'JWT_ISSUER'
+    'JWT_ISSUER',
+    'CLOAKING_MASTER_KEY',
+    'CLOAKING_KEYCHAIN'
   ]),
   webpack: (config, { isServer, buildId }) => {
     // Fixes npm packages that depend on `fs` module

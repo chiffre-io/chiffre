@@ -1,8 +1,32 @@
 import webcrypto from './primitives/webcrypto'
-import { utf8, b64 } from './primitives/codec'
+import { utf8, b64, hex } from './primitives/codec'
 import { encryptAesGcm, decryptAesGcm } from './primitives/aes-gcm'
 
 export type CloakedString = string
+export type Keychain = {
+  [fingerprint: string]: string // key
+}
+
+export const importKeychain = async (
+  encryptedKeychain: string,
+  masterKey: string
+): Promise<Keychain> => {
+  const masterKeychain = {
+    [await getKeyFingerprint(masterKey)]: masterKey
+  }
+  const keyList = await decryptString(encryptedKeychain, masterKeychain)
+  const keys = keyList.split(',')
+  const keychain: Keychain = {}
+  for (const key of keys) {
+    keychain[await getKeyFingerprint(key)] = key
+  }
+  return keychain
+}
+
+export const exportKeychain = async (keychain: Keychain, masterKey: string) => {
+  const keyList = Object.values(keychain).join(',')
+  return encryptString(keyList, masterKey)
+}
 
 export const generateKey = async () => {
   const key = await webcrypto.subtle.generateKey(
@@ -14,7 +38,7 @@ export const generateKey = async () => {
     ['encrypt', 'decrypt']
   )
   const raw = await webcrypto.subtle.exportKey('raw', key)
-  return b64.encode(Buffer.from(raw))
+  return b64.encode(new Uint8Array(raw))
 }
 
 export const expandKey = async (key: string, usage: 'encrypt' | 'decrypt') => {
@@ -34,10 +58,7 @@ export const expandKey = async (key: string, usage: 'encrypt' | 'decrypt') => {
 export const getKeyFingerprint = async (key: string): Promise<string> => {
   const data = utf8.encode(key)
   const hash = await webcrypto.subtle.digest('SHA-256', data)
-  return Buffer.from(hash)
-    .toString('hex')
-    .slice(0, 8)
-    .toLowerCase()
+  return hex.encode(new Uint8Array(hash)).slice(0, 8)
 }
 
 export const encryptString = async (
@@ -58,7 +79,7 @@ export const encryptString = async (
 
 export const decryptString = async (
   input: CloakedString,
-  keys: { [fingerprint: string]: string }
+  keys: Keychain
 ): Promise<string> => {
   if (!input.startsWith('v1.')) {
     throw new Error('Unknown format')
@@ -67,7 +88,7 @@ export const decryptString = async (
   if (algo !== 'aesgcm256') {
     throw new Error('Unsupported cipher')
   }
-  if (!(fingerprint in keys)) {
+  if (!Object.keys(keys).includes(fingerprint)) {
     throw new Error('Key is not available')
   }
   const key = keys[fingerprint]
