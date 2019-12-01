@@ -1,7 +1,8 @@
-import React from 'react'
+import { NextPage } from 'next'
+import Redirect from '~/src/client/components/Redirect'
 
-const Home = () => {
-  return null
+const Home: NextPage = () => {
+  return <Redirect to="/login" />
 }
 
 export default Home
