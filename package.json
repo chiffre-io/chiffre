@@ -6,6 +6,7 @@
     "dev": "ts-node --project tsconfig.server.json ./src/server/server.ts",
     "build": "next build",
     "test": "jest --verbose",
+    "install": "yarn build",
     "test:watch": "jest --watch",
     "start": "NODE_ENV=production ts-node --project tsconfig.server.json ./src/server/server.ts",
     "clean": "rm -rf ./out ./.next",
@@ -16,7 +17,9 @@
     "migrate:up": "ts-node --project ./tsconfig.server.json ./node_modules/.bin/knex migrate:up",
     "seed:make": "ts-node --project ./tsconfig.server.json ./node_modules/.bin/knex seed:make",
     "seed:run": "ts-node --project ./tsconfig.server.json ./node_modules/.bin/knex seed:run",
-    "cloak": "ts-node --project ./tsconfig.server.json ./src/cli/cloak"
+    "cloak": "ts-node --project ./tsconfig.server.json ./src/cli/cloak",
+    "db:reset": "./scripts/stop-db.sh && rm -rf .db && ./scripts/start-db.sh",
+    "db:setup": "yarn migrate:up && yarn seed:run"
   },
   "dependencies": {
     "@chakra-ui/core": "^0.4.1",
