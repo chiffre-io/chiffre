@@ -8,6 +8,7 @@ interface SessionInput {
   userID: string
   totpVerified?: boolean
   expiresAt: Date
+  ipAddress: string
 }
 
 export interface Session extends SessionInput {
@@ -25,6 +26,7 @@ export const createSession = async (
   const session: SessionInput = {
     userID,
     totpVerified: twoFactorRequired ? false : null,
+    ipAddress,
     expiresAt: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000) // in 7 days
   }
   const result = await db
@@ -87,7 +89,7 @@ export const createInitialSessionsTable = async (db: Knex) => {
       .notNullable()
       .index()
     table.foreign('userID').references(`${USERS_AUTH_SRP_TABLE}.id`)
-
+    table.string('ipAddress').notNullable()
     table.boolean('totpVerified').nullable()
     table.timestamp('expiresAt').notNullable()
   })

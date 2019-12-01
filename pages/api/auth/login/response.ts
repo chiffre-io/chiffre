@@ -4,6 +4,9 @@ import requireBodyParams, {
   requiredString
 } from '~/src/server/middleware/requireBodyParams'
 import database, { Db } from '~/src/server/middleware/database'
+import ipAddressMiddleware, {
+  IpAddress
+} from '~/src/server/middleware/ipAddress'
 import { Request } from '~/src/server/types'
 import {
   findLoginChallenge,
@@ -44,9 +47,13 @@ handler.use(
   })
 )
 handler.use(database)
+handler.use(ipAddressMiddleware)
 
 handler.post(
-  async (req: Request<Db, LoginResponseParameters>, res: NextApiResponse) => {
+  async (
+    req: Request<Db & IpAddress, LoginResponseParameters>,
+    res: NextApiResponse
+  ) => {
     const {
       userID,
       challengeID,
@@ -102,7 +109,12 @@ handler.post(
     }
 
     const twoFactorRequired = await userRequiresTwoFactorAuth(req.db, user.id)
-    const session = await createSession(req.db, user.id, twoFactorRequired)
+    const session = await createSession(
+      req.db,
+      user.id,
+      twoFactorRequired,
+      req.ipAddress
+    )
 
     const jwt = twoFactorRequired
       ? null
