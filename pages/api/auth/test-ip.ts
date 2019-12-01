@@ -1,17 +1,19 @@
 import nextConnect from 'next-connect'
-import { NextApiRequest, NextApiResponse } from 'next'
+import { NextApiResponse } from 'next'
+import ipAddressMiddleware, {
+  IpAddress
+} from '~/src/server/middleware/ipAddress'
+import { Request } from '~/src/server/types'
 
 // --
 
 const handler = nextConnect()
+handler.use(ipAddressMiddleware)
 
-handler.get(async (req: NextApiRequest, res: NextApiResponse) => {
-  console.log({
-    'req.socket.remoteAddress': req.socket.remoteAddress,
-    'req.socket.remoteFamily': req.socket.remoteFamily,
-    'req.headers': req.headers
+handler.get(async (req: Request<IpAddress>, res: NextApiResponse) => {
+  res.json({
+    ip: req.ipAddress
   })
-  res.json({})
 })
 
 export default handler
