@@ -6,7 +6,7 @@ export const SESSIONS_TABLE = 'sessions'
 
 interface SessionInput {
   userID: string
-  totpVerified?: boolean
+  twoFactorVerified?: boolean
   expiresAt: Date
   ipAddress: string
 }
@@ -21,11 +21,12 @@ export const createSession = async (
   db: Knex,
   userID: string,
   twoFactorRequired: boolean,
+  ipAddress: string,
   now: Date = new Date()
 ): Promise<Session> => {
   const session: SessionInput = {
     userID,
-    totpVerified: twoFactorRequired ? false : null,
+    twoFactorVerified: twoFactorRequired ? false : null,
     ipAddress,
     expiresAt: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000) // in 7 days
   }
@@ -48,17 +49,17 @@ export const findSession = async (db: Knex, id: string) => {
   return result[0]
 }
 
-export const markTotpVerifiedInSession = async (db: Knex, id: string) => {
+export const markTwoFactorVerifiedInSession = async (db: Knex, id: string) => {
   await db(SESSIONS_TABLE)
     .where({ id })
-    .update({ totpVerified: true })
+    .update({ twoFactorVerified: true })
 }
 
 export const isSessionExpired = (session: Session, now: Date = new Date()) => {
   return session.expiresAt < now
 }
 
-export const isSessionValid = async (db: Knex, id: string) => {
+export const isSessionValid = async (db: Knex, id: string, userID: string) => {
   const session = await findSession(db, id)
   if (!session) {
     return false
@@ -66,9 +67,12 @@ export const isSessionValid = async (db: Knex, id: string) => {
   if (isSessionExpired(session)) {
     return false
   }
+  if (session.userID !== userID) {
+    return false
+  }
   const twoFactorRequired = await userRequiresTwoFactorAuth(db, session.userID)
   if (twoFactorRequired) {
-    return session.totpVerified
+    return session.twoFactorVerified
   }
   return true
 }
@@ -90,7 +94,7 @@ export const createInitialSessionsTable = async (db: Knex) => {
       .index()
     table.foreign('userID').references(`${USERS_AUTH_SRP_TABLE}.id`)
     table.string('ipAddress').notNullable()
-    table.boolean('totpVerified').nullable()
+    table.boolean('twoFactorVerified').nullable()
     table.timestamp('expiresAt').notNullable()
   })
 }

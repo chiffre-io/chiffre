@@ -6,7 +6,7 @@ import ErrorText from '../../components/form/ErrorText'
 import theme from '~/src/client/ui/theme'
 
 interface Values {
-  totpToken: string
+  twoFactorToken: string
   recoveryToken: string
 }
 
@@ -14,7 +14,7 @@ export interface Props {
   onSubmit: (v: Values) => void
 }
 
-const TotpField = ({ name, ...props }) => {
+const TwoFactorTokenField = ({ name, ...props }) => {
   const [field] = useField(name)
   return (
     <>
@@ -40,7 +40,7 @@ const TotpField = ({ name, ...props }) => {
 
 const TwoFactorForm: React.FC<Props> = ({ onSubmit }) => {
   const initialValues: Values = {
-    totpToken: '',
+    twoFactorToken: '',
     recoveryToken: ''
   }
 
@@ -57,8 +57,10 @@ const TwoFactorForm: React.FC<Props> = ({ onSubmit }) => {
       {({ isSubmitting }) => (
         <Form>
           <Box mb={4}>
-            <Label htmlFor="totpToken">Two Factor Authentication Code</Label>
-            <TotpField name="totpToken" />
+            <Label htmlFor="twoFactorToken">
+              Two Factor Authentication Code
+            </Label>
+            <TwoFactorTokenField name="twoFactorToken" />
           </Box>
           <Button
             type="submit"

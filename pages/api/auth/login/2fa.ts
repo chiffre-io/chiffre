@@ -5,17 +5,17 @@ import requireBodyParams, {
 } from '~/src/server/middleware/requireBodyParams'
 import database, { Db } from '~/src/server/middleware/database'
 import { Request } from '~/src/server/types'
-import { verifyTotpToken } from '~/src/server/2fa'
+import { verifyTwoFactorToken } from '~/src/server/2fa'
 import { findUser } from '~/src/server/db/models/auth/UsersAuthSRP'
 import { findSession } from '~/src/server/db/models/auth/Sessions'
 import { createJwt } from '~/src/server/jwt'
-import { markTotpVerifiedInSession } from '../../../../src/server/db/models/auth/Sessions'
-import { getTwoFactorSettings } from '../../../../src/server/db/models/auth/UsersAuthSettings'
+import { markTwoFactorVerifiedInSession } from '~/src/server/db/models/auth/Sessions'
+import { getTwoFactorSettings } from '~/src/server/db/models/auth/UsersAuthSettings'
 
 export interface Login2FAParameters {
   userID: string
   sessionID: string
-  totpToken: string
+  twoFactorToken: string
 }
 
 export interface Login2FAResponseBody {
@@ -30,14 +30,14 @@ handler.use(
   requireBodyParams<Login2FAParameters>({
     userID: requiredString,
     sessionID: requiredString,
-    totpToken: requiredString
+    twoFactorToken: requiredString
   })
 )
 handler.use(database)
 
 handler.post(
   async (req: Request<Db, Login2FAParameters>, res: NextApiResponse) => {
-    const { userID, sessionID, totpToken } = req.body
+    const { userID, sessionID, twoFactorToken } = req.body
 
     const user = await findUser(req.db, userID)
     if (!user) {
@@ -52,7 +52,7 @@ handler.post(
       })
     }
 
-    if (session.totpVerified) {
+    if (session.twoFactorVerified) {
       // The session is already verified
       // todo: Then what ?
     }
@@ -69,17 +69,17 @@ handler.post(
       })
     }
 
-    const verified = verifyTotpToken(
-      totpToken,
+    const verified = verifyTwoFactorToken(
+      twoFactorToken,
       twoFactorSettings.twoFactorSecret
     )
     if (!verified) {
       return res.status(401).json({
-        error: `Invalid TOTP code`
+        error: `Invalid two factor code`
       })
     }
 
-    await markTotpVerifiedInSession(req.db, session.id)
+    await markTwoFactorVerifiedInSession(req.db, session.id)
 
     const jwt = createJwt({
       userID: user.id,
@@ -93,6 +93,8 @@ handler.post(
     res.json(body)
   }
 )
+
+// todo: Factor better error handlers & logging story
 handler.use((err, req, res, next) => {
   console.error(err)
 })

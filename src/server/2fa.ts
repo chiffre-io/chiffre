@@ -11,15 +11,15 @@ const authenticator = new Authenticator({
   keyEncoder
 })
 
-export const generateTotpSecret = () => {
+export const generateTwoFactorSecret = () => {
   return authenticator.generateSecret(32)
 }
 
-export const generateTotpToken = (secret: string) => {
+export const generateTwoFactorToken = (secret: string) => {
   return authenticator.generate(secret)
 }
 
-export const verifyTotpToken = (token: string, secret: string) => {
+export const verifyTwoFactorToken = (token: string, secret: string) => {
   try {
     return authenticator.check(token, secret)
   } catch (error) {

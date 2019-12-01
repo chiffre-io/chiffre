@@ -35,7 +35,7 @@ const TwoFactorPage = () => {
           const { jwt } = await verify({
             userID,
             sessionID,
-            totpToken: values.totpToken
+            twoFactorToken: values.twoFactorToken
           })
           window.localStorage.setItem('chiffre:jwt', jwt)
           await router.push('/')
