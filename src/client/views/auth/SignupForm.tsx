@@ -6,7 +6,9 @@ import {
   Text,
   Link,
   Checkbox,
-  useColorMode
+  useColorMode,
+  useToast,
+  useToastOptions
 } from '@chakra-ui/core'
 import { Formik, Form, FormikErrors, Field, ErrorMessage } from 'formik'
 
@@ -63,11 +65,28 @@ const getConfirmationLockColor = (values: Values) => {
   return 'gray'
 }
 
+const showToast = (
+  toast: (props: useToastOptions) => void,
+  errors: FormikErrors<Values>
+) => {
+  if (errors.passwordStrength) {
+    toast({
+      title: 'Invalid password',
+      description: errors.passwordStrength,
+      status: 'error',
+      isClosable: true
+    })
+  }
+}
+
+// --
+
 const SignupForm: React.FC<Props> = ({ onSubmit }) => {
   const [revealPasswords, setRevealPasswords] = React.useState(false)
   const [aboutPasswordsVisible, setAboutPasswordsVisible] = React.useState(
     false
   )
+  const toast = useToast()
 
   const dark = useColorMode().colorMode === 'dark'
 
@@ -114,7 +133,7 @@ const SignupForm: React.FC<Props> = ({ onSubmit }) => {
         return errors
       }}
     >
-      {({ values, isSubmitting }) => (
+      {({ values, errors, isSubmitting }) => (
         <Form autoComplete="off">
           <Box mb="4">
             <Label htmlFor="email">Account</Label>
@@ -188,31 +207,13 @@ const SignupForm: React.FC<Props> = ({ onSubmit }) => {
             )}
           </Field>
           <ErrorMessage component={ErrorText} name="acceptToS" />
-          <ErrorMessage
-            render={message => (
-              <Box mt={4} mb={-2} textAlign="center">
-                <ErrorText fontSize="md" fontWeight="semibold" mb={0}>
-                  {message}
-                </ErrorText>
-                <Text fontSize="sm">
-                  <Link
-                    href="#about-passwords"
-                    textDecoration="underline"
-                    onClick={() => setAboutPasswordsVisible(true)}
-                  >
-                    Learn more
-                  </Link>
-                </Text>
-              </Box>
-            )}
-            name="passwordStrength"
-          />
           <Button
             type="submit"
             isLoading={isSubmitting}
             width="100%"
             variantColor="green"
             mt={6}
+            onClick={() => showToast(toast, errors)}
           >
             Create account
           </Button>
