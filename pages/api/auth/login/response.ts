@@ -9,11 +9,13 @@ import {
   findLoginChallenge,
   isChallengeExpired
 } from '~/src/server/db/models/auth/LoginChallengesSRP'
+import { createJwt } from '~/src/server/jwt'
 import { serverLoginResponse } from '~/src/server/srp'
 import { deleteLoginChallenge } from '~/src/server/db/models/auth/LoginChallengesSRP'
 import { findUser } from '~/src/server/db/models/auth/UsersAuthSRP'
 import { Session as SrpSession } from 'secure-remote-password/server'
 import { createSession } from '~/src/server/db/models/auth/Sessions'
+import { userRequiresTwoFactorAuth } from '~/src/server/db/models/auth/UsersAuthSettings'
 
 export interface LoginResponseParameters {
   userID: string
@@ -80,9 +82,9 @@ handler.post(
       })
     }
 
-    let session: SrpSession = null
+    let srpSession: SrpSession = null
     try {
-      session = serverLoginResponse(
+      srpSession = serverLoginResponse(
         challenge.ephemeralSecret,
         clientEphemeral,
         user.salt,
@@ -99,14 +101,22 @@ handler.post(
       await deleteLoginChallenge(req.db, challenge.id)
     }
 
-    // todo: Generate JWT and store in sessions table
-    const sessionID = await createSession(req.db, userID)
+    const twoFactorRequired = await userRequiresTwoFactorAuth(req.db, user.id)
+    const session = await createSession(req.db, user.id, twoFactorRequired)
+
+    const jwt = twoFactorRequired
+      ? null
+      : createJwt({
+          userID: user.id,
+          sessionID: session.id,
+          expiresAt: session.expiresAt
+        })
 
     const body: LoginResponseResponseBody = {
-      proof: session.proof,
-      jwt: null,
-      twoFactor: true,
-      sessionID
+      proof: srpSession.proof,
+      jwt,
+      twoFactor: twoFactorRequired,
+      sessionID: session.id
     }
     res.json(body)
   }

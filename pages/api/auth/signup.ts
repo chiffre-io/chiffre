@@ -6,6 +6,7 @@ import requireBodyParams, {
 import database, { Db } from '~/src/server/middleware/database'
 import { Request } from '~/src/server/types'
 import { createUser } from '~/src/server/db/models/auth/UsersAuthSRP'
+import { createUserAuthSettings } from '~/src/server/db/models/auth/UsersAuthSettings'
 
 export interface SignupParameters {
   username: string
@@ -31,7 +32,8 @@ handler.post(
     const { username, salt, verifier } = req.body
 
     try {
-      await createUser(req.db, username, salt, verifier)
+      const userID = await createUser(req.db, username, salt, verifier)
+      await createUserAuthSettings(req.db, userID)
     } catch (error) {
       if (error.code === '23505') {
         // duplicate key value violates unique constraint

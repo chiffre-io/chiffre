@@ -10,6 +10,7 @@ import { findUser } from '~/src/server/db/models/auth/UsersAuthSRP'
 import { findSession } from '~/src/server/db/models/auth/Sessions'
 import { createJwt } from '~/src/server/jwt'
 import { markTotpVerifiedInSession } from '../../../../src/server/db/models/auth/Sessions'
+import { getTwoFactorSettings } from '../../../../src/server/db/models/auth/UsersAuthSettings'
 
 export interface Login2FAParameters {
   userID: string
@@ -56,9 +57,21 @@ handler.post(
       // todo: Then what ?
     }
 
+    const twoFactorSettings = await getTwoFactorSettings(req.db, user.id)
+    if (
+      !twoFactorSettings.twoFactorEnabled ||
+      !twoFactorSettings.twoFactorVerified ||
+      !twoFactorSettings.twoFactorSecret
+    ) {
+      // Don't give too much information
+      return res.status(422).json({
+        error: `Cannot proceed with 2FA authentication`
+      })
+    }
+
     const verified = verifyTotpToken(
       totpToken,
-      'X6NU5UDZGPDHWW5H32WJSRYHOU55TPVBMZGZHXC67UUS4CUHQAGA'
+      twoFactorSettings.twoFactorSecret
     )
     if (!verified) {
       return res.status(401).json({

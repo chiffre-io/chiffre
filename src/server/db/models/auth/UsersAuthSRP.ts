@@ -19,13 +19,17 @@ export const createUser = async (
   username: string,
   salt: string,
   verifier: string
-) => {
+): Promise<string> => {
   const user: UserAuthSrpInput = {
     username,
     salt,
     verifier
   }
-  await db.insert(user).into(USERS_AUTH_SRP_TABLE)
+  const result = await db
+    .insert(user)
+    .into(USERS_AUTH_SRP_TABLE)
+    .returning<string[]>('id')
+  return result[0]
 }
 
 export const findUserByUsername = async (db: Knex, username: string) => {

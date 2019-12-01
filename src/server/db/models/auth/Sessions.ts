@@ -1,11 +1,12 @@
 import Knex from 'knex'
 import { USERS_AUTH_SRP_TABLE } from './UsersAuthSRP'
+import { userRequiresTwoFactorAuth } from './UsersAuthSettings'
 
 export const SESSIONS_TABLE = 'sessions'
 
 interface SessionInput {
   userID: string
-  totpVerified: boolean
+  totpVerified?: boolean
   expiresAt: Date
 }
 
@@ -18,17 +19,18 @@ export interface Session extends SessionInput {
 export const createSession = async (
   db: Knex,
   userID: string,
+  twoFactorRequired: boolean,
   now: Date = new Date()
-) => {
+): Promise<Session> => {
   const session: SessionInput = {
     userID,
-    totpVerified: false,
+    totpVerified: twoFactorRequired ? false : null,
     expiresAt: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000) // in 7 days
   }
   const result = await db
     .insert(session)
     .into(SESSIONS_TABLE)
-    .returning<string[]>('id')
+    .returning<Session[]>('*')
   return result[0]
 }
 
@@ -62,7 +64,11 @@ export const isSessionValid = async (db: Knex, id: string) => {
   if (isSessionExpired(session)) {
     return false
   }
-  return session.totpVerified // todo: Make 2FA optional
+  const twoFactorRequired = await userRequiresTwoFactorAuth(db, session.userID)
+  if (twoFactorRequired) {
+    return session.totpVerified
+  }
+  return true
 }
 
 // --
@@ -82,7 +88,7 @@ export const createInitialSessionsTable = async (db: Knex) => {
       .index()
     table.foreign('userID').references(`${USERS_AUTH_SRP_TABLE}.id`)
 
-    table.boolean('totpVerified')
+    table.boolean('totpVerified').nullable()
     table.timestamp('expiresAt').notNullable()
   })
 }
