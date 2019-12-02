@@ -77,6 +77,12 @@ export const isSessionValid = async (db: Knex, id: string, userID: string) => {
   return true
 }
 
+export const deleteSession = async (db: Knex, id: string, userID: string) => {
+  return await db
+    .from(SESSIONS_TABLE)
+    .where({ id, userID })
+    .delete()
+}
 // --
 
 export const createInitialSessionsTable = async (db: Knex) => {
