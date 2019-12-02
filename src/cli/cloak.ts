@@ -7,6 +7,7 @@ import {
   encryptString,
   decryptString,
   getKeyFingerprint,
+  findKeyForMessage,
   exportKeychain
 } from '../client/engine/crypto/cloaking'
 
@@ -70,7 +71,8 @@ program.command('decrypt [key]').action(async key => {
   if (key) {
     keychain[await getKeyFingerprint(key)] = key
   }
-  const cleartext = await decryptString(stdin, keychain)
+  const keyFoo = await findKeyForMessage(stdin, keychain)
+  const cleartext = await decryptString(stdin, keyFoo)
   console.log(cleartext)
 })
 

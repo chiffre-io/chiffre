@@ -3,18 +3,30 @@ import { utf8, b64, hex } from './primitives/codec'
 import { encryptAesGcm, decryptAesGcm } from './primitives/aes-gcm'
 
 export type CloakedString = string
+export type CloakKey = string
 export type Keychain = {
-  [fingerprint: string]: string // key
+  [fingerprint: string]: CloakKey // key
 }
 
-export const importKeychain = async (
-  encryptedKeychain: string,
-  masterKey: string
-): Promise<Keychain> => {
-  const masterKeychain = {
-    [await getKeyFingerprint(masterKey)]: masterKey
+export const makeKeychain = async (keys: CloakKey[]): Promise<Keychain> => {
+  const keychain: Keychain = {}
+  for (const key of keys) {
+    keychain[await getKeyFingerprint(key)] = key
   }
-  const keyList = await decryptString(encryptedKeychain, masterKeychain)
+  return keychain
+}
+
+/**
+ * Decrypt and hydrate the given encrypted keychain
+ *
+ * @param encryptedKeychain - A keychain as exported by exportKeychain
+ * @param masterKey - The key used to encrypt the keychain
+ */
+export const importKeychain = async (
+  encryptedKeychain: CloakedString,
+  masterKey: CloakKey
+): Promise<Keychain> => {
+  const keyList = await decryptString(encryptedKeychain, masterKey)
   const keys = keyList.split(',')
   const keychain: Keychain = {}
   for (const key of keys) {
@@ -23,7 +35,17 @@ export const importKeychain = async (
   return keychain
 }
 
-export const exportKeychain = async (keychain: Keychain, masterKey: string) => {
+/**
+ * Export a serialized and encrypted version of a keychain
+ *
+ * @param keychain - The keychain to export
+ * @param masterKey The key to use to encrypt the keychain
+ * @returns an encrypted keychain string
+ */
+export const exportKeychain = async (
+  keychain: Keychain,
+  masterKey: CloakKey
+): Promise<CloakedString> => {
   const keyList = Object.values(keychain).join(',')
   return encryptString(keyList, masterKey)
 }
@@ -79,7 +101,7 @@ export const encryptString = async (
 
 export const decryptString = async (
   input: CloakedString,
-  keys: Keychain
+  key: CloakKey
 ): Promise<string> => {
   if (!input.startsWith('v1.')) {
     throw new Error('Unknown format')
@@ -88,13 +110,48 @@ export const decryptString = async (
   if (algo !== 'aesgcm256') {
     throw new Error('Unsupported cipher')
   }
-  if (!Object.keys(keys).includes(fingerprint)) {
-    throw new Error('Key is not available')
-  }
-  const key = keys[fingerprint]
   const aesKey = await expandKey(key, 'decrypt')
   return await decryptAesGcm(aesKey, {
     iv: b64.decode(iv),
     text: b64.decode(ciphertext)
   })
 }
+
+export const findKeyForMessage = async (
+  message: CloakedString,
+  keychain: Keychain
+): Promise<CloakKey> => {
+  if (!message.startsWith('v1.')) {
+    throw new Error('Unknown format')
+  }
+  const [_, algo, fingerprint] = message.split('.')
+  if (algo !== 'aesgcm256') {
+    throw new Error('Unsupported cipher')
+  }
+  if (!Object.keys(keychain).includes(fingerprint)) {
+    throw new Error('Key is not available')
+  }
+  return keychain[fingerprint]
+}
+
+// export const decryptString = async (
+//   input: CloakedString,
+//   keys: Keychain
+// ): Promise<string> => {
+//   if (!input.startsWith('v1.')) {
+//     throw new Error('Unknown format')
+//   }
+//   const [_, algo, fingerprint, iv, ciphertext] = input.split('.')
+//   if (algo !== 'aesgcm256') {
+//     throw new Error('Unsupported cipher')
+//   }
+//   if (!Object.keys(keys).includes(fingerprint)) {
+//     throw new Error('Key is not available')
+//   }
+//   const key = keys[fingerprint]
+//   const aesKey = await expandKey(key, 'decrypt')
+//   return await decryptAesGcm(aesKey, {
+//     iv: b64.decode(iv),
+//     text: b64.decode(ciphertext)
+//   })
+// }
