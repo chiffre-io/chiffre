@@ -83,6 +83,14 @@ export const deleteSession = async (db: Knex, id: string, userID: string) => {
     .where({ id, userID })
     .delete()
 }
+
+export const getAllSessionsForUser = async (db: Knex, userID: string) => {
+  return await db
+    .select<(Session & { created_at: Date })[]>('*')
+    .from(SESSIONS_TABLE)
+    .where({ userID })
+}
+
 // --
 
 export const createInitialSessionsTable = async (db: Knex) => {
