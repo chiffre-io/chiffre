@@ -1,5 +1,6 @@
 import React from 'react'
 import axios from 'axios'
+import { useRouter } from 'next/dist/client/router'
 import {
   clientAssembleLoginResponse,
   clientVerifyLogin
@@ -9,9 +10,38 @@ import {
   LoginResponseParameters,
   LoginResponseResponseBody
 } from '~/pages/api/auth/login/response'
+import { saveLoginCredentials } from '../auth'
+import use2faVerification from './use2faVerification'
 
-export default function useSrpLogin() {
-  const [error, setError] = React.useState<Error>(null)
+interface AuthInfo {
+  userID: string
+  sessionID: string
+}
+
+interface Return {
+  login: (username: string, password: string) => Promise<any>
+  enterTwoFactorToken: (token: string) => Promise<any>
+  showTwoFactor: boolean
+}
+
+const useRedirectAfterLogin = (defaultRoute = '/') => {
+  const router = useRouter()
+  if (!router || !router.query) {
+    // Server-side
+    return async () => false
+  }
+  const { redirect = defaultRoute } = router.query
+  const redirectPath = typeof redirect === 'string' ? redirect : redirect[0]
+  return async () => await router.replace(redirectPath)
+}
+
+export default function useSrpLogin(): Return {
+  const [error, setError] = React.useState<Error>(undefined)
+  const [authInfo, setAuthInfo] = React.useState<AuthInfo>(null)
+  const [showTwoFactor, setShowTwoFactor] = React.useState(false)
+
+  const verifyTwoFactor = use2faVerification()
+  const redirectAfterLogin = useRedirectAfterLogin()
 
   const login = async (username: string, password: string) => {
     let res = await axios.post('/api/auth/login/challenge', { username })
@@ -54,16 +84,49 @@ export default function useSrpLogin() {
 
     await clientVerifyLogin(serverProof, clientEphemeral, session)
 
-    return {
-      userID,
-      jwt,
-      twoFactor,
-      sessionID
+    if (twoFactor) {
+      setShowTwoFactor(true)
+      setAuthInfo(null)
+    } else if (jwt) {
+      setError(null)
+      saveLoginCredentials(jwt)
+      setAuthInfo({
+        userID,
+        sessionID
+      })
+      await redirectAfterLogin()
     }
   }
 
+  const enterTwoFactorToken = async (token: string) => {
+    const { jwt } = await verifyTwoFactor({
+      userID: authInfo.userID,
+      sessionID: authInfo.sessionID,
+      twoFactorToken: token
+    })
+    if (jwt) {
+      setError(null)
+      saveLoginCredentials(jwt)
+      await redirectAfterLogin()
+    }
+  }
+
+  const saveAndThrowBack = (error: Error) => {
+    setError(error) // For the UI to display
+    throw error // For the original caller to catch
+  }
+
+  React.useEffect(() => {
+    if (error) {
+      // todo: Show using a toast
+      console.error(error)
+    }
+  }, [error])
+
   return {
-    login,
-    error
+    login: (...args) => login(...args).catch(saveAndThrowBack),
+    enterTwoFactorToken: (...args) =>
+      enterTwoFactorToken(...args).catch(saveAndThrowBack),
+    showTwoFactor
   }
 }

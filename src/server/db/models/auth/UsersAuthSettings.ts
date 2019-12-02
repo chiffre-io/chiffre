@@ -40,15 +40,12 @@ export const getTwoFactorSettings = async (
   if (result.length === 0) {
     return null
   }
-  if (result[0].twoFactorEnabled) {
-    const { twoFactorEnabled, twoFactorSecret, twoFactorVerified } = result[0]
-    return {
-      twoFactorEnabled,
-      twoFactorSecret,
-      twoFactorVerified
-    }
+  const { twoFactorEnabled, twoFactorSecret, twoFactorVerified } = result[0]
+  return {
+    twoFactorEnabled,
+    twoFactorSecret,
+    twoFactorVerified
   }
-  return null
 }
 
 export const userRequiresTwoFactorAuth = async (db: Knex, userID: string) => {
@@ -56,7 +53,7 @@ export const userRequiresTwoFactorAuth = async (db: Knex, userID: string) => {
   if (!settings) {
     return null
   }
-  return settings.twoFactorEnabled
+  return settings.twoFactorVerified
 }
 
 // --
@@ -68,9 +65,9 @@ export const enableTwoFactor = async (
 ) => {
   return await db<UserAuthSettings>(USERS_AUTH_SETTINGS_TABLE)
     .where({
-      userID,
-      twoFactorEnabled: false,
-      twoFactorSecret: null // Don't allow mutating the secret
+      userID
+      // twoFactorEnabled: false,
+      // twoFactorSecret: null // Don't allow mutating the secret
     })
     .update({
       twoFactorEnabled: true,

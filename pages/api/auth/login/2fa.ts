@@ -84,8 +84,10 @@ handler.post(
     const jwt = createJwt({
       userID: user.id,
       sessionID: session.id,
-      expiresAt: session.expiresAt
+      sessionExpiresAt: session.expiresAt
     })
+
+    // todo: Set JWT cookie
 
     const body: Login2FAResponseBody = {
       jwt

@@ -3,6 +3,7 @@ import { useRouter } from 'next/dist/client/router'
 import AuthPage from '~/src/client/views/auth/AuthPage'
 import TwoFactorForm from '~/src/client/views/auth/TwoFactorForm'
 import use2faVerification from '~/src/client/hooks/use2faVerification'
+import { saveLoginCredentials } from '../../src/client/auth'
 
 const uniqueString = (value: string | string[]) =>
   typeof value === 'string'
@@ -26,7 +27,7 @@ const useQueryParams = () => {
 const TwoFactorPage = () => {
   const router = useRouter()
   const { userID, sessionID } = useQueryParams()
-  const { verify } = use2faVerification()
+  const verify = use2faVerification()
 
   return (
     <AuthPage>
@@ -37,7 +38,7 @@ const TwoFactorPage = () => {
             sessionID,
             twoFactorToken: values.twoFactorToken
           })
-          window.localStorage.setItem('chiffre:jwt', jwt)
+          saveLoginCredentials(jwt)
           await router.push('/')
         }}
       />

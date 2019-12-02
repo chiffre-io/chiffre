@@ -1,30 +1,27 @@
 import React from 'react'
-import { useRouter } from 'next/dist/client/router'
 import AuthPage from '~/src/client/views/auth/AuthPage'
 import LoginForm from '~/src/client/views/auth/LoginForm'
+import TwoFactorForm from '~/src/client/views/auth/TwoFactorForm'
 import useSrpLogin from '~/src/client/hooks/useSrpLogin'
 
 const LoginPage = () => {
-  const router = useRouter()
-  const { login } = useSrpLogin()
-
+  const { login, enterTwoFactorToken, showTwoFactor } = useSrpLogin()
   return (
     <AuthPage>
-      <LoginForm
-        onSubmit={async values => {
-          const { jwt, twoFactor, sessionID, userID } = await login(
-            values.email,
-            values.password
-          )
-          if (twoFactor) {
-            return await router.push(
-              `/auth/2fa?session=${sessionID}&user=${userID}`
-            )
-          } else if (jwt) {
-            console.log({ jwt })
-          }
-        }}
-      />
+      {!showTwoFactor && (
+        <LoginForm
+          onSubmit={async values => {
+            await login(values.email, values.password)
+          }}
+        />
+      )}
+      {showTwoFactor && (
+        <TwoFactorForm
+          onSubmit={async values => {
+            await enterTwoFactorToken(values.twoFactorToken)
+          }}
+        />
+      )}
     </AuthPage>
   )
 }

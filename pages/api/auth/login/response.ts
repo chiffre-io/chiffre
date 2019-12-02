@@ -19,6 +19,7 @@ import { findUser } from '~/src/server/db/models/auth/UsersAuthSRP'
 import { Session as SrpSession } from 'secure-remote-password/server'
 import { createSession } from '~/src/server/db/models/auth/Sessions'
 import { userRequiresTwoFactorAuth } from '~/src/server/db/models/auth/UsersAuthSettings'
+import { createJwtCookie } from '../../../../src/server/cookies'
 
 export interface LoginResponseParameters {
   userID: string
@@ -121,8 +122,14 @@ handler.post(
       : createJwt({
           userID: user.id,
           sessionID: session.id,
-          expiresAt: session.expiresAt
+          sessionExpiresAt: session.expiresAt
         })
+
+    if (jwt) {
+      // Put JWT in a cookie to authenticate SSR requests
+      const jwtCookie = createJwtCookie(jwt, session)
+      res.setHeader('Set-Cookie', [jwtCookie])
+    }
 
     const body: LoginResponseResponseBody = {
       proof: srpSession.proof,
@@ -134,6 +141,7 @@ handler.post(
   }
 )
 
+// todo: Factor better error handlers & logging story
 handler.use((err, req, res, next) => {
   console.error(err)
 })

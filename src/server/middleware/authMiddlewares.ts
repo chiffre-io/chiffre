@@ -1,14 +1,10 @@
 import { NextApiMiddleware } from '../types'
 import { Db } from './database'
-import { verifyJwt } from '../jwt'
+import { verifyJwt, JwtClaims } from '../jwt'
 import { isSessionValid } from '../db/models/auth/Sessions'
 
 export interface ApiAuth {
-  auth: {
-    userID: string
-    sessionID: string
-    sessionExpiresAt: Date
-  }
+  auth: JwtClaims
 }
 
 export const apiAuthMiddleware: NextApiMiddleware<Db & ApiAuth> = async (
@@ -16,28 +12,20 @@ export const apiAuthMiddleware: NextApiMiddleware<Db & ApiAuth> = async (
   res,
   next
 ) => {
-  const bearerLength = 'Bearer '.length
-
-  if (
-    !req.headers.authorization ||
-    req.headers.authorization.length <= bearerLength
-  ) {
-    return res.status(401).json({
-      error: 'Authentication required',
-      details: 'Missing JWT in authorization header'
-    })
-  }
   try {
+    const bearerLength = 'Bearer '.length
+    if (
+      !req.headers.authorization ||
+      req.headers.authorization.length <= bearerLength
+    ) {
+      throw new Error('Missing JWT in authorization header')
+    }
     const token = req.headers.authorization.slice(bearerLength)
-    const { userID, sessionID, expiresAt } = verifyJwt(token)
-    if (!(await isSessionValid(req.db, sessionID, userID))) {
+    const claims = verifyJwt(token)
+    if (!(await isSessionValid(req.db, claims.sessionID, claims.userID))) {
       throw new Error('Session has expired')
     }
-    req.auth = {
-      userID,
-      sessionID,
-      sessionExpiresAt: expiresAt
-    }
+    req.auth = claims
     next()
   } catch (error) {
     return res.status(401).json({
