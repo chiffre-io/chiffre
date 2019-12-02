@@ -3,18 +3,24 @@ import { createInitialUsersAuthSrpTable } from '../models/auth/UsersAuthSRP'
 import { createInitialLoginChallengesSrpTable } from '../models/auth/LoginChallengesSRP'
 import { createInitialSessionsTable } from '../models/auth/Sessions'
 import { createInitialUsersAuthSettingsTable } from '../models/auth/UsersAuthSettings'
+import { createInitialProjectsTable } from '../models/projects/Projects'
+import { setupUpdatedAtFieldAutoUpdate } from '../utility'
 
 export async function up(knex: Knex): Promise<any> {
   console.info('Setting up database from scratch...')
 
   // Load extensions
   await knex.raw('create extension if not exists "uuid-ossp"') // Generate UUIDv4 IDs
+  await setupUpdatedAtFieldAutoUpdate(knex)
 
-  // Create initial tables
+  // Auth
   await createInitialUsersAuthSrpTable(knex)
-  await createInitialLoginChallengesSrpTable(knex)
   await createInitialUsersAuthSettingsTable(knex)
+  await createInitialLoginChallengesSrpTable(knex)
   await createInitialSessionsTable(knex)
+
+  // Projects
+  await createInitialProjectsTable(knex)
 }
 
 export async function down(knex: Knex): Promise<any> {
