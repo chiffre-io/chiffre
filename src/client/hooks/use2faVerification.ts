@@ -1,4 +1,4 @@
-import axios from 'axios'
+import { clientApi } from '~/src/client/api'
 import {
   Login2FAParameters,
   Login2FAResponseBody
@@ -8,7 +8,7 @@ export default function use2faVerification() {
   const verify = async (
     params: Login2FAParameters
   ): Promise<Login2FAResponseBody> => {
-    const res = await axios.post('/api/auth/login/2fa', params)
+    const res = await clientApi.post('/auth/login/2fa', params)
     if (res.status !== 200) {
       throw new Error(res.data.error)
     }

@@ -1,5 +1,4 @@
 import React from 'react'
-import axios from 'axios'
 import { useRouter } from 'next/dist/client/router'
 import {
   clientAssembleLoginResponse,
@@ -12,6 +11,7 @@ import {
 } from '~/pages/api/auth/login/response'
 import { saveLoginCredentials } from '../auth'
 import use2faVerification from './use2faVerification'
+import { publicApi } from '../api'
 
 interface AuthInfo {
   userID: string
@@ -44,7 +44,7 @@ export default function useSrpLogin(): Return {
   const redirectAfterLogin = useRedirectAfterLogin()
 
   const login = async (username: string, password: string) => {
-    let res = await axios.post('/api/auth/login/challenge', { username })
+    let res = await publicApi.post('/auth/login/challenge', { username })
     if (res.status !== 200) {
       throw new Error(res.data.error)
     }
@@ -71,7 +71,7 @@ export default function useSrpLogin(): Return {
       ephemeral: clientEphemeral.public,
       proof: session.proof
     }
-    res = await axios.post('/api/auth/login/response', responseParams)
+    res = await publicApi.post('/auth/login/response', responseParams)
     if (res.status !== 200) {
       throw new Error(res.data.error)
     }

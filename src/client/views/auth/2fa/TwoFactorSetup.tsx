@@ -1,5 +1,4 @@
 import React from 'react'
-import axios from 'axios'
 import {
   Button,
   List,
@@ -14,12 +13,12 @@ import {
   Textarea
 } from '@chakra-ui/core'
 import useLoader from '~/src/client/hooks/useLoader'
-import { getLoginCredentials } from '~/src/client/auth'
 import { TwoFactorEnableResponse } from '~/pages/api/auth/2fa/enable'
 import TwoFactorSecretDisplay from './TwoFactorSecretDisplay'
 import ErrorText from '~/src/client/components/form/ErrorText'
 import TwoFactorForm, { Values as TwoFactorFormValues } from '../TwoFactorForm'
-import { VerifyTwoFactorParams } from '../../../../../pages/api/auth/2fa/verify'
+import { VerifyTwoFactorParams } from '~/pages/api/auth/2fa/verify'
+import { clientApi } from '~/src/client/api'
 
 const useRequestActivation = () => {
   type T = TwoFactorEnableResponse
@@ -28,11 +27,7 @@ const useRequestActivation = () => {
   const requestActivation = () =>
     load(async () => {
       try {
-        const res = await axios.post('/api/auth/2fa/enable', null, {
-          headers: {
-            authorization: `Bearer ${getLoginCredentials()}`
-          }
-        })
+        const res = await clientApi.post('/auth/2fa/enable', null)
         return res.data
       } catch (error) {
         throw new Error(error.response.data.error)
@@ -59,11 +54,7 @@ const useVerification = () => {
         token
       }
       try {
-        const res = await axios.post('/api/auth/2fa/verify', body, {
-          headers: {
-            authorization: `Bearer ${getLoginCredentials()}`
-          }
-        })
+        const res = await clientApi.post('/auth/2fa/verify', body)
         return res.data
       } catch (error) {
         throw new Error(error.response.data.error)
@@ -233,11 +224,7 @@ const TwoFactorSetup: React.FC = () => {
   const showSecret = twoFactorSecret && !showBackup
 
   const onCancel = async () => {
-    await axios.delete('/api/auth/2fa/enable', {
-      headers: {
-        authorization: `Bearer ${getLoginCredentials()}`
-      }
-    })
+    await clientApi.delete('/auth/2fa/enable')
     // todo: Close the component, reset state
   }
 
