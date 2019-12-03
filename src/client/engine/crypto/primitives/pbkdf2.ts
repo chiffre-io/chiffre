@@ -5,7 +5,7 @@ import { b64 } from './codec'
  * Generate a salt for PBKDF2 operations.
  */
 export const generateSalt = (): Uint8Array =>
-  webcrypto.getRandomValues(new Uint8Array(16))
+  webcrypto.getRandomValues(new Uint8Array(32))
 
 export const serializeSalt = (salt: Uint8Array) => b64.encode(salt)
 export const deserializeSalt = (salt: string) => b64.decode(salt)
@@ -50,7 +50,7 @@ export const pbkdf2DeriveBytes = async (
   salt: Uint8Array,
   length: number,
   hash: 'SHA-256' | 'SHA-384' | 'SHA-512' = 'SHA-256',
-  rounds: number = 10000
+  rounds: number = 100000
 ): Promise<Uint8Array> => {
   let enc = new TextEncoder()
   const key = await webcrypto.subtle.importKey(
