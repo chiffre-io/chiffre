@@ -75,6 +75,12 @@ Hashicorp Vault uses the Shamir Secret Sharing method to split a secret into
 multiple fragments, each requiring cooperation with the others to retrieve and
 decode the original secret.
 
+The key can be fragmented into multiple parts, deployed on small microservices,
+each using a TweetNaCl box for encryption over untrusted channels, and requiring
+a given threshold of success to re-assemble the master key.
+
+=> See https://github.com/47ng/horcrux
+
 ### Key Rotation
 
 Once key acquisition has been solved, it may become possible to rotate keys
