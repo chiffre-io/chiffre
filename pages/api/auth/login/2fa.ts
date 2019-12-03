@@ -11,6 +11,7 @@ import { findSession } from '~/src/server/db/models/auth/Sessions'
 import { createJwt } from '~/src/server/jwt'
 import { markTwoFactorVerifiedInSession } from '~/src/server/db/models/auth/Sessions'
 import { getTwoFactorSettings } from '~/src/server/db/models/auth/UsersAuthSettings'
+import { createJwtCookie } from '~/src/server/cookies'
 
 export interface Login2FAParameters {
   userID: string
@@ -86,8 +87,8 @@ handler.post(
       sessionID: session.id,
       sessionExpiresAt: session.expiresAt
     })
-
-    // todo: Set JWT cookie
+    const jwtCookie = createJwtCookie(jwt, session)
+    res.setHeader('Set-Cookie', [jwtCookie])
 
     const body: Login2FAResponseBody = {
       jwt

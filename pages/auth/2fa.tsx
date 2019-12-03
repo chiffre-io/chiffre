@@ -3,7 +3,7 @@ import { useRouter } from 'next/dist/client/router'
 import AuthPage from '~/src/client/views/auth/AuthPage'
 import TwoFactorForm from '~/src/client/views/auth/TwoFactorForm'
 import use2faVerification from '~/src/client/hooks/use2faVerification'
-import { saveLoginCredentials } from '../../src/client/auth'
+import { saveLoginCredentials } from '~/src/client/auth'
 
 const uniqueString = (value: string | string[]) =>
   typeof value === 'string'

@@ -19,7 +19,7 @@ import { findUser } from '~/src/server/db/models/auth/UsersAuthSRP'
 import { Session as SrpSession } from 'secure-remote-password/server'
 import { createSession } from '~/src/server/db/models/auth/Sessions'
 import { userRequiresTwoFactorAuth } from '~/src/server/db/models/auth/UsersAuthSettings'
-import { createJwtCookie } from '../../../../src/server/cookies'
+import { createJwtCookie } from '~/src/server/cookies'
 
 export interface LoginResponseParameters {
   userID: string
@@ -30,9 +30,9 @@ export interface LoginResponseParameters {
 
 export interface LoginResponseResponseBody {
   proof: string
-  jwt?: string
-  twoFactor?: boolean
   sessionID: string
+  twoFactor: boolean
+  jwt?: string // Will be sent if twoFactor is false
 }
 
 // --
