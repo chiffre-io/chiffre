@@ -1,5 +1,6 @@
 import Knex from 'knex'
 import { USERS_AUTH_SRP_TABLE } from './UsersAuthSRP'
+import { updatedAtFieldAutoUpdate } from '../../utility'
 
 export const USERS_AUTH_SETTINGS_TABLE = 'users_auth_settings'
 
@@ -155,8 +156,7 @@ export const consumeBackupCode = async (
 
 export const createInitialUsersAuthSettingsTable = async (db: Knex) => {
   await db.schema.createTable(USERS_AUTH_SETTINGS_TABLE, table => {
-    table.timestamp('created_at').defaultTo(db.fn.now())
-
+    table.timestamps(true, true)
     table
       .uuid('userID')
       .notNullable()
@@ -180,4 +180,5 @@ export const createInitialUsersAuthSettingsTable = async (db: Knex) => {
       .nullable()
       .defaultTo(null)
   })
+  await updatedAtFieldAutoUpdate(db, USERS_AUTH_SRP_TABLE)
 }

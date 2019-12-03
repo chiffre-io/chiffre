@@ -1,4 +1,5 @@
 import Knex from 'knex'
+import { updatedAtFieldAutoUpdate } from '../../utility'
 
 export const USERS_AUTH_SRP_TABLE = 'users_auth_srp'
 
@@ -60,7 +61,7 @@ export const findUser = async (db: Knex, userID: string) => {
 
 export const createInitialUsersAuthSrpTable = async (db: Knex) => {
   await db.schema.createTable(USERS_AUTH_SRP_TABLE, table => {
-    table.timestamp('created_at').defaultTo(db.fn.now())
+    table.timestamps(true, true)
     table
       .uuid('id')
       .unique()
@@ -81,4 +82,5 @@ export const createInitialUsersAuthSrpTable = async (db: Knex) => {
       .unique()
       .notNullable()
   })
+  await updatedAtFieldAutoUpdate(db, USERS_AUTH_SRP_TABLE)
 }

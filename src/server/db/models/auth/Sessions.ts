@@ -1,6 +1,7 @@
 import Knex from 'knex'
 import { USERS_AUTH_SRP_TABLE } from './UsersAuthSRP'
 import { userRequiresTwoFactorAuth } from './UsersAuthSettings'
+import { updatedAtFieldAutoUpdate } from '../../utility'
 
 export const SESSIONS_TABLE = 'sessions'
 
@@ -111,4 +112,5 @@ export const createInitialSessionsTable = async (db: Knex) => {
     table.boolean('twoFactorVerified').nullable()
     table.timestamp('expiresAt').notNullable()
   })
+  await updatedAtFieldAutoUpdate(db, SESSIONS_TABLE)
 }
