@@ -75,7 +75,7 @@ handler.post(
     )
     if (!verified) {
       return res.status(401).json({
-        error: `Invalid two factor code`
+        error: `Invalid two-factor code`
       })
     }
 

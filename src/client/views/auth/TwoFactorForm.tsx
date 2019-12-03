@@ -1,21 +1,24 @@
 import React from 'react'
-import { Input, Button, useColorMode, Box } from '@chakra-ui/core'
+import { Input, Button, Box } from '@chakra-ui/core'
+import {
+  Formik,
+  Form,
+  FormikErrors,
+  useField,
+  ErrorMessage,
+  useFormikContext
+} from 'formik'
 import Label from '../../components/form/Label'
-import { Formik, Form, FormikErrors, useField, ErrorMessage } from 'formik'
 import ErrorText from '../../components/form/ErrorText'
 import theme from '~/src/client/ui/theme'
 
-interface Values {
+export interface Values {
   twoFactorToken: string
   recoveryToken: string
 }
 
-export interface Props {
-  onSubmit: (v: Values) => void
-}
-
 const TwoFactorTokenField = ({ name, ...props }) => {
-  const [field] = useField(name)
+  const [{ onBlur, ...field }] = useField(name)
   return (
     <>
       <Input
@@ -25,10 +28,12 @@ const TwoFactorTokenField = ({ name, ...props }) => {
         placeholder="123456"
         mb={1}
         size="lg"
+        w="9rem"
         inputMode="numeric" // Show numeric keyboard on mobile
         pattern="[0-9]{6}"
         textAlign="center"
-        fontSize="1.8rem"
+        fontSize="1.6rem"
+        mx="auto"
         fontFamily={theme.fonts.mono}
         {...field}
         {...props}
@@ -38,7 +43,31 @@ const TwoFactorTokenField = ({ name, ...props }) => {
   )
 }
 
-const TwoFactorForm: React.FC<Props> = ({ onSubmit }) => {
+export interface Props {
+  label?: string
+  onSubmit: (v: Values) => void
+}
+
+const DefaultSubmitButton = ({}) => {
+  const ctx = useFormikContext()
+  return (
+    <Button
+      type="submit"
+      isLoading={ctx.isSubmitting}
+      width="100%"
+      variantColor="blue"
+      mt={6}
+    >
+      Verify
+    </Button>
+  )
+}
+
+const TwoFactorForm: React.FC<Props> = ({
+  onSubmit,
+  label = 'Two-Factor Authentication Code',
+  children = () => <DefaultSubmitButton />
+}) => {
   const initialValues: Values = {
     twoFactorToken: '',
     recoveryToken: ''
@@ -51,26 +80,19 @@ const TwoFactorForm: React.FC<Props> = ({ onSubmit }) => {
       validate={values => {
         const errors: FormikErrors<Values> = {}
         // todo: Add minimal validation
+        if (values.twoFactorToken.length !== 6) {
+          errors.twoFactorToken = 'Token must be 6 digits long'
+        }
         return errors
       }}
     >
-      {({ isSubmitting }) => (
+      {() => (
         <Form>
           <Box mb={4}>
-            <Label htmlFor="twoFactorToken">
-              Two Factor Authentication Code
-            </Label>
+            <Label htmlFor="twoFactorToken">{label}</Label>
             <TwoFactorTokenField name="twoFactorToken" />
           </Box>
-          <Button
-            type="submit"
-            isLoading={isSubmitting}
-            width="100%"
-            variantColor="blue"
-            mt={6}
-          >
-            Verify
-          </Button>
+          {children}
         </Form>
       )}
     </Formik>

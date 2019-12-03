@@ -6,13 +6,19 @@ import {
   ApiAuth
 } from '~/src/server/middleware/authMiddlewares'
 import { Request } from '~/src/server/types'
-import { getTwoFactorSettings } from '~/src/server/db/models/auth/UsersAuthSettings'
+import {
+  getTwoFactorSettings,
+  markTwoFactorVerified
+} from '~/src/server/db/models/auth/UsersAuthSettings'
 import { verifyTwoFactorToken, generateBackupCodes } from '~/src/server/2fa'
+import requireBodyParams, {
+  requiredString
+} from '~/src/server/middleware/requireBodyParams'
 
 // --
 
 export interface VerifyTwoFactorParams {
-  twoFactorToken: string
+  token: string
 }
 
 export interface VerifyTwoFactorResponse {
@@ -27,32 +33,44 @@ const handler = nextConnect()
 
 handler.use(database)
 handler.use(apiAuthMiddleware)
+handler.use(
+  requireBodyParams<VerifyTwoFactorParams>({
+    token: requiredString
+  })
+)
 
 handler.post(async (req: VerifyTwoFactorRequest, res: NextApiResponse) => {
-  const settings = await getTwoFactorSettings(req.db, req.auth.userID)
-  if (settings.twoFactorVerified) {
+  const twoFactorSettings = await getTwoFactorSettings(req.db, req.auth.userID)
+  if (twoFactorSettings.verified) {
     return res.status(422).json({
       error: 'Two-factor authentication is already active'
     })
   }
 
   const verified = verifyTwoFactorToken(
-    req.body.twoFactorToken,
-    settings.twoFactorSecret
+    req.body.token,
+    twoFactorSettings.secret
   )
   if (!verified) {
     return res.status(401).json({
-      error: `Invalid two factor code`
+      error: `Invalid two-factor code`
     })
   }
 
-  // Generate 8 codes of 128 bits, hex-encoded
-  const backupCodes = generateBackupCodes(8, 16)
-  // todo: Store them in the database
-  const body: VerifyTwoFactorResponse = {
-    backupCodes
+  try {
+    // Generate 8 codes of 128 bits, hex-encoded
+    const backupCodes = generateBackupCodes(8, 16)
+    await markTwoFactorVerified(req.db, req.auth.userID, backupCodes)
+    const body: VerifyTwoFactorResponse = {
+      backupCodes
+    }
+    return res.json(body)
+  } catch (error) {
+    return res.status(401).json({
+      error: 'Failed to verify two-factor authentication',
+      details: error.message
+    })
   }
-  return res.json(body)
 })
 
 export default handler

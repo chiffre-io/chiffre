@@ -2,46 +2,121 @@ import React from 'react'
 import axios from 'axios'
 import {
   Button,
-  Heading,
   List,
   ListItem,
   Text,
   Box,
-  Flex
+  Flex,
+  Code,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  Textarea
 } from '@chakra-ui/core'
 import useLoader from '~/src/client/hooks/useLoader'
 import { getLoginCredentials } from '~/src/client/auth'
-import { TwoFactorActivationResponse } from '~/pages/api/auth/2fa/activate'
-import TwoFactorSecretDisplay from './components/TwoFactorSecretDisplay'
+import { TwoFactorEnableResponse } from '~/pages/api/auth/2fa/enable'
+import TwoFactorSecretDisplay from './TwoFactorSecretDisplay'
+import ErrorText from '~/src/client/components/form/ErrorText'
+import TwoFactorForm, { Values as TwoFactorFormValues } from '../TwoFactorForm'
+import { VerifyTwoFactorParams } from '../../../../../pages/api/auth/2fa/verify'
 
 const useRequestActivation = () => {
-  const { load, loading, data } = useLoader<TwoFactorActivationResponse>()
+  type T = TwoFactorEnableResponse
+  const { load, loading, data, error } = useLoader<T>()
 
   const requestActivation = () =>
     load(async () => {
-      const res = await axios.post('/api/auth/2fa/activate', null, {
-        headers: {
-          authorization: `Bearer ${getLoginCredentials()}`
-        }
-      })
-      return res.data
+      try {
+        const res = await axios.post('/api/auth/2fa/enable', null, {
+          headers: {
+            authorization: `Bearer ${getLoginCredentials()}`
+          }
+        })
+        return res.data
+      } catch (error) {
+        throw new Error(error.response.data.error)
+      }
     })
 
   return {
     requestActivation,
     loading,
-    data
+    error: error ? error.message || error : null,
+    data: data ? data : null
+  }
+}
+
+const useVerification = () => {
+  type T = {
+    backupCodes: string[]
+  }
+  const { load, loading, data, error } = useLoader<T>()
+
+  const verifyToken = (token: string) =>
+    load(async () => {
+      const body: VerifyTwoFactorParams = {
+        token
+      }
+      try {
+        const res = await axios.post('/api/auth/2fa/verify', body, {
+          headers: {
+            authorization: `Bearer ${getLoginCredentials()}`
+          }
+        })
+        return res.data
+      } catch (error) {
+        throw new Error(error.response.data.error)
+      }
+    })
+
+  return {
+    verifyToken,
+    loading,
+    error: error ? error.message || error : null,
+    data: data ? data.backupCodes : null
   }
 }
 
 // --
 
-const Phase1 = ({ uri, text, onNext }) => {
+const StatusPhase = ({ loading, onClick, error }) => {
   return (
-    <Box w="100%" maxW="26.5em" p={2}>
-      <Heading as="h3" size="lg" mb={4}>
-        Enable Two-Factor Authentication :
-      </Heading>
+    <>
+      <Text mb={4}>
+        Two-factor authentication is{' '}
+        <Text as="span" fontWeight="semibold">
+          disabled
+        </Text>
+        .
+      </Text>
+      <Box mb={8}>
+        <Button
+          isLoading={loading}
+          onClick={onClick}
+          variantColor="green"
+          loadingText="Enable"
+        >
+          Enable
+        </Button>
+        <ErrorText bold mt={2}>
+          {error}
+        </ErrorText>
+      </Box>
+    </>
+  )
+}
+
+const SecretAndVerificationPhase = ({
+  uri,
+  text,
+  onNext,
+  onCancel,
+  loading,
+  error
+}) => {
+  return (
+    <>
       <List as="ol" styleType="decimal" mb={4} spacing={2}>
         <ListItem>
           Open your authenticator app{' '}
@@ -49,61 +124,147 @@ const Phase1 = ({ uri, text, onNext }) => {
             (eg: Google Authenticator, Authy, ...)
           </Text>
         </ListItem>
-        <ListItem>Scan the QR code :</ListItem>
+        <ListItem>
+          Scan the QR code :
+          <TwoFactorSecretDisplay uri={uri} text={text} mt={8} />
+        </ListItem>
+        <ListItem mt={4}>
+          Enter the code from your authenticator :
+          <TwoFactorForm onSubmit={onNext} label={null}>
+            {error && (
+              <ErrorText bold textAlign="center" mt={-2}>
+                {error}
+              </ErrorText>
+            )}
+            <Flex justify="flex-end" mt={4}>
+              <Button mr={2} variant="ghost" onClick={onCancel} type="button">
+                Cancel
+              </Button>
+              <Button
+                variantColor="blue"
+                rightIcon="chevron-right"
+                type="submit"
+                isLoading={loading}
+              >
+                Next
+              </Button>
+            </Flex>
+          </TwoFactorForm>
+        </ListItem>
       </List>
-      <TwoFactorSecretDisplay uri={uri} text={text} />
-      <Flex>
-        <Button variantColor="blue" mt={4} ml="auto" rightIcon="chevron-right">
-          Next
-        </Button>
-      </Flex>
-    </Box>
+    </>
   )
 }
 
-const Phase2 = ({}) => {
-  return null
+const BackupCodes = ({ backupCodes, onDone }) => {
+  const ref = React.useRef<HTMLTextAreaElement>()
+  return (
+    <>
+      <Alert
+        status="success"
+        variant="top-accent"
+        flexDirection="column"
+        justifyContent="center"
+        textAlign="center"
+        py={5}
+        mb={6}
+      >
+        <AlertIcon size="40px" />
+        <AlertTitle mt={4} mb={1} fontSize="lg" fontWeight="semibold">
+          Two-factor authentication activated !
+        </AlertTitle>
+      </Alert>
+      <Text mb={4}>
+        In case you lose access to your authenticator, here are some backup
+        codes that you should store safely :<br />
+        <Text fontSize="sm" color="gray.600">
+          (write them down or save them in a secure password manager)
+        </Text>
+      </Text>
+      <Textarea
+        isReadOnly
+        ref={ref}
+        onFocus={() => ref.current.select()}
+        value={(backupCodes || []).join('\n')}
+        lineHeight="2"
+        fontFamily="mono"
+        fontSize="0.9em"
+        whiteSpace="pre"
+        _readOnly={{
+          backgroundColor: 'gray.100'
+        }}
+        minH="256px"
+        isFullWidth
+        variant="filled"
+        resize="none"
+      />
+      <Flex justify="flex-end" mt={4}>
+        <Button variantColor="green" leftIcon="check" onClick={onDone}>
+          Done
+        </Button>
+      </Flex>
+    </>
+  )
 }
 
 // --
 
 const TwoFactorSetup: React.FC = () => {
-  // Phase 0: Only show button "Enable 2FA"
-  // Phase 1: show QR code & text code
-  // Phase 3: show input for 2FA token
-  // Phase 4: show backup codes
-  // Phase 5: done
+  // Phase 1: Only show button "Enable 2FA"
+  // Phase 2: show QR code, text code & input for 2FA token
+  // Phase 3: show backup codes
 
   const {
     requestActivation,
-    loading,
-    data: phase1Data
+    loading: requestLoading,
+    error: requestError,
+    data: twoFactorSecret
   } = useRequestActivation()
 
-  // const phase1Data = {
-  //   twoFactorSecret: {
-  //     text: 'LA27 JDYV BUOJ YBUI VNLD ENTN ZS4W TQM4',
-  //     uri: 'bar'
-  //   }
-  // }
+  const {
+    verifyToken,
+    loading: verifyLoading,
+    error: verifyError,
+    data: backupCodes
+  } = useVerification()
+
+  const showStatus = !twoFactorSecret
+  const showBackup = !!backupCodes
+  const showSecret = twoFactorSecret && !showBackup
+
+  const onCancel = async () => {
+    await axios.delete('/api/auth/2fa/enable', {
+      headers: {
+        authorization: `Bearer ${getLoginCredentials()}`
+      }
+    })
+    // todo: Close the component, reset state
+  }
 
   return (
-    <Flex align="center" direction="column">
-      {!phase1Data && (
-        <Button
-          isLoading={loading}
+    <Box w="100%" maxW="26.5em" p={2}>
+      {showStatus && (
+        <StatusPhase
           onClick={requestActivation}
-          loadingText="Enabling Two-Factor Authentication"
-          variantColor="green"
-        >
-          Enable Two-Factor Authentication
-        </Button>
+          loading={requestLoading}
+          error={requestError}
+        />
       )}
-      {phase1Data && (
-        <Phase1 {...phase1Data.twoFactorSecret} onNext={() => {}} />
+      {showSecret && (
+        <SecretAndVerificationPhase
+          {...twoFactorSecret}
+          loading={verifyLoading}
+          onNext={async (values: TwoFactorFormValues) => {
+            await verifyToken(values.twoFactorToken)
+          }}
+          onCancel={onCancel}
+          error={verifyError}
+        />
       )}
-      <Phase2 />
-    </Flex>
+      {showBackup && (
+        <BackupCodes backupCodes={backupCodes} onDone={() => {}} />
+      )}
+    </Box>
   )
 }
 

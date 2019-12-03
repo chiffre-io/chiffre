@@ -8,12 +8,15 @@ export interface UserAuthSettings {
   twoFactorEnabled: boolean
   twoFactorVerified: boolean
   twoFactorSecret?: string
+  twoFactorBackupCodes?: string // comma-separated array
 }
 
-export type TwoFactorSettings = Pick<
-  UserAuthSettings,
-  'twoFactorEnabled' | 'twoFactorVerified' | 'twoFactorSecret'
->
+export interface TwoFactorSettings {
+  enabled: boolean
+  verified: boolean
+  secret?: string
+  backupCodes?: string[]
+}
 
 // --
 
@@ -40,11 +43,17 @@ export const getTwoFactorSettings = async (
   if (result.length === 0) {
     return null
   }
-  const { twoFactorEnabled, twoFactorSecret, twoFactorVerified } = result[0]
-  return {
+  const {
     twoFactorEnabled,
     twoFactorSecret,
-    twoFactorVerified
+    twoFactorVerified,
+    twoFactorBackupCodes
+  } = result[0]
+  return {
+    enabled: twoFactorEnabled,
+    secret: twoFactorSecret,
+    verified: twoFactorVerified,
+    backupCodes: twoFactorBackupCodes && twoFactorBackupCodes.split(',')
   }
 }
 
@@ -53,7 +62,7 @@ export const userRequiresTwoFactorAuth = async (db: Knex, userID: string) => {
   if (!settings) {
     return null
   }
-  return settings.twoFactorVerified
+  return settings.verified
 }
 
 // --
@@ -76,14 +85,32 @@ export const enableTwoFactor = async (
     })
 }
 
-export const markTwoFactorVerified = async (db: Knex, userID: string) => {
+export const markTwoFactorVerified = async (
+  db: Knex,
+  userID: string,
+  backupCodes: string[]
+) => {
   return await db<UserAuthSettings>(USERS_AUTH_SETTINGS_TABLE)
     .where({
       userID,
       twoFactorEnabled: true
     })
     .update({
-      twoFactorVerified: true
+      twoFactorVerified: true,
+      twoFactorBackupCodes: backupCodes.join(',')
+    })
+}
+
+export const cancelTwoFactor = async (db: Knex, userID: string) => {
+  return await db<UserAuthSettings>(USERS_AUTH_SETTINGS_TABLE)
+    .where({
+      userID
+    })
+    .update({
+      twoFactorSecret: null,
+      twoFactorBackupCodes: null,
+      twoFactorEnabled: false,
+      twoFactorVerified: false
     })
 }
 
@@ -96,8 +123,31 @@ export const disableTwoFactor = async (db: Knex, userID: string) => {
     })
     .update({
       twoFactorSecret: null,
+      twoFactorBackupCodes: null,
       twoFactorEnabled: false,
       twoFactorVerified: false
+    })
+}
+
+export const consumeBackupCode = async (
+  db: Knex,
+  userID: string,
+  code: string
+) => {
+  const settings = await getTwoFactorSettings(db, userID)
+  if (!settings.backupCodes || settings.backupCodes.length === 0) {
+    throw new Error('No backup codes available')
+  }
+  if (!settings.backupCodes.includes(code)) {
+    throw new Error('Invalid backup code')
+  }
+  const newCodes = settings.backupCodes.filter(c => c !== code)
+  return await db<UserAuthSettings>(USERS_AUTH_SETTINGS_TABLE)
+    .where({
+      userID
+    })
+    .update({
+      twoFactorBackupCodes: newCodes.join(',')
     })
 }
 
@@ -123,6 +173,10 @@ export const createInitialUsersAuthSettingsTable = async (db: Knex) => {
       .defaultTo(false)
     table
       .string('twoFactorSecret')
+      .nullable()
+      .defaultTo(null)
+    table
+      .text('twoFactorBackupCodes')
       .nullable()
       .defaultTo(null)
   })

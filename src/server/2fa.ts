@@ -34,15 +34,18 @@ export const generateBackupCodes = (
 ): string[] => {
   return Array(number)
     .fill(undefined)
-    .map(() => createRandomBytes(numBytes, KeyEncodings.HEX))
+    .map(() =>
+      createRandomBytes(numBytes, KeyEncodings.HEX)
+        .match(/.{1,8}/g)
+        .join('-')
+    )
 }
 
 export const formatTwoFactorSecret = (secret: string, username: string) => {
   const issuer = 'Chiffre' // todo: Read from environment/config
   const uri = authenticator.keyuri(username, issuer, secret)
-  const text = secret.match(/.{1,4}/g).join(' ')
   return {
     uri,
-    text
+    text: secret
   }
 }

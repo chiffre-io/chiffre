@@ -9,7 +9,8 @@ import {
   InputRightElement,
   Button,
   Tooltip,
-  StackProps
+  StackProps,
+  useClipboard
 } from '@chakra-ui/core'
 import { useCopyToClipboard } from 'react-use'
 
@@ -18,25 +19,13 @@ export interface Props {
   text: string
 }
 
-function useTrigger(timeout: number): [boolean, () => void] {
-  const [state, setState] = React.useState(false)
-  React.useEffect(() => {
-    const t = setTimeout(() => {
-      setState(false)
-    }, timeout)
-    return () => clearTimeout(t)
-  }, [state])
-  return [state, () => setState(true)]
-}
-
 const TwoFactorSecretDisplay: React.FC<Props & StackProps> = ({
   uri,
   text,
   ...props
 }) => {
   const ref = React.createRef<HTMLInputElement>()
-  const [_, copyToClipboard] = useCopyToClipboard()
-  const [showCopied, triggerShowCopied] = useTrigger(1500)
+  const { onCopy, hasCopied } = useClipboard(text)
 
   return (
     <Stack spacing={8} alignItems="center" {...props}>
@@ -56,6 +45,7 @@ const TwoFactorSecretDisplay: React.FC<Props & StackProps> = ({
         <InputGroup size="md">
           <Input
             ref={ref}
+            pl="0.25rem"
             pr="4.5rem"
             type="text"
             value={text}
@@ -66,19 +56,12 @@ const TwoFactorSecretDisplay: React.FC<Props & StackProps> = ({
           />
           <InputRightElement width="4.5rem">
             <Tooltip
-              isOpen={showCopied}
+              isOpen={hasCopied}
               label="Copied !"
               aria-label="Copied !"
               placement="right-end"
             >
-              <Button
-                h="1.75rem"
-                size="sm"
-                onClick={() => {
-                  triggerShowCopied()
-                  copyToClipboard(text)
-                }}
-              >
+              <Button h="1.75rem" size="sm" onClick={onCopy}>
                 Copy
               </Button>
             </Tooltip>
