@@ -11,6 +11,7 @@ import {
   markTwoFactorVerified
 } from '~/src/server/db/models/auth/UsersAuthSettings'
 import { verifyTwoFactorToken, generateBackupCodes } from '~/src/server/2fa'
+import { markTwoFactorVerifiedInSession } from '~/src/server/db/models/auth/Sessions'
 import requireBodyParams, {
   requiredString
 } from '~/src/server/middleware/requireBodyParams'
@@ -61,6 +62,7 @@ handler.post(async (req: VerifyTwoFactorRequest, res: NextApiResponse) => {
     // Generate 8 codes of 128 bits, hex-encoded
     const backupCodes = generateBackupCodes(8, 16)
     await markTwoFactorVerified(req.db, req.auth.userID, backupCodes)
+    await markTwoFactorVerifiedInSession(req.db, req.auth.sessionID)
     const body: VerifyTwoFactorResponse = {
       backupCodes
     }
