@@ -1,5 +1,5 @@
 import { NextPage, NextPageContext } from 'next'
-import { authenticatedPage } from '~/src/shared/auth'
+import { authenticatePage } from '~/src/shared/auth'
 import { JwtClaims } from '~/src/server/jwt'
 import TwoFactorSetup from '~/src/client/views/auth/2fa/TwoFactorSetup'
 
@@ -10,7 +10,7 @@ const AuthSettingsPage: NextPage<Props> = ({ ...props }) => {
 }
 
 AuthSettingsPage.getInitialProps = async (ctx: NextPageContext) => {
-  const auth = await authenticatedPage(ctx)
+  const auth = await authenticatePage(ctx)
   return auth
 }
 

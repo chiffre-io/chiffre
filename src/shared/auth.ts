@@ -26,7 +26,7 @@ const redirectToLogin = async (ctx: NextPageContext) => {
  * Require authentication or redirect to /login
  * @param ctx Next.js page context
  */
-export const authenticatedPage = async (
+export const authenticatePage = async (
   ctx: NextPageContext
 ): Promise<JwtClaims> => {
   try {
