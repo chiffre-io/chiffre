@@ -180,5 +180,5 @@ export const createInitialUsersAuthSettingsTable = async (db: Knex) => {
       .nullable()
       .defaultTo(null)
   })
-  await updatedAtFieldAutoUpdate(db, USERS_AUTH_SRP_TABLE)
+  await updatedAtFieldAutoUpdate(db, USERS_AUTH_SETTINGS_TABLE)
 }
