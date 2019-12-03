@@ -59,9 +59,9 @@ handler.post(
 
     const twoFactorSettings = await getTwoFactorSettings(req.db, user.id)
     if (
-      !twoFactorSettings.twoFactorEnabled ||
-      !twoFactorSettings.twoFactorVerified ||
-      !twoFactorSettings.twoFactorSecret
+      !twoFactorSettings.enabled ||
+      !twoFactorSettings.verified ||
+      !twoFactorSettings.secret
     ) {
       // Don't give too much information
       return res.status(422).json({
@@ -71,7 +71,7 @@ handler.post(
 
     const verified = verifyTwoFactorToken(
       twoFactorToken,
-      twoFactorSettings.twoFactorSecret
+      twoFactorSettings.secret
     )
     if (!verified) {
       return res.status(401).json({

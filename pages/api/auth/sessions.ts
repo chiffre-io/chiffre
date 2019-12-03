@@ -49,7 +49,7 @@ handler.get(async (req: Request<Db & ApiAuth>, res: NextApiResponse) => {
         id: session.id,
         active,
         current: session.id === req.auth.sessionID,
-        twoFactor: twoFactorSettings.twoFactorVerified
+        twoFactor: twoFactorSettings.verified
           ? session.twoFactorVerified
             ? 'verified'
             : 'pending'

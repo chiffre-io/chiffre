@@ -66,7 +66,7 @@ const DefaultSubmitButton = ({}) => {
 const TwoFactorForm: React.FC<Props> = ({
   onSubmit,
   label = 'Two-Factor Authentication Code',
-  children = () => <DefaultSubmitButton />
+  children = <DefaultSubmitButton />
 }) => {
   const initialValues: Values = {
     twoFactorToken: '',
@@ -79,7 +79,6 @@ const TwoFactorForm: React.FC<Props> = ({
       onSubmit={onSubmit}
       validate={values => {
         const errors: FormikErrors<Values> = {}
-        // todo: Add minimal validation
         if (values.twoFactorToken.length !== 6) {
           errors.twoFactorToken = 'Token must be 6 digits long'
         }

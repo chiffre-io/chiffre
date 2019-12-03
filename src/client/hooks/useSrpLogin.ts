@@ -84,16 +84,15 @@ export default function useSrpLogin(): Return {
 
     await clientVerifyLogin(serverProof, clientEphemeral, session)
 
+    setAuthInfo({
+      userID,
+      sessionID
+    })
     if (twoFactor) {
       setShowTwoFactor(true)
-      setAuthInfo(null)
     } else if (jwt) {
       setError(null)
       saveLoginCredentials(jwt)
-      setAuthInfo({
-        userID,
-        sessionID
-      })
       await redirectAfterLogin()
     }
   }

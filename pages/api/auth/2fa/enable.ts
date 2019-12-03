@@ -33,19 +33,13 @@ handler.use(apiAuthMiddleware)
  * Enable 2FA (needs to be verified with ./verify)
  */
 handler.post(async (req: Request<Db & ApiAuth>, res: NextApiResponse) => {
-  // todo: Handle this case
-  // console.dir(req.auth)
-  // const settings = await getTwoFactorSettings(req.db, req.auth.userID)
-  // console.dir(settings)
-  // if (
-  //   settings.twoFactorEnabled ||
-  //   settings.twoFactorVerified ||
-  //   settings.twoFactorSecret
-  // ) {
-  //   return res.status(422).json({
-  //     error: 'Two-factor authentication is already active'
-  //   })
-  // }
+  const settings = await getTwoFactorSettings(req.db, req.auth.userID)
+  if (settings.enabled || settings.verified || settings.secret) {
+    return res.status(422).json({
+      error: 'Two-factor authentication is already active'
+    })
+  }
+
   try {
     const user = await findUser(req.db, req.auth.userID)
     if (!user) {
