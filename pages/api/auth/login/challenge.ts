@@ -16,7 +16,7 @@ export interface LoginChallengeParameters {
 export interface LoginChallengeResponseBody {
   userID: string
   challengeID: string
-  salt: string
+  srpSalt: string
   ephemeral: string
 }
 
@@ -42,7 +42,7 @@ handler.post(
       })
     }
 
-    const serverEphemeral = serverLoginChallenge(user.verifier)
+    const serverEphemeral = serverLoginChallenge(user.srpVerifier)
     const challengeID = await saveLoginChallenge(
       req.db,
       user.id,
@@ -52,7 +52,7 @@ handler.post(
     const body: LoginChallengeResponseBody = {
       userID: user.id,
       challengeID,
-      salt: user.salt,
+      srpSalt: user.srpSalt,
       ephemeral: serverEphemeral.public
     }
     res.json(body)

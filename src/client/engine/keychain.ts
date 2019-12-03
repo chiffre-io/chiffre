@@ -1,16 +1,14 @@
 import nacl from 'tweetnacl'
 import {
+  generateKey,
   encryptString,
   decryptString,
   CloakKey,
   CloakedString,
   exportCryptoKey
-} from './crypto/cloaking'
+} from './crypto/cloak'
 import { b64, encoders, decoders, Encoding } from './crypto/primitives/codec'
-import {
-  generateSalt,
-  deriveAesGcmKeyFromPassword
-} from './crypto/primitives/pbkdf2'
+import { deriveAesGcmKeyFromPassword } from './crypto/primitives/pbkdf2'
 
 /**
  * The Keychain holds all the keys to an account.
@@ -107,23 +105,8 @@ export const getKeychainPublicKeys = (keychain: Keychain) => {
 
 // -----------------------------------------------------------------------------
 
-export const createKeychainKey = async (username: string, password: string) => {
-  const salt = b64.encode(generateSalt())
-  const key = await deriveKeychainKey(username, password, salt)
-  return { key, salt }
-}
-
-export const deriveKeychainKey = async (
-  username: string,
-  password: string,
-  salt: string
-) => {
-  const key = await deriveAesGcmKeyFromPassword(
-    [username, password].join(':'),
-    b64.decode(salt),
-    20000
-  )
-  return await exportCryptoKey(key)
+export const createKeychainKey = async () => {
+  return await generateKey()
 }
 
 // -----------------------------------------------------------------------------

@@ -51,7 +51,7 @@ export default function useSrpLogin(): Return {
     const {
       userID,
       challengeID,
-      salt,
+      srpSalt,
       ephemeral: serverEphemeral
     }: LoginChallengeResponseBody = res.data
 
@@ -61,7 +61,7 @@ export default function useSrpLogin(): Return {
     } = await clientAssembleLoginResponse(
       username,
       password,
-      salt,
+      srpSalt,
       serverEphemeral
     )
 

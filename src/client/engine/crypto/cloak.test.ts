@@ -4,7 +4,7 @@ import {
   decryptString,
   findKeyForMessage,
   makeKeychain
-} from './cloaking'
+} from './cloak'
 
 describe('Cloaking', () => {
   test('encrypt/decrypt simple text', async () => {

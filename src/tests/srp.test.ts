@@ -9,23 +9,23 @@ describe('SRP', () => {
   test('complete login flow', async () => {
     const username = 'username'
     const password = 'password'
-    const { salt, verifier } = await clientSignup(username, password)
-    const serverEphemeral = serverLoginChallenge(verifier)
+    const { srpSalt, srpVerifier } = await clientSignup(username, password)
+    const serverEphemeral = serverLoginChallenge(srpVerifier)
     const {
       session: clientSession,
       ephemeral: clientEphemeral
     } = await clientAssembleLoginResponse(
       username,
       password,
-      salt,
+      srpSalt,
       serverEphemeral.public
     )
     const serverSession = serverLoginResponse(
       serverEphemeral.secret,
       clientEphemeral.public,
-      salt,
+      srpSalt,
       username,
-      verifier,
+      srpVerifier,
       clientSession.proof
     )
     expect(serverSession.key).toEqual(clientSession.key)
@@ -36,24 +36,27 @@ describe('SRP', () => {
 
   test('login with wrong password', async () => {
     const username = 'username'
-    const { salt, verifier } = await clientSignup(username, 'password-signup')
-    const serverEphemeral = serverLoginChallenge(verifier)
+    const { srpSalt, srpVerifier } = await clientSignup(
+      username,
+      'password-signup'
+    )
+    const serverEphemeral = serverLoginChallenge(srpVerifier)
     const {
       session: clientSession,
       ephemeral: clientEphemeral
     } = await clientAssembleLoginResponse(
       username,
       'password-login',
-      salt,
+      srpSalt,
       serverEphemeral.public
     )
     const shouldThrow = () =>
       serverLoginResponse(
         serverEphemeral.secret,
         clientEphemeral.public,
-        salt,
+        srpSalt,
         username,
-        verifier,
+        srpVerifier,
         clientSession.proof
       )
     expect(shouldThrow).toThrowError('Client provided session proof is invalid')
@@ -61,24 +64,27 @@ describe('SRP', () => {
 
   test('login with wrong username', async () => {
     const password = 'password'
-    const { salt, verifier } = await clientSignup('username-signup', password)
-    const serverEphemeral = serverLoginChallenge(verifier)
+    const { srpSalt, srpVerifier } = await clientSignup(
+      'username-signup',
+      password
+    )
+    const serverEphemeral = serverLoginChallenge(srpVerifier)
     const {
       session: clientSession,
       ephemeral: clientEphemeral
     } = await clientAssembleLoginResponse(
       'username-login',
       password,
-      salt,
+      srpSalt,
       serverEphemeral.public
     )
     const shouldThrow = () =>
       serverLoginResponse(
         serverEphemeral.secret,
         clientEphemeral.public,
-        salt,
+        srpSalt,
         'username-login',
-        verifier,
+        srpVerifier,
         clientSession.proof
       )
     expect(shouldThrow).toThrowError('Client provided session proof is invalid')

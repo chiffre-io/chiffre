@@ -11,6 +11,7 @@
     "start": "NODE_ENV=production ts-node --project tsconfig.server.json ./src/server/server.ts",
     "clean": "rm -rf ./out ./.next",
     "export": "next export",
+    "ts": "tsc --project ./tsconfig.server.json",
     "deploy": "surge -p ./out -d https://chiffre.surge.sh",
     "release": "yarn clean && yarn build && yarn export && yarn deploy",
     "migrate:make": "ts-node --project ./tsconfig.server.json ./node_modules/.bin/knex migrate:make",

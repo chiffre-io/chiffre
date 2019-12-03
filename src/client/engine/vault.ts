@@ -1,94 +1,61 @@
-import nacl, { BoxKeyPair } from 'tweetnacl'
-import { utf8 } from './crypto/primitives/codec'
-import { Cipher } from './crypto'
+import {
+  CloakKey,
+  CloakedString,
+  encryptString,
+  decryptString
+} from './crypto/cloak'
+
+export interface ProjectKey {
+  projectID: string
+  key: CloakKey
+}
 
 export interface Vault {
-  createdAt: Date
+  v: number
+  name: string
+  projectKeys: ProjectKey[]
 }
 
-export interface OrganizationKeychain {
-  /**
-   * ID of the organization
-   */
-  id: string
+// --
 
-  /**
-   * Key to unlock the organization vault,
-   * shared across members.
-   */
-  key: Uint8Array
-
-  /**
-   * Public & secret keys used by the member
-   * to discuss with others.
-   * Generated when the member joins the org.
-   */
-  memberKeyPair: BoxKeyPair
-}
-
-/**
- * A repository of keys used to unlock vaults.
- * Each user gets their own personal vault,
- * but when they joint organizations they get
- * access to shared keys for the org vaults.
- */
-export interface UserKeychain {
-  ownVaultKey: Uint8Array
-  orgVaultKeys: OrganizationKeychain[]
-}
-
-export const createAccount = (): UserKeychain => {
+export const createVault = (name: string): Vault => {
   return {
-    ownVaultKey: nacl.box.keyPair().secretKey,
-    orgVaultKeys: []
-  }
-}
-
-export const createVault = ({ now = new Date() } = {}): Vault => {
-  return {
-    createdAt: now
+    v: 1,
+    name,
+    projectKeys: []
   }
 }
 
 // --
 
-export const serializeVault = (vault: Vault): string => JSON.stringify(vault)
-export const deserializeVault = (vault: string): Vault =>
-  JSON.parse(vault, (key, value) => {
-    if (key === 'createdAt') {
-      return new Date(value)
-    }
-    return value
-  })
+export const lockVault = async (
+  vault: Vault,
+  key: CloakKey
+): Promise<CloakedString> => {
+  const json = JSON.stringify(vault)
+  return await encryptString(json, key)
+}
+
+export const unlockVault = async (
+  vault: CloakedString,
+  key: CloakKey
+): Promise<Vault> => {
+  const json = await decryptString(vault, key)
+  return JSON.parse(json)
+}
 
 // --
 
-export const lockOwnVault = (vault: Vault, account: UserKeychain): Cipher => {
-  const txtVault = serializeVault(vault)
-  const nonce = nacl.randomBytes(nacl.secretbox.nonceLength)
-  const cipherText = nacl.secretbox(
-    utf8.encode(txtVault),
-    nonce,
-    account.ownVaultKey
-  )
-  return {
-    text: cipherText,
-    nonce
-  }
+export const addProject = (
+  vault: Vault,
+  projectID: string,
+  projectKey: CloakKey
+): Vault => {
+  vault.projectKeys.push({ projectID, key: projectKey })
+  return vault
 }
 
-export const unlockOwnVault = (
-  cipher: Cipher,
-  account: UserKeychain
-): Vault | null => {
-  const vaultBuffer = nacl.secretbox.open(
-    cipher.text,
-    cipher.nonce,
-    account.ownVaultKey
-  )
-  if (!vaultBuffer) {
-    return null
-  }
-  const vaultJson = utf8.decode(vaultBuffer)
-  return deserializeVault(vaultJson)
+export const getProjectKey = (vault: Vault, projectID: string) => {
+  const project = vault.projectKeys.find(pk => pk.projectID === projectID)
+  return project ? project.key : null
 }

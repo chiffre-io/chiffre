@@ -6,14 +6,15 @@ export const KEYCHAINS_TABLE = 'keychains'
 
 export interface KeychainRecord {
   userID: string
-  salt: string
+  key: string
   encrypted: string
   signaturePublicKey: string
   sharingPublicKey: string
 }
 
 export interface KeychainUpdatableFields {
-  encrypted: string // Always required
+  encrypted: string // Always required (will always change)
+  key?: string
   signaturePublicKey?: string
   sharingPublicKey?: string
 }
@@ -66,7 +67,7 @@ export const createInitialKeychainsTable = async (db: Knex) => {
       .notNullable()
       .primary()
     table.foreign('userID').references(`${USERS_AUTH_SRP_TABLE}.id`)
-    table.string('salt').notNullable()
+    table.text('key').notNullable()
     table.text('encrypted').notNullable()
     table.string('signaturePublicKey').notNullable()
     table.string('sharingPublicKey').notNullable()

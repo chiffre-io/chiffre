@@ -4,12 +4,14 @@ import { encryptAesGcm, decryptAesGcm } from './primitives/aes-gcm'
 
 export type CloakedString = string
 export type CloakKey = string
-export type Keychain = {
-  [fingerprint: string]: CloakKey // key
+export type CloakKeychain = {
+  [fingerprint: string]: CloakKey
 }
 
-export const makeKeychain = async (keys: CloakKey[]): Promise<Keychain> => {
-  const keychain: Keychain = {}
+export const makeKeychain = async (
+  keys: CloakKey[]
+): Promise<CloakKeychain> => {
+  const keychain: CloakKeychain = {}
   for (const key of keys) {
     keychain[await getKeyFingerprint(key)] = key
   }
@@ -25,10 +27,10 @@ export const makeKeychain = async (keys: CloakKey[]): Promise<Keychain> => {
 export const importKeychain = async (
   encryptedKeychain: CloakedString,
   masterKey: CloakKey
-): Promise<Keychain> => {
+): Promise<CloakKeychain> => {
   const keyList = await decryptString(encryptedKeychain, masterKey)
   const keys = keyList.split(',')
-  const keychain: Keychain = {}
+  const keychain: CloakKeychain = {}
   for (const key of keys) {
     keychain[await getKeyFingerprint(key)] = key
   }
@@ -43,7 +45,7 @@ export const importKeychain = async (
  * @returns an encrypted keychain string
  */
 export const exportKeychain = async (
-  keychain: Keychain,
+  keychain: CloakKeychain,
   masterKey: CloakKey
 ): Promise<CloakedString> => {
   const keyList = Object.values(keychain).join(',')
@@ -123,7 +125,7 @@ export const decryptString = async (
 
 export const findKeyForMessage = async (
   message: CloakedString,
-  keychain: Keychain
+  keychain: CloakKeychain
 ): Promise<CloakKey> => {
   if (!message.startsWith('v1.')) {
     throw new Error('Unknown format')
@@ -137,25 +139,3 @@ export const findKeyForMessage = async (
   }
   return keychain[fingerprint]
 }
-
-// export const decryptString = async (
-//   input: CloakedString,
-//   keys: Keychain
-// ): Promise<string> => {
-//   if (!input.startsWith('v1.')) {
-//     throw new Error('Unknown format')
-//   }
-//   const [_, algo, fingerprint, iv, ciphertext] = input.split('.')
-//   if (algo !== 'aesgcm256') {
-//     throw new Error('Unsupported cipher')
-//   }
-//   if (!Object.keys(keys).includes(fingerprint)) {
-//     throw new Error('Key is not available')
-//   }
-//   const key = keys[fingerprint]
-//   const aesKey = await expandKey(key, 'decrypt')
-//   return await decryptAesGcm(aesKey, {
-//     iv: b64.decode(iv),
-//     text: b64.decode(ciphertext)
-//   })
-// }

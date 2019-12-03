@@ -14,9 +14,14 @@ import {
 
 export interface SignupParameters {
   username: string
-  salt: string
-  verifier: string
+  srpSalt: string
+  srpVerifier: string
+  masterSalt: string
   keychain: Omit<KeychainRecord, 'userID'>
+}
+
+export interface SignupResponse {
+  userID: string
 }
 
 // --
@@ -26,8 +31,9 @@ const handler = nextConnect()
 handler.use(
   requireBodyParams<SignupParameters>({
     username: requiredString,
-    salt: requiredString,
-    verifier: requiredString,
+    srpSalt: requiredString,
+    srpVerifier: requiredString,
+    masterSalt: requiredString,
     keychain: obj => Object.values(obj).every(requiredString)
   })
 )
@@ -35,13 +41,25 @@ handler.use(database)
 
 handler.post(
   async (req: Request<Db, SignupParameters>, res: NextApiResponse) => {
-    const { username, salt, verifier, keychain } = req.body
+    const { username, srpSalt, srpVerifier, masterSalt, keychain } = req.body
 
     try {
       // todo: Pack all operations into a transaction
-      const userID = await createUser(req.db, username, salt, verifier)
+      const userID = await createUser(
+        req.db,
+        username,
+        srpSalt,
+        srpVerifier,
+        masterSalt
+      )
       await createUserAuthSettings(req.db, userID)
       await createKeychainRecord(req.db, { userID, ...keychain })
+      const body: SignupResponse = {
+        userID
+      }
+      return res
+        .status(201) // Created
+        .json(body)
     } catch (error) {
       if (error.code === '23505') {
         // duplicate key value violates unique constraint
@@ -56,9 +74,6 @@ handler.post(
         details: error.detail
       })
     }
-    return res
-      .status(201) // Created
-      .send(null)
   }
 )
 

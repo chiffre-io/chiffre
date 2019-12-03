@@ -95,9 +95,9 @@ handler.post(
       srpSession = serverLoginResponse(
         challenge.ephemeralSecret,
         clientEphemeral,
-        user.salt,
+        user.srpSalt,
         user.username,
-        user.verifier,
+        user.srpVerifier,
         clientProof
       )
     } catch (error) {

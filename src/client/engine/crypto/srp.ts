@@ -13,7 +13,7 @@ const derivePrivateKey = async (
     hex.decode(salt),
     32, // 32 bytes key (256 bits)
     'SHA-256',
-    20000
+    100000
   )
   return hex.encode(bytes)
 }
@@ -22,7 +22,7 @@ const derivePrivateKey = async (
 
 type SrpSignupParameters = Pick<
   SignupParameters,
-  'username' | 'salt' | 'verifier'
+  'username' | 'srpSalt' | 'srpVerifier'
 >
 
 export const clientSignup = async (
@@ -36,8 +36,8 @@ export const clientSignup = async (
 
   return {
     username,
-    salt: hexToBase64url(salt),
-    verifier: hexToBase64url(verifier)
+    srpSalt: hexToBase64url(salt),
+    srpVerifier: hexToBase64url(verifier)
   }
 }
 

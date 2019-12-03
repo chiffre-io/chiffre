@@ -5,8 +5,9 @@ export const USERS_AUTH_SRP_TABLE = 'users_auth_srp'
 
 interface UserAuthSrpInput {
   username: string
-  salt: string
-  verifier: string
+  srpSalt: string
+  srpVerifier: string
+  masterSalt: string
 }
 
 export interface UserAuthSrp extends UserAuthSrpInput {
@@ -18,13 +19,15 @@ export interface UserAuthSrp extends UserAuthSrpInput {
 export const createUser = async (
   db: Knex,
   username: string,
-  salt: string,
-  verifier: string
+  srpSalt: string,
+  srpVerifier: string,
+  masterSalt: string
 ): Promise<string> => {
   const user: UserAuthSrpInput = {
     username,
-    salt,
-    verifier
+    srpSalt,
+    srpVerifier,
+    masterSalt
   }
   const result = await db
     .insert(user)
@@ -74,11 +77,15 @@ export const createInitialUsersAuthSrpTable = async (db: Knex) => {
       .notNullable()
       .index()
     table
-      .string('salt')
+      .string('srpSalt')
       .unique()
       .notNullable()
     table
-      .string('verifier', 512) // 512 would be hex, but we store as b64. Keep some padding anyway
+      .string('srpVerifier', 512) // 512 would be hex, but we store as b64. Keep some padding anyway
+      .unique()
+      .notNullable()
+    table
+      .string('masterSalt')
       .unique()
       .notNullable()
   })
