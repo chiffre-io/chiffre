@@ -7,11 +7,16 @@ import database, { Db } from '~/src/server/middleware/database'
 import { Request } from '~/src/server/types'
 import { createUser } from '~/src/server/db/models/auth/UsersAuthSRP'
 import { createUserAuthSettings } from '~/src/server/db/models/auth/UsersAuthSettings'
+import {
+  createKeychainRecord,
+  KeychainRecord
+} from '~/src/server/db/models/auth/Keychains'
 
 export interface SignupParameters {
   username: string
   salt: string
   verifier: string
+  keychain: Omit<KeychainRecord, 'userID'>
 }
 
 // --
@@ -22,18 +27,21 @@ handler.use(
   requireBodyParams<SignupParameters>({
     username: requiredString,
     salt: requiredString,
-    verifier: requiredString
+    verifier: requiredString,
+    keychain: obj => Object.values(obj).every(requiredString)
   })
 )
 handler.use(database)
 
 handler.post(
   async (req: Request<Db, SignupParameters>, res: NextApiResponse) => {
-    const { username, salt, verifier } = req.body
+    const { username, salt, verifier, keychain } = req.body
 
     try {
+      // todo: Pack all operations into a transaction
       const userID = await createUser(req.db, username, salt, verifier)
       await createUserAuthSettings(req.db, userID)
+      await createKeychainRecord(req.db, { userID, ...keychain })
     } catch (error) {
       if (error.code === '23505') {
         // duplicate key value violates unique constraint

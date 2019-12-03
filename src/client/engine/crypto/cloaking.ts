@@ -59,6 +59,10 @@ export const generateKey = async () => {
     true,
     ['encrypt', 'decrypt']
   )
+  return await exportCryptoKey(key)
+}
+
+export const exportCryptoKey = async (key: CryptoKey) => {
   const raw = await webcrypto.subtle.exportKey('raw', key)
   return b64.encode(new Uint8Array(raw))
 }

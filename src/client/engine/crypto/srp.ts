@@ -20,10 +20,15 @@ const derivePrivateKey = async (
 
 // --
 
+type SrpSignupParameters = Pick<
+  SignupParameters,
+  'username' | 'salt' | 'verifier'
+>
+
 export const clientSignup = async (
   username: string,
   password: string
-): Promise<SignupParameters> => {
+): Promise<SrpSignupParameters> => {
   const salt = srpClient.generateSalt()
 
   const privateKey = await derivePrivateKey(username, password, salt)

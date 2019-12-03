@@ -3,6 +3,7 @@ import { createInitialUsersAuthSrpTable } from '../models/auth/UsersAuthSRP'
 import { createInitialLoginChallengesSrpTable } from '../models/auth/LoginChallengesSRP'
 import { createInitialSessionsTable } from '../models/auth/Sessions'
 import { createInitialUsersAuthSettingsTable } from '../models/auth/UsersAuthSettings'
+import { createInitialKeychainsTable } from '../models/auth/Keychains'
 import { createInitialProjectsTable } from '../models/projects/Projects'
 import { setupUpdatedAtFieldAutoUpdate } from '../utility'
 
@@ -18,6 +19,7 @@ export async function up(knex: Knex): Promise<any> {
   await createInitialUsersAuthSettingsTable(knex)
   await createInitialLoginChallengesSrpTable(knex)
   await createInitialSessionsTable(knex)
+  await createInitialKeychainsTable(knex)
 
   // Projects
   await createInitialProjectsTable(knex)
