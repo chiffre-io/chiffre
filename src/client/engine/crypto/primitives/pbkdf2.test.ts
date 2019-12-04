@@ -12,7 +12,7 @@ describe('WebCrypto PBKDF2', () => {
   test('salt', () => {
     const expected = generateSalt()
     const received = deserializeSalt(serializeSalt(expected))
-    expect(expected).toHaveLength(16)
+    expect(expected.length).toBeGreaterThan(16)
     expect(received).toEqual(expected)
   })
 
