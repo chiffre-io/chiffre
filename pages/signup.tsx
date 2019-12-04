@@ -4,7 +4,13 @@ import AuthPage from '~/src/client/views/auth/AuthPage'
 import SignupForm, { Values } from '~/src/client/views/auth/SignupForm'
 import useErrorToast from '~/src/client/hooks/useErrorToast'
 import { publicApi } from '~/src/client/api'
-import { createSignupEntities } from '~/src/client/engine/account'
+import {
+  createSignupEntities,
+  unlockEntities
+} from '~/src/client/engine/account'
+import { saveLoginCredentials } from '~/src/client/auth'
+import { SignupParameters, SignupResponse } from '~/pages/api/auth/signup'
+import keyStorage from '~/src/client/engine/keyStorage'
 
 const SignupPage = () => {
   const showErrorToast = useErrorToast()
@@ -15,11 +21,21 @@ const SignupPage = () => {
 
     try {
       const params = await createSignupEntities(username, password)
-      console.dir(params)
-      const res = await publicApi.post('/auth/signup', params)
-      if (res.status === 201) {
-        return await router.push('/login')
-      }
+      type Req = SignupParameters
+      type Res = SignupResponse
+      const { jwt, userID } = await publicApi.post<Req, Res>(
+        '/auth/signup',
+        params
+      )
+      saveLoginCredentials(jwt)
+      const { keychain, keychainKey } = await unlockEntities(
+        username,
+        password,
+        params.masterSalt
+      )
+      keyStorage.keychainKey = keychainKey
+      keyStorage.keychain = keychain
+      return await router.push('/')
     } catch (error) {
       showErrorToast(error)
     }

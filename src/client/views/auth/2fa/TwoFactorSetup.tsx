@@ -26,12 +26,7 @@ const useRequestActivation = () => {
 
   const requestActivation = () =>
     load(async () => {
-      try {
-        const res = await clientApi.post('/auth/2fa/enable', null)
-        return res.data
-      } catch (error) {
-        throw new Error(error.response.data.error)
-      }
+      return await clientApi.post<null, T>('/auth/2fa/enable', null)
     })
 
   return {
@@ -50,15 +45,12 @@ const useVerification = () => {
 
   const verifyToken = (token: string) =>
     load(async () => {
-      const body: VerifyTwoFactorParams = {
-        token
-      }
-      try {
-        const res = await clientApi.post('/auth/2fa/verify', body)
-        return res.data
-      } catch (error) {
-        throw new Error(error.response.data.error)
-      }
+      return await clientApi.post<VerifyTwoFactorParams, T>(
+        '/auth/2fa/verify',
+        {
+          token
+        }
+      )
     })
 
   return {

@@ -4,7 +4,10 @@ import {
   clientAssembleLoginResponse,
   clientVerifyLogin
 } from '../engine/crypto/srp'
-import { LoginChallengeResponseBody } from '~/pages/api/auth/login/challenge'
+import {
+  LoginChallengeResponseBody,
+  LoginChallengeParameters
+} from '~/pages/api/auth/login/challenge'
 import {
   LoginResponseParameters,
   LoginResponseResponseBody
@@ -12,10 +15,14 @@ import {
 import { saveLoginCredentials } from '../auth'
 import use2faVerification from './use2faVerification'
 import { publicApi } from '../api'
+import { unlockEntities } from '../engine/account'
+import keyStorage from '../engine/keyStorage'
 
 interface AuthInfo {
   userID: string
   sessionID: string
+  username: string
+  password: string
 }
 
 interface Return {
@@ -44,16 +51,15 @@ export default function useSrpLogin(): Return {
   const redirectAfterLogin = useRedirectAfterLogin()
 
   const login = async (username: string, password: string) => {
-    let res = await publicApi.post('/auth/login/challenge', { username })
-    if (res.status !== 200) {
-      throw new Error(res.data.error)
-    }
     const {
       userID,
       challengeID,
       srpSalt,
       ephemeral: serverEphemeral
-    }: LoginChallengeResponseBody = res.data
+    } = await publicApi.post<
+      LoginChallengeParameters,
+      LoginChallengeResponseBody
+    >('/auth/login/challenge', { username })
 
     const {
       session,
@@ -71,43 +77,58 @@ export default function useSrpLogin(): Return {
       ephemeral: clientEphemeral.public,
       proof: session.proof
     }
-    res = await publicApi.post('/auth/login/response', responseParams)
-    if (res.status !== 200) {
-      throw new Error(res.data.error)
-    }
     const {
       proof: serverProof,
       jwt,
+      masterSalt,
       twoFactor,
       sessionID
-    }: LoginResponseResponseBody = res.data
+    }: LoginResponseResponseBody = await publicApi.post(
+      '/auth/login/response',
+      responseParams
+    )
 
     await clientVerifyLogin(serverProof, clientEphemeral, session)
 
     setAuthInfo({
       userID,
-      sessionID
+      sessionID,
+      // Store credentials for post-2FA KDF
+      username: twoFactor ? null : username,
+      password: twoFactor ? null : password
     })
     if (twoFactor) {
       setShowTwoFactor(true)
-    } else if (jwt) {
+    } else if (jwt && masterSalt) {
       setError(null)
       saveLoginCredentials(jwt)
+      const { keychain, keychainKey } = await unlockEntities(
+        username,
+        password,
+        masterSalt
+      )
+      keyStorage.keychainKey = keychainKey
+      keyStorage.keychain = keychain
       await redirectAfterLogin()
     }
   }
 
   const enterTwoFactorToken = async (token: string) => {
-    const { jwt } = await verifyTwoFactor({
+    const { jwt, masterSalt } = await verifyTwoFactor({
       userID: authInfo.userID,
       sessionID: authInfo.sessionID,
       twoFactorToken: token
     })
-    if (jwt) {
-      setError(null)
-      saveLoginCredentials(jwt)
-      await redirectAfterLogin()
-    }
+    setError(null)
+    saveLoginCredentials(jwt)
+    const { keychain, keychainKey } = await unlockEntities(
+      authInfo.username,
+      authInfo.password,
+      masterSalt
+    )
+    keyStorage.keychainKey = keychainKey
+    keyStorage.keychain = keychain
+    await redirectAfterLogin()
   }
 
   const saveAndThrowBack = (error: Error) => {

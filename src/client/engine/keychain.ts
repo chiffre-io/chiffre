@@ -4,11 +4,9 @@ import {
   encryptString,
   decryptString,
   CloakKey,
-  CloakedString,
-  exportCryptoKey
+  CloakedString
 } from './crypto/cloak'
 import { b64, encoders, decoders, Encoding } from './crypto/primitives/codec'
-import { deriveAesGcmKeyFromPassword } from './crypto/primitives/pbkdf2'
 
 /**
  * The Keychain holds all the keys to an account.
@@ -72,6 +70,7 @@ export interface Keychain {
  */
 export interface VaultKey {
   vaultID: string
+  name: string
   key: CloakKey
 }
 
@@ -151,7 +150,7 @@ export const unlockKeychain = async (
     signatureKeyPair: nacl.sign.keyPair.fromSecretKey(
       b64.decode(parsed.signatureKeyPair)
     ),
-    sharingKeyPair: nacl.sign.keyPair.fromSecretKey(
+    sharingKeyPair: nacl.box.keyPair.fromSecretKey(
       b64.decode(parsed.sharingKeyPair)
     ),
     sharedKeys: parsed.sharedKeys.map(sk => ({
@@ -162,16 +161,28 @@ export const unlockKeychain = async (
   }
 }
 
+// --
+
 export const addVaultKey = (
   keychain: Keychain,
   vaultID: string,
+  name: string,
   vaultKey: CloakKey
 ): Keychain => {
   keychain.vaultKeys.push({
     vaultID,
+    name,
     key: vaultKey
   })
   return keychain
+}
+
+export const getVaultKeyByID = (keychain: Keychain, vaultID: string) => {
+  return keychain.vaultKeys.find(k => k.vaultID === vaultID)
+}
+
+export const getVaultKeyByName = (keychain: Keychain, name: string) => {
+  return keychain.vaultKeys.find(k => k.name === name)
 }
 
 // --

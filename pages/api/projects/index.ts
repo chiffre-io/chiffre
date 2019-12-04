@@ -38,7 +38,6 @@ handler.post(
     req: Request<Db & ApiAuth, CreateProjectArgs>,
     res: NextApiResponse
   ) => {
-    console.log('hello')
     try {
       const { id } = await createProject(
         req.db,
