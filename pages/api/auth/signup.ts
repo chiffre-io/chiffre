@@ -7,6 +7,12 @@ import database, { Db } from '~/src/server/middleware/database'
 import { Request } from '~/src/server/types'
 import { createUser } from '~/src/server/db/models/auth/UsersAuthSRP'
 import { createUserAuthSettings } from '~/src/server/db/models/auth/UsersAuthSettings'
+import { createSession } from '~/src/server/db/models/auth/Sessions'
+import ipAddressMiddleware, {
+  IpAddress
+} from '~/src/server/middleware/ipAddress'
+import { createJwt } from '~/src/server/jwt'
+import { createJwtCookie } from '~/src/server/cookies'
 import {
   createKeychainRecord,
   KeychainRecord
@@ -22,6 +28,7 @@ export interface SignupParameters {
 
 export interface SignupResponse {
   userID: string
+  jwt: string
 }
 
 // --
@@ -38,9 +45,13 @@ handler.use(
   })
 )
 handler.use(database)
+handler.use(ipAddressMiddleware)
 
 handler.post(
-  async (req: Request<Db, SignupParameters>, res: NextApiResponse) => {
+  async (
+    req: Request<Db & IpAddress, SignupParameters>,
+    res: NextApiResponse
+  ) => {
     const { username, srpSalt, srpVerifier, masterSalt, keychain } = req.body
 
     try {
@@ -54,7 +65,25 @@ handler.post(
       )
       await createUserAuthSettings(req.db, userID)
       await createKeychainRecord(req.db, { userID, ...keychain })
+
+      const session = await createSession(
+        req.db,
+        userID,
+        false, // 2FA not required by default
+        req.ipAddress
+      )
+
+      const jwt = createJwt({
+        userID,
+        sessionID: session.id,
+        sessionExpiresAt: session.expiresAt
+      })
+      // Put JWT in a cookie to authenticate SSR requests
+      const jwtCookie = createJwtCookie(jwt, session)
+      res.setHeader('Set-Cookie', [jwtCookie])
+
       const body: SignupResponse = {
+        jwt,
         userID
       }
       return res
