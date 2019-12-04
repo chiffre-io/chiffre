@@ -21,6 +21,7 @@ export interface Login2FAParameters {
 
 export interface Login2FAResponseBody {
   jwt: string
+  masterSalt: string
 }
 
 // --
@@ -80,20 +81,28 @@ handler.post(
       })
     }
 
-    await markTwoFactorVerifiedInSession(req.db, session.id)
+    try {
+      await markTwoFactorVerifiedInSession(req.db, session.id)
 
-    const jwt = createJwt({
-      userID: user.id,
-      sessionID: session.id,
-      sessionExpiresAt: session.expiresAt
-    })
-    const jwtCookie = createJwtCookie(jwt, session)
-    res.setHeader('Set-Cookie', [jwtCookie])
+      const jwt = createJwt({
+        userID: user.id,
+        sessionID: session.id,
+        sessionExpiresAt: session.expiresAt
+      })
+      const jwtCookie = createJwtCookie(jwt, session)
+      res.setHeader('Set-Cookie', [jwtCookie])
 
-    const body: Login2FAResponseBody = {
-      jwt
+      const body: Login2FAResponseBody = {
+        jwt,
+        masterSalt: user.masterSalt
+      }
+      res.json(body)
+    } catch (error) {
+      return res.status(401).json({
+        error: `Authentication error`,
+        details: error.message
+      })
     }
-    res.json(body)
   }
 )
 

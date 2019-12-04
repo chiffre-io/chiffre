@@ -33,6 +33,7 @@ export interface LoginResponseResponseBody {
   sessionID: string
   twoFactor: boolean
   jwt?: string // Will be sent if twoFactor is false
+  masterSalt?: string
 }
 
 // --
@@ -130,10 +131,12 @@ handler.post(
       const jwtCookie = createJwtCookie(jwt, session)
       res.setHeader('Set-Cookie', [jwtCookie])
     }
+    const masterSalt = twoFactorRequired ? undefined : user.masterSalt
 
     const body: LoginResponseResponseBody = {
       proof: srpSession.proof,
       jwt,
+      masterSalt,
       twoFactor: twoFactorRequired,
       sessionID: session.id
     }
