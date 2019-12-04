@@ -14,11 +14,13 @@
     "ts": "tsc --project ./tsconfig.server.json",
     "deploy": "surge -p ./out -d https://chiffre.surge.sh",
     "release": "yarn clean && yarn build && yarn export && yarn deploy",
-    "migrate:make": "ts-node --project ./tsconfig.server.json ./node_modules/.bin/knex migrate:make",
-    "migrate:up": "ts-node --project ./tsconfig.server.json ./node_modules/.bin/knex migrate:up",
-    "seed:make": "ts-node --project ./tsconfig.server.json ./node_modules/.bin/knex seed:make",
-    "seed:run": "ts-node --project ./tsconfig.server.json ./node_modules/.bin/knex seed:run",
-    "cloak": "ts-node --project ./tsconfig.server.json ./src/cli/cloak",
+    "tsnode": "ts-node --project ./tsconfig.server.json -r tsconfig-paths/register",
+    "knex": "yarn tsnode ./node_modules/.bin/knex",
+    "migrate:make": "yarn knex migrate:make",
+    "migrate:up": "yarn knex migrate:up",
+    "seed:make": "yarn knex seed:make",
+    "seed:run": "yarn knex seed:run",
+    "cloak": "tsn ./src/cli/cloak.ts",
     "db:reset": "./scripts/stop-db.sh && rm -rf .db && ./scripts/start-db.sh",
     "db:setup": "yarn migrate:up && yarn seed:run",
     "analyze": "ANALYZE=true next build"
@@ -73,6 +75,7 @@
     "node-webcrypto-ossl": "^1.0.48",
     "ts-jest": "^24.1.0",
     "ts-node": "^8.5.2",
+    "tsconfig-paths": "^3.9.0",
     "typescript": "^3.7.2"
   },
   "jest": {
