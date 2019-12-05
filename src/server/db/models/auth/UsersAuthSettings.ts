@@ -32,7 +32,7 @@ export const createUserAuthSettings = async (db: Knex, userID: string) => {
 
 // --
 
-export const getTwoFactorSettings = async (
+export const findTwoFactorSettings = async (
   db: Knex,
   userID: string
 ): Promise<TwoFactorSettings> => {
@@ -59,7 +59,7 @@ export const getTwoFactorSettings = async (
 }
 
 export const userRequiresTwoFactorAuth = async (db: Knex, userID: string) => {
-  const settings = await getTwoFactorSettings(db, userID)
+  const settings = await findTwoFactorSettings(db, userID)
   if (!settings) {
     return null
   }
@@ -135,7 +135,7 @@ export const consumeBackupCode = async (
   userID: string,
   code: string
 ) => {
-  const settings = await getTwoFactorSettings(db, userID)
+  const settings = await findTwoFactorSettings(db, userID)
   if (!settings.backupCodes || settings.backupCodes.length === 0) {
     throw new Error('No backup codes available')
   }

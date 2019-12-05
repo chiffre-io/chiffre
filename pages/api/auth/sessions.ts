@@ -10,7 +10,7 @@ import {
   getAllSessionsForUser,
   isSessionExpired
 } from '~/src/server/db/models/auth/Sessions'
-import { getTwoFactorSettings } from '~/src/server/db/models/auth/UsersAuthSettings'
+import { findTwoFactorSettings } from '~/src/server/db/models/auth/UsersAuthSettings'
 
 // --
 
@@ -41,7 +41,7 @@ handler.get(async (req: Request<Db & ApiAuth>, res: NextApiResponse) => {
         continue
       }
       const active = !isSessionExpired(session)
-      const twoFactorSettings = await getTwoFactorSettings(
+      const twoFactorSettings = await findTwoFactorSettings(
         req.db,
         req.auth.userID
       )

@@ -10,7 +10,7 @@ import requireBodyParams, {
   requiredString
 } from '~/src/server/middleware/requireBodyParams'
 import {
-  getKeychain,
+  findKeychain,
   updateKeychain,
   KeychainUpdatableFields
 } from '~/src/server/db/models/auth/Keychains'
@@ -23,7 +23,7 @@ handler.use(database)
 handler.use(apiAuthMiddleware)
 
 handler.get(async (req: Request<Db & ApiAuth>, res: NextApiResponse) => {
-  const keychain = await getKeychain(req.db, req.auth.userID)
+  const keychain = await findKeychain(req.db, req.auth.userID)
   return res.json(keychain)
 })
 

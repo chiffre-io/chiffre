@@ -6,7 +6,7 @@ import {
   ApiAuth
 } from '~/src/server/middleware/authMiddlewares'
 import { Request } from '~/src/server/types'
-import { getTwoFactorSettings } from '~/src/server/db/models/auth/UsersAuthSettings'
+import { findTwoFactorSettings } from '~/src/server/db/models/auth/UsersAuthSettings'
 
 // --
 
@@ -26,7 +26,7 @@ handler.use(database)
 handler.use(apiAuthMiddleware)
 
 handler.get(async (req: Request<Db & ApiAuth>, res: NextApiResponse) => {
-  const settings = await getTwoFactorSettings(req.db, req.auth.userID)
+  const settings = await findTwoFactorSettings(req.db, req.auth.userID)
   if (!settings) {
     return res.status(404).json({
       error: 'Two-factor settings not found',

@@ -7,7 +7,7 @@ import {
 } from '~/src/server/middleware/authMiddlewares'
 import { Request } from '~/src/server/types'
 import {
-  getTwoFactorSettings,
+  findTwoFactorSettings,
   enableTwoFactor,
   cancelTwoFactor
 } from '~/src/server/db/models/auth/UsersAuthSettings'
@@ -33,7 +33,7 @@ handler.use(apiAuthMiddleware)
  * Enable 2FA (needs to be verified with ./verify)
  */
 handler.post(async (req: Request<Db & ApiAuth>, res: NextApiResponse) => {
-  const settings = await getTwoFactorSettings(req.db, req.auth.userID)
+  const settings = await findTwoFactorSettings(req.db, req.auth.userID)
   if (settings.enabled || settings.verified || settings.secret) {
     return res.status(422).json({
       error: 'Two-factor authentication is already active'
@@ -65,7 +65,7 @@ handler.post(async (req: Request<Db & ApiAuth>, res: NextApiResponse) => {
  * Will fail if 2FA has been verified, call ./disable instead
  */
 handler.delete(async (req: Request<Db & ApiAuth>, res: NextApiResponse) => {
-  const twoFactorSettings = await getTwoFactorSettings(req.db, req.auth.userID)
+  const twoFactorSettings = await findTwoFactorSettings(req.db, req.auth.userID)
   if (!twoFactorSettings) {
     return res.status(404).json({
       error: 'Two-factor settings not found',

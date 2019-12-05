@@ -7,7 +7,7 @@ import {
 } from '~/src/server/middleware/authMiddlewares'
 import { Request } from '~/src/server/types'
 import {
-  getTwoFactorSettings,
+  findTwoFactorSettings,
   markTwoFactorVerified
 } from '~/src/server/db/models/auth/UsersAuthSettings'
 import { verifyTwoFactorToken, generateBackupCodes } from '~/src/server/2fa'
@@ -41,7 +41,7 @@ handler.use(
 )
 
 handler.post(async (req: VerifyTwoFactorRequest, res: NextApiResponse) => {
-  const twoFactorSettings = await getTwoFactorSettings(req.db, req.auth.userID)
+  const twoFactorSettings = await findTwoFactorSettings(req.db, req.auth.userID)
   if (twoFactorSettings.verified) {
     return res.status(422).json({
       error: 'Two-factor authentication is already active'

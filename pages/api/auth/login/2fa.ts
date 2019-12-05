@@ -10,7 +10,7 @@ import { findUser } from '~/src/server/db/models/auth/UsersAuthSRP'
 import { findSession } from '~/src/server/db/models/auth/Sessions'
 import { createJwt } from '~/src/server/jwt'
 import { markTwoFactorVerifiedInSession } from '~/src/server/db/models/auth/Sessions'
-import { getTwoFactorSettings } from '~/src/server/db/models/auth/UsersAuthSettings'
+import { findTwoFactorSettings } from '~/src/server/db/models/auth/UsersAuthSettings'
 import { createJwtCookie } from '~/src/server/cookies'
 
 export interface Login2FAParameters {
@@ -59,7 +59,7 @@ handler.post(
       // todo: Then what ?
     }
 
-    const twoFactorSettings = await getTwoFactorSettings(req.db, user.id)
+    const twoFactorSettings = await findTwoFactorSettings(req.db, user.id)
     if (
       !twoFactorSettings.enabled ||
       !twoFactorSettings.verified ||

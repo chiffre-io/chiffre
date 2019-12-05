@@ -30,7 +30,7 @@ export const createKeychainRecord = async (
 
 // --
 
-export const getKeychain = async (
+export const findKeychain = async (
   db: Knex,
   userID: string
 ): Promise<KeychainRecord> => {
