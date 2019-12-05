@@ -18,18 +18,18 @@ export const seed = async (knex: Knex) => {
   if (process.env.NODE_ENV === 'production') {
     return
   }
+  const { projectID, creator } = testProject
+  const project: Project = {
+    id: projectID,
+    publicKey: testProject.publicKey,
+    encrypted: 'invalid',
+    creator
+  }
   try {
-    const { projectID, creator } = testProject
-    const project: Project = {
-      id: projectID,
-      publicKey: testProject.publicKey,
-      encrypted: 'invalid',
-      creator
-    }
     await knex.insert(project).into(PROJECTS_TABLE)
-    const emitter = await formatEmitterEmbedScript(knex, projectID)
-    console.log(emitter)
   } catch (error) {
     console.error(error)
   }
+  const emitter = await formatEmitterEmbedScript(knex, projectID)
+  console.log(emitter)
 }
