@@ -3,10 +3,13 @@ import { PROJECTS_TABLE } from './Projects'
 
 export const PROJECT_MESSAGE_QUEUE_TABLE = 'project_message_queue'
 
-interface ProjectMessageInput {
-  projectID: string
+export interface ProjectMessageLite {
   message: string
   performance: number
+}
+
+interface ProjectMessageInput extends ProjectMessageLite {
+  projectID: string
 }
 
 export interface ProjectMessage extends ProjectMessageInput {
@@ -35,7 +38,7 @@ export const pushMessage = async (
 
 export const findMessagesForProject = async (db: Knex, projectID: string) => {
   return await db
-    .select<ProjectMessage[]>('*')
+    .select<ProjectMessageLite[]>('message', 'performance')
     .from(PROJECT_MESSAGE_QUEUE_TABLE)
     .where({ projectID })
 }
