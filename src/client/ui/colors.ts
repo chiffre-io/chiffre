@@ -12,6 +12,7 @@ export type ThemeableColors = {
 // Tailwind CSS colors
 export const tailwindColors = {
   gray: {
+    50: '#fcfeff',
     100: '#f7fafc',
     200: '#edf2f7',
     300: '#e2e8f0',
@@ -23,6 +24,7 @@ export const tailwindColors = {
     900: '#1a202c'
   },
   red: {
+    50: '#fffafa',
     100: '#fff5f5',
     200: '#fed7d7',
     300: '#feb2b2',
@@ -34,6 +36,7 @@ export const tailwindColors = {
     900: '#742a2a'
   },
   orange: {
+    50: '#fffdfa',
     100: '#fffaf0',
     200: '#feebc8',
     300: '#fbd38d',
@@ -45,6 +48,7 @@ export const tailwindColors = {
     900: '#7b341e'
   },
   yellow: {
+    50: '#fffffa',
     100: '#fffff0',
     200: '#fefcbf',
     300: '#faf089',
@@ -56,6 +60,7 @@ export const tailwindColors = {
     900: '#744210'
   },
   green: {
+    50: '#fafffb',
     100: '#f0fff4',
     200: '#c6f6d5',
     300: '#9ae6b4',
@@ -67,6 +72,7 @@ export const tailwindColors = {
     900: '#22543d'
   },
   teal: {
+    50: '#fafffe',
     100: '#e6fffa',
     200: '#b2f5ea',
     300: '#81e6d9',
@@ -78,6 +84,7 @@ export const tailwindColors = {
     900: '#234e52'
   },
   blue: {
+    50: '#fafdff',
     100: '#ebf8ff',
     200: '#bee3f8',
     300: '#90cdf4',
@@ -89,6 +96,7 @@ export const tailwindColors = {
     900: '#2a4365'
   },
   indigo: {
+    50: '#f9fbff',
     100: '#ebf4ff',
     200: '#c3dafe',
     300: '#a3bffa',
@@ -100,6 +108,7 @@ export const tailwindColors = {
     900: '#3c366b'
   },
   purple: {
+    50: '#fcfaff',
     100: '#faf5ff',
     200: '#e9d8fd',
     300: '#d6bcfa',
@@ -111,6 +120,7 @@ export const tailwindColors = {
     900: '#44337a'
   },
   pink: {
+    50: '#fffafb',
     100: '#fff5f7',
     200: '#fed7e2',
     300: '#fbb6ce',
