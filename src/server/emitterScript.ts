@@ -4,23 +4,35 @@ import { b64 } from '~/src/client/engine/crypto/primitives/codec'
 import { Project, findProject } from '~/src/server/db/models/projects/Projects'
 
 export const generateEmitterEmbedScriptContent = (project: Project) => {
-  return `window.Chiffre = {
-  config: {
-    publicKey: "${project.publicKey}",
-    projectID: "${project.id}",
-    pushURL: "${process.env.APP_URL}/api/push/${project.id}"
+  return `
+(function(){
+  function load(resolve) {
+    window.addEventListener(
+      'load',
+      function() {
+        var script = document.createElement('script')
+        script.async = true
+        script.src = '${process.env.APP_URL}/emitter.js'
+        document.body.appendChild(script)
+        script.onload = function() {
+          resolve()
+        }
+      },
+      false
+    )
   }
-}
-window.addEventListener(
-  'load',
-  function() {
-    var script = document.createElement('script')
-    script.async = true
-    script.src = '${process.env.APP_URL}/emitter.js'
-    document.body.appendChild(script)
-  },
-  false
-)`
+  window.Chiffre = {
+    config: {
+      publicKey: "${project.publicKey}",
+      projectID: "${project.id}",
+      pushURL: "${process.env.APP_URL}/api/push/${project.id}"
+    },
+    ready: new Promise(function(resolve) {
+      load(resolve)
+    }),
+    sendEvent: function(type, data = undefined) {}
+  }
+})()`
 }
 
 export const getEmitterEmbedScriptUrl = (projectID: string) => {

@@ -19,10 +19,10 @@ class MyDocument extends Document {
           <NextScript />
           <script
             src="http://localhost:3000/api/embed/c0ffeeb0-dead-f00d-baad-cafebaadcafe"
-            integrity="sha256-Id1GLxztN6F0t+/AtVRJshWXXIz6pz/SFxB6mRgfS3Q="
+            integrity="sha256-OQ062aRYOPnjgZ2FXCrnFxxVZgurFmTUElca5VMqlqU="
             crossOrigin="anonymous"
             async
-          />
+          ></script>
         </body>
       </Html>
     )
