@@ -6,6 +6,7 @@ import { createInitialUsersAuthSettingsTable } from '../models/auth/UsersAuthSet
 import { createInitialKeychainsTable } from '../models/auth/Keychains'
 import { createInitialVaultsTable } from '../models/vaults/Vaults'
 import { createInitialProjectsTable } from '../models/projects/Projects'
+import { createInitialProjectMessageQueueTable } from '../models/projects/ProjectMessageQueue'
 import { setupUpdatedAtFieldAutoUpdate } from '../utility'
 
 export async function up(knex: Knex): Promise<any> {
@@ -25,6 +26,7 @@ export async function up(knex: Knex): Promise<any> {
   await createInitialKeychainsTable(knex)
   await createInitialVaultsTable(knex)
   await createInitialProjectsTable(knex)
+  await createInitialProjectMessageQueueTable(knex)
 }
 
 export async function down(knex: Knex): Promise<any> {
