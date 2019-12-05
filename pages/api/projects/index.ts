@@ -10,6 +10,7 @@ import requireBodyParams, {
 } from '~/src/server/middleware/requireBodyParams'
 import { Request } from '~/src/server/types'
 import { createProject } from '~/src/server/db/models/projects/Projects'
+import { formatEmitterEmbedScript } from '~/src/server/emitterScript'
 
 // --
 
@@ -20,6 +21,7 @@ export interface CreateProjectArgs {
 
 export interface CreateProjectResponse {
   projectID: string
+  embedScript: string
 }
 
 const handler = nextConnect()
@@ -45,8 +47,10 @@ handler.post(
         req.body.publicKey,
         req.body.encrypted
       )
+      const embedScript = await formatEmitterEmbedScript(req.db, id)
       const response: CreateProjectResponse = {
-        projectID: id
+        projectID: id,
+        embedScript
       }
       return res.status(201).send(response)
     } catch (error) {

@@ -74,6 +74,7 @@ const wrapBodyfulRequest = (client: AxiosInstance, method: Method) => async <
 
 export const publicApi = {
   raw: _publicApi,
+  get: wrapBodylessRequest(_publicApi, 'GET'),
   post: wrapBodyfulRequest(_publicApi, 'POST')
 }
 

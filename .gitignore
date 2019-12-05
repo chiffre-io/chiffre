@@ -29,3 +29,7 @@ yarn-error.log*
 
 # parcel cache
 .cache/
+
+# Generated artifacts
+public/emitter.js
+public/emitter.js.map

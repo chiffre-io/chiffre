@@ -3,7 +3,7 @@ import { NextApiResponse } from 'next'
 import database, { Db } from '~/src/server/middleware/database'
 import { Request } from '~/src/server/types'
 import { findProject } from '~/src/server/db/models/projects/Projects'
-import serverRuntimeConfig from '~/src/server/env'
+import { generateEmitterEmbedScriptContent } from '~/src/server/emitterScript'
 
 // --
 
@@ -33,25 +33,9 @@ handler.get(async (req: Request<Db>, res: NextApiResponse) => {
     })
   }
 
-  const emitterScriptUrl = '/emitter.js'
   res.setHeader('content-type', 'application/javascript')
-  return res.send(`window.Chiffre = {
-  config: {
-    publicKey: "${project.publicKey}",
-    projectID: "${project.id}",
-    pushURL: "${serverRuntimeConfig.APP_URL}/api/push/${project.id}"
-  }
-}
-window.addEventListener(
-  'load',
-  function() {
-    var script = document.createElement('script')
-    script.async = true
-    script.src = '${emitterScriptUrl}'
-    document.body.appendChild(script)
-  },
-  false
-)`)
+  const content = generateEmitterEmbedScriptContent(project)
+  return res.send(content)
 })
 
 // todo: Factor better error handlers & logging story

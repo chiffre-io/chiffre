@@ -4,6 +4,7 @@ import { encode as encodeHex, decode as decodeHex } from '@stablelib/hex'
 
 export const b64 = {
   urlSafe: (str: string) => str.replace(/\+/g, '-').replace(/\//g, '_'),
+  urlUnsafe: (str: string) => str.replace(/\-/g, '+').replace(/_/g, '/'),
   encode: encodeURLSafe,
   decode: (base64: string) => decodeURLSafe(b64.urlSafe(base64))
 }
