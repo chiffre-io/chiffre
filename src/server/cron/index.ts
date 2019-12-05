@@ -1,6 +1,6 @@
 import { CronJob } from 'cron'
 import cleanupSrpChallenges from './cleanupSrpChallenges'
-import database from '../db/database'
+import database from '~/src/server/db/database'
 
 export default async function setupCronTasks() {
   const jobs = [

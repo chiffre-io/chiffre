@@ -1,5 +1,5 @@
 import React from 'react'
-import { pushDataPoint, VisitorConfig } from '../engine/visitor'
+import { pushDataPoint, VisitorConfig } from '~/src/client/engine/visitor'
 import useConsent from './useConsent'
 
 export default function useEvent(type: string, config: VisitorConfig) {

@@ -2,7 +2,7 @@ import srpServer from 'secure-remote-password/server'
 import {
   base64ToHex,
   hexToBase64url
-} from '../client/engine/crypto/primitives/codec'
+} from '~/src/client/engine/crypto/primitives/codec'
 
 /**
  *

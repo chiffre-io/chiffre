@@ -1,5 +1,5 @@
 import Knex from 'knex'
-import { updatedAtFieldAutoUpdate } from '../../utility'
+import { updatedAtFieldAutoUpdate } from '~/src/server/db/utility'
 
 export const USERS_AUTH_SRP_TABLE = 'users_auth_srp'
 

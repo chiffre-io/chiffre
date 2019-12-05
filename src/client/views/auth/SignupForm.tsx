@@ -12,15 +12,15 @@ import {
 } from '@chakra-ui/core'
 import { Formik, Form, FormikErrors, Field, ErrorMessage } from 'formik'
 
-import Label, { LabelWithAside } from '../../components/form/Label'
-import EmailField from '../../components/form/EmailField'
-import FieldHelpText from '../../components/form/FieldHelpText'
-import { ControlledPasswordField } from '../../components/form/PasswordField'
+import Label, { LabelWithAside } from '~/src/client/components/form/Label'
+import EmailField from '~/src/client/components/form/EmailField'
+import FieldHelpText from '~/src/client/components/form/FieldHelpText'
+import { ControlledPasswordField } from '~/src/client/components/form/PasswordField'
 import PasswordStrengthSkeleton from './signup/PasswordStrengthSkeleton'
-import { RouteLink } from '../../components/Links'
+import { RouteLink } from '~/src/client/components/Links'
 import AboutPasswords from './signup/AboutPasswords'
 import { PasswordStrength } from './signup/passwordSettings'
-import ErrorText from '../../components/form/ErrorText'
+import ErrorText from '~/src/client/components/form/ErrorText'
 
 const PasswordStrengthIndicator = dynamic(
   () => import('./signup/PasswordStrengthIndicator'),

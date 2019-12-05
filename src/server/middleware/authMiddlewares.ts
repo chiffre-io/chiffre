@@ -1,7 +1,7 @@
-import { NextApiMiddleware } from '../types'
+import { NextApiMiddleware } from '~/src/server/types'
 import { Db } from './database'
-import { verifyJwt, JwtClaims } from '../jwt'
-import { isSessionValid } from '../db/models/auth/Sessions'
+import { verifyJwt, JwtClaims } from '~/src/server/jwt'
+import { isSessionValid } from '~/src/server/db/models/auth/Sessions'
 
 export interface ApiAuth {
   auth: JwtClaims

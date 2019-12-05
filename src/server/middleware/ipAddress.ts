@@ -1,4 +1,4 @@
-import { NextApiMiddleware } from '../types'
+import { NextApiMiddleware } from '~/src/server/types'
 
 export interface IpAddress {
   ipAddress?: string

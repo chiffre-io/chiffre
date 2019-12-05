@@ -8,8 +8,8 @@ import {
   ErrorMessage,
   useFormikContext
 } from 'formik'
-import Label from '../../components/form/Label'
-import ErrorText from '../../components/form/ErrorText'
+import Label from '~/src/client/components/form/Label'
+import ErrorText from '~/src/client/components/form/ErrorText'
 import theme from '~/src/client/ui/theme'
 
 export interface Values {

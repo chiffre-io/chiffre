@@ -1,6 +1,6 @@
 import Knex from 'knex'
 import { USERS_AUTH_SRP_TABLE } from './UsersAuthSRP'
-import { updatedAtFieldAutoUpdate } from '../../utility'
+import { updatedAtFieldAutoUpdate } from '~/src/server/db/utility'
 
 export const KEYCHAINS_TABLE = 'keychains'
 

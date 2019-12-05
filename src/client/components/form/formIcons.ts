@@ -1,4 +1,4 @@
-import { ThemeableColors } from '../../ui/colors'
+import { ThemeableColors } from '~/src/client/ui/colors'
 
 export const leftIconColors: ThemeableColors = {
   gray: {

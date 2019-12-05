@@ -2,7 +2,7 @@ import Knex from 'knex'
 import {
   getAllExpiredLoginChallenges,
   deleteLoginChallenge
-} from '../db/models/auth/LoginChallengesSRP'
+} from '~/src/server/db/models/auth/LoginChallengesSRP'
 import { format as timeago } from 'timeago.js'
 
 export default async function cleanupSrpChallenges(db: Knex) {

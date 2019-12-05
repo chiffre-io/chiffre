@@ -9,7 +9,7 @@ import {
   getKeyFingerprint,
   findKeyForMessage,
   exportKeychain
-} from '../client/engine/crypto/cloak'
+} from '~/src/client/engine/crypto/cloak'
 
 dotenv.config()
 

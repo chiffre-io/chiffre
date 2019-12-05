@@ -2,7 +2,7 @@ import Knex from 'knex'
 import { createUser } from '../models/auth/UsersAuthSRP'
 import { createUserAuthSettings } from '../models/auth/UsersAuthSettings'
 import { createKeychainRecord } from '../models/auth/Keychains'
-import { createSignupEntities } from '../../../client/engine/account'
+import { createSignupEntities } from '~/src/client/engine/account'
 
 export const seed = async (knex: Knex) => {
   if (process.env.NODE_ENV === 'production') {

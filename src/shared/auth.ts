@@ -32,7 +32,7 @@ export const authenticatePage = async (
   try {
     if (ctx.req) {
       // Imported here to avoid client-side imports
-      const database = require('../server/db/database').default
+      const database = require('~/src/server/db/database').default
 
       // Server-side: get the JWT from the cookies
       const { [CookieNames.jwt]: jwt } = nextCookie(ctx)

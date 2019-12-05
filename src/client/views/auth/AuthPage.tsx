@@ -1,7 +1,7 @@
 import React from 'react'
 import { Box, Flex, useColorMode } from '@chakra-ui/core'
-import Logo from '../../components/Logo'
-import theme from '../../ui/theme'
+import Logo from '~/src/client/components/Logo'
+import theme from '~/src/client/ui/theme'
 
 interface Props {
   solidBackground?: boolean

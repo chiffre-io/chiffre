@@ -3,7 +3,7 @@ import { useRouter } from 'next/dist/client/router'
 import {
   clientAssembleLoginResponse,
   clientVerifyLogin
-} from '../engine/crypto/srp'
+} from '~/src/client/engine/crypto/srp'
 import {
   LoginChallengeResponseBody,
   LoginChallengeParameters
@@ -12,11 +12,11 @@ import {
   LoginResponseParameters,
   LoginResponseResponseBody
 } from '~/pages/api/auth/login/response'
-import { saveLoginCredentials } from '../auth'
+import { saveLoginCredentials } from '~/src/client/auth'
 import use2faVerification from './use2faVerification'
-import { publicApi } from '../api'
-import { unlockEntities } from '../engine/account'
-import keyStorage from '../engine/keyStorage'
+import { publicApi } from '~/src/client/api'
+import { unlockEntities } from '~/src/client/engine/account'
+import keyStorage from '~/src/client/engine/keyStorage'
 
 interface AuthInfo {
   userID: string

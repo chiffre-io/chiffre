@@ -1,5 +1,5 @@
 import Knex from 'knex'
-import { updatedAtFieldAutoUpdate } from '../../utility'
+import { updatedAtFieldAutoUpdate } from '~/src/server/db/utility'
 
 export const VAULTS_TABLE = 'vaults'
 

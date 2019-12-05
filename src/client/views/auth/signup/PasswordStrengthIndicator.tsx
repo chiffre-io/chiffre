@@ -2,8 +2,7 @@ import React from 'react'
 import { Box, Grid, Text, Flex, useColorMode, Collapse } from '@chakra-ui/core'
 import { Bar } from './PasswordStrengthSkeleton'
 import usePasswordStrength from './usePasswordStrength'
-import { AnchorLink } from '../../../components/Links'
-import { useDebounce } from 'react-use'
+import { AnchorLink } from '~/src/client/components/Links'
 import { PasswordStrength } from './passwordSettings'
 
 export interface Props {

@@ -11,9 +11,9 @@ import {
 } from '@chakra-ui/core'
 import { useField, ErrorMessage } from 'formik'
 import ErrorText from './ErrorText'
-import { ThemeableColors } from '../../ui/colors'
+import { ThemeableColors } from '~/src/client/ui/colors'
 import { leftIconColors } from './formIcons'
-import theme from '../../ui/theme'
+import theme from '~/src/client/ui/theme'
 
 // --
 

@@ -1,6 +1,6 @@
 import Knex from 'knex'
-import { NextApiMiddleware } from '../types'
-import database from '../db/database'
+import { NextApiMiddleware } from '~/src/server/types'
+import database from '~/src/server/db/database'
 
 export interface Db {
   db: Knex

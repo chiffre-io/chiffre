@@ -1,6 +1,6 @@
 import React from 'react'
 import { Stack, Checkbox } from '@chakra-ui/core'
-import useConsent from '../hooks/useConsent'
+import useConsent from '~/src/client/hooks/useConsent'
 
 const ConsentManager = ({}) => {
   const { events, isConsentingTo, isIndeterminate, setConsent } = useConsent()

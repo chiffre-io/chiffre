@@ -9,10 +9,10 @@ import {
   Text,
   Box
 } from '@chakra-ui/core'
-import PasswordField from '../../components/form/PasswordField'
-import Label from '../../components/form/Label'
-import { RouteLink } from '../../components/Links'
-import EmailField from '../../components/form/EmailField'
+import PasswordField from '~/src/client/components/form/PasswordField'
+import Label from '~/src/client/components/form/Label'
+import { RouteLink } from '~/src/client/components/Links'
+import EmailField from '~/src/client/components/form/EmailField'
 import { Formik, Form, FormikErrors } from 'formik'
 
 interface Values {

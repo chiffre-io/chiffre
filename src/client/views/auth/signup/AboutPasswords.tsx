@@ -1,5 +1,5 @@
 import React from 'react'
-import { RouteLink } from '../../../components/Links'
+import { RouteLink } from '~/src/client/components/Links'
 import { Text, Collapse, useColorMode } from '@chakra-ui/core'
 
 const Paragraph = ({ children, ...props }) => {
