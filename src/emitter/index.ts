@@ -1,17 +1,21 @@
 import { EmitterConfig } from './config'
 import { setupSessionListeners } from './session'
+import { setupPageVisitListeners } from './pageVisits'
 
 declare global {
   interface Window {
     // The embed script sets this and loads the emitter script
-    Chiffre: EmitterConfig
+    Chiffre: {
+      config: EmitterConfig
+    }
   }
 }
 
 export const entrypoint = async () => {
   try {
-    const config = window.Chiffre
+    const { config } = window.Chiffre
     setupSessionListeners(config)
+    setupPageVisitListeners(config)
   } catch (error) {
     // What do we do there ?
     // - Store the errors somewhere (in a special event queue for errors)

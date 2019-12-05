@@ -6,28 +6,35 @@ import { pushEvent } from './push'
 export const sessionID = nanoid()
 
 export interface SessionData {
-  timestamp: number
-  sessionID: string
+  ua: string // user-agent
+  lang: string // language
+  vp: {
+    // viewport dimensions
+    w: number
+    h: number
+  }
 }
 
 export const sessionStart = () => {
-  return createEvent<'session:start', SessionData>('session:start', {
-    timestamp: Date.now(),
-    sessionID
+  return createEvent<SessionData>('session:start', {
+    ua: navigator.userAgent,
+    lang: navigator.language,
+    vp: {
+      w: window.innerWidth,
+      h: window.innerHeight
+    }
   })
 }
 
 export const sessionEnd = () => {
-  return createEvent<'session:end', SessionData>('session:end', {
-    timestamp: Date.now(),
-    sessionID
-  })
+  return createEvent('session:end')
 }
 
 export const setupSessionListeners = (config: EmitterConfig) => {
-  const sessionStartEvent = sessionStart()
+  const startEvent = sessionStart()
   window.addEventListener('beforeunload', () => {
-    pushEvent(sessionEnd(), config)
+    const endEvent = sessionEnd()
+    pushEvent(endEvent, config)
   })
-  pushEvent(sessionStartEvent, config)
+  pushEvent(startEvent, config)
 }

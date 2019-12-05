@@ -23,7 +23,8 @@ handler.post(async (req: Request<Db>, res: NextApiResponse) => {
   // todo: Push to message queue
   console.dir({
     projectID,
-    message: req.body
+    message: req.body,
+    headers: req.headers
   })
   return res.status(204).send(null)
 })
