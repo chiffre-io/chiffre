@@ -1,34 +1,38 @@
 import nacl from 'tweetnacl'
+import { CloakKey, encryptString, decryptString } from './crypto/cloak'
+import { clientApi } from '../api'
+import {
+  CreateProjectArgs,
+  CreateProjectResponse
+} from '~/pages/api/projects/index'
 import { b64 } from './crypto/primitives/codec'
+import { Project } from '~/src/server/db/models/entities/Projects'
 
-type KVPair = {
-  [key: string]: any
-}
-
-export interface Project<Pub = KVPair, Sec = KVPair> {
-  v: number
-  keys: nacl.BoxKeyPair
-  public: Pub
-  secret: Sec & {
-    name: string
-    description?: string
+export const createProject = async (
+  vaultID: string,
+  vaultKey: CloakKey
+): Promise<CreateProjectResponse> => {
+  const keyPair = nacl.box.keyPair()
+  const publicKey = b64.encode(keyPair.publicKey)
+  const secretKey = b64.encode(keyPair.secretKey)
+  const body: CreateProjectArgs = {
+    vaultID,
+    publicKey,
+    secretKey: await encryptString(secretKey, vaultKey)
   }
+  type Req = CreateProjectArgs
+  type Res = CreateProjectResponse
+  return await clientApi.post<Req, Res>('/projects', body)
 }
 
-// -----------------------------------------------------------------------------
-
-export const createProject = (name: string, description?: string): Project => {
+export const getProject = async (
+  projectID: string,
+  vaultKey: CloakKey
+): Promise<Project> => {
+  const url = `/projects/${projectID}`
+  const project = await clientApi.get<Project>(url)
   return {
-    v: 1,
-    keys: nacl.box.keyPair(),
-    public: {},
-    secret: {
-      name,
-      description
-    }
+    ...project,
+    secretKey: await decryptString(project.secretKey, vaultKey)
   }
-}
-
-export const getProjectPublicData = (project: Project): string => {
-  return b64.encode(project.keys.publicKey)
 }

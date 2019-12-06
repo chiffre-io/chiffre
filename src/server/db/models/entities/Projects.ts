@@ -53,7 +53,7 @@ export const deleteProject = async (db: Knex, id: string) => {
     .delete()
 }
 
-export const getAllProjectsInVault = async (db: Knex, vaultID: string) => {
+export const findAllProjectsInVault = async (db: Knex, vaultID: string) => {
   return await db
     .select<Project[]>('*')
     .from(PROJECTS_TABLE)

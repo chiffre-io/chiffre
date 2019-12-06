@@ -22,6 +22,10 @@ const redirectToLogin = async (ctx: NextPageContext) => {
 
 // --
 
+export interface AuthenticatedPage {
+  auth: JwtClaims
+}
+
 /**
  * Require authentication or redirect to /login
  * @param ctx Next.js page context

@@ -9,8 +9,13 @@ import requireBodyParams, {
   requiredString
 } from '~/src/server/middleware/requireBodyParams'
 import { Request } from '~/src/server/types'
-import { createProject } from '~/src/server/db/models/entities/Projects'
+import {
+  Project,
+  createProject,
+  findAllProjectsInVault
+} from '~/src/server/db/models/entities/Projects'
 import { formatEmitterEmbedScript } from '~/src/server/emitterScript'
+import { findVaultEdgesForUser } from '~/src/server/db/models/entities/UserVaultEdges'
 
 // --
 
@@ -27,17 +32,15 @@ export interface CreateProjectResponse {
 
 const handler = nextConnect()
 
-handler.use(
-  requireBodyParams<CreateProjectArgs>({
-    vaultID: requiredString,
-    publicKey: requiredString,
-    secretKey: requiredString
-  })
-)
 handler.use(database)
 handler.use(apiAuthMiddleware)
 
 handler.post(
+  requireBodyParams<CreateProjectArgs>({
+    vaultID: requiredString,
+    publicKey: requiredString,
+    secretKey: requiredString
+  }),
   async (
     req: Request<Db & ApiAuth, CreateProjectArgs>,
     res: NextApiResponse
@@ -65,5 +68,30 @@ handler.post(
     }
   }
 )
+
+// -----------------------------------------------------------------------------
+
+export type ProjectsList = ProjectWithVaultKey[]
+type ProjectWithVaultKey = Project & { vaultKey: string }
+
+handler.get(async (req: Request<Db & ApiAuth>, res: NextApiResponse) => {
+  try {
+    const userProjects: ProjectWithVaultKey[] = []
+    const vaultEdges = await findVaultEdgesForUser(req.db, req.auth.userID)
+    for (const { vaultID, vaultKey } of vaultEdges) {
+      const vaultProjects = await findAllProjectsInVault(req.db, vaultID)
+      vaultProjects.forEach(project => {
+        userProjects.push({ ...project, vaultKey })
+      })
+    }
+    return res.json(userProjects)
+  } catch (error) {
+    console.error(error)
+    return res.status(401).json({
+      error: 'Cannot retrieve projects',
+      details: error.message
+    })
+  }
+})
 
 export default handler
