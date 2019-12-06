@@ -12,6 +12,7 @@
     "start": "NODE_ENV=production yarn tsnode ./src/server/server.ts",
     "clean": "rm -rf ./out ./.next",
     "export": "next export",
+    "install": "yarn build",
     "deploy": "surge -p ./out -d https://chiffre.surge.sh",
     "release": "yarn clean && yarn build && yarn export && yarn deploy",
     "knex": "yarn tsnode ./node_modules/.bin/knex",
