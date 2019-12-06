@@ -2,7 +2,7 @@ import nextConnect from 'next-connect'
 import { NextApiResponse } from 'next'
 import database, { Db } from '~/src/server/middleware/database'
 import { Request } from '~/src/server/types'
-import { pushMessage } from '~/src/server/db/models/projects/ProjectMessageQueue'
+import { pushMessage } from '~/src/server/db/models/entities/ProjectMessageQueue'
 
 // --
 

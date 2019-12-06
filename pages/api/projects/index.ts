@@ -9,14 +9,15 @@ import requireBodyParams, {
   requiredString
 } from '~/src/server/middleware/requireBodyParams'
 import { Request } from '~/src/server/types'
-import { createProject } from '~/src/server/db/models/projects/Projects'
+import { createProject } from '~/src/server/db/models/entities/Projects'
 import { formatEmitterEmbedScript } from '~/src/server/emitterScript'
 
 // --
 
 export interface CreateProjectArgs {
+  vaultID: string
   publicKey: string
-  encrypted: string
+  secretKey: string
 }
 
 export interface CreateProjectResponse {
@@ -28,8 +29,9 @@ const handler = nextConnect()
 
 handler.use(
   requireBodyParams<CreateProjectArgs>({
+    vaultID: requiredString,
     publicKey: requiredString,
-    encrypted: requiredString
+    secretKey: requiredString
   })
 )
 handler.use(database)
@@ -41,15 +43,17 @@ handler.post(
     res: NextApiResponse
   ) => {
     try {
-      const { id } = await createProject(
+      // todo: Make sure req.auth.userID has the right to create a project
+      // ie: They have a link to the vaultID with their keychain.
+      const { id: projectID } = await createProject(
         req.db,
-        req.auth.userID,
+        req.body.vaultID,
         req.body.publicKey,
-        req.body.encrypted
+        req.body.secretKey
       )
-      const embedScript = await formatEmitterEmbedScript(req.db, id)
+      const embedScript = await formatEmitterEmbedScript(req.db, projectID)
       const response: CreateProjectResponse = {
-        projectID: id,
+        projectID,
         embedScript
       }
       return res.status(201).send(response)

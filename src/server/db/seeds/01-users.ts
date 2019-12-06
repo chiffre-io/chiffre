@@ -1,7 +1,7 @@
 import Knex from 'knex'
 import { UserAuthSrp, USERS_AUTH_SRP_TABLE } from '../models/auth/UsersAuthSRP'
 import { createUserAuthSettings } from '../models/auth/UsersAuthSettings'
-import { createKeychainRecord } from '../models/auth/Keychains'
+import { createKeychainRecord } from '../models/entities/Keychains'
 import { createSignupEntities } from '~/src/client/engine/account'
 
 export const testUserCredentials = {

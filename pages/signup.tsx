@@ -6,7 +6,7 @@ import useErrorToast from '~/src/client/hooks/useErrorToast'
 import { publicApi } from '~/src/client/api'
 import {
   createSignupEntities,
-  unlockEntities
+  unlockKeychain
 } from '~/src/client/engine/account'
 import { saveLoginCredentials } from '~/src/client/auth'
 import { SignupParameters, SignupResponse } from '~/pages/api/auth/signup'
@@ -23,18 +23,14 @@ const SignupPage = () => {
       const params = await createSignupEntities(username, password)
       type Req = SignupParameters
       type Res = SignupResponse
-      const { jwt, userID } = await publicApi.post<Req, Res>(
-        '/auth/signup',
-        params
-      )
+      const { jwt } = await publicApi.post<Req, Res>('/auth/signup', params)
       saveLoginCredentials(jwt)
-      const { keychain, keychainKey } = await unlockEntities(
+      const keychainKey = await unlockKeychain(
         username,
         password,
         params.masterSalt
       )
       keyStorage.keychainKey = keychainKey
-      keyStorage.keychain = keychain
       return await router.push('/')
     } catch (error) {
       showErrorToast(error)

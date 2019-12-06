@@ -38,7 +38,7 @@ export const pushMessage = async (
 
 export const findMessagesForProject = async (db: Knex, projectID: string) => {
   return await db
-    .select<ProjectMessageLite[]>('message', 'performance')
+    .select<ProjectMessageLite[]>('message', 'performance', 'created_at')
     .from(PROJECT_MESSAGE_QUEUE_TABLE)
     .where({ projectID })
 }

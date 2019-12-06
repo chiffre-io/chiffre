@@ -1,7 +1,7 @@
 import Knex from 'knex'
 import { hashString } from '~/src/client/engine/crypto/primitives/hash'
 import { b64 } from '~/src/client/engine/crypto/primitives/codec'
-import { Project, findProject } from '~/src/server/db/models/projects/Projects'
+import { Project, findProject } from '~/src/server/db/models/entities/Projects'
 
 export const generateEmitterEmbedScriptContent = (project: Project) => {
   return `

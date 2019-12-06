@@ -15,7 +15,7 @@ import {
 import { saveLoginCredentials } from '~/src/client/auth'
 import use2faVerification from './use2faVerification'
 import { publicApi } from '~/src/client/api'
-import { unlockEntities } from '~/src/client/engine/account'
+import { unlockKeychain } from '~/src/client/engine/account'
 import keyStorage from '~/src/client/engine/keyStorage'
 
 interface AuthInfo {
@@ -102,13 +102,8 @@ export default function useSrpLogin(): Return {
     } else if (jwt && masterSalt) {
       setError(null)
       saveLoginCredentials(jwt)
-      const { keychain, keychainKey } = await unlockEntities(
-        username,
-        password,
-        masterSalt
-      )
+      const keychainKey = await unlockKeychain(username, password, masterSalt)
       keyStorage.keychainKey = keychainKey
-      keyStorage.keychain = keychain
       await redirectAfterLogin()
     }
   }
@@ -121,13 +116,12 @@ export default function useSrpLogin(): Return {
     })
     setError(null)
     saveLoginCredentials(jwt)
-    const { keychain, keychainKey } = await unlockEntities(
+    const keychainKey = await unlockKeychain(
       authInfo.username,
       authInfo.password,
       masterSalt
     )
     keyStorage.keychainKey = keychainKey
-    keyStorage.keychain = keychain
     await redirectAfterLogin()
   }
 

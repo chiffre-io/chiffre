@@ -13,7 +13,7 @@ import {
   findKeychain,
   updateKeychain,
   KeychainUpdatableFields
-} from '~/src/server/db/models/auth/Keychains'
+} from '~/src/server/db/models/entities/Keychains'
 
 // --
 
@@ -33,9 +33,7 @@ type UpdateKeychainRequest = Request<Db & ApiAuth, UpdateKeychainParams>
 interface UpdateKeychainParams extends KeychainUpdatableFields {}
 
 handler.patch(
-  requireBodyParams<UpdateKeychainParams>({
-    encrypted: requiredString
-  }),
+  requireBodyParams<UpdateKeychainParams>({}),
   async (req: UpdateKeychainRequest, res: NextApiResponse) => {
     try {
       await updateKeychain(req.db, req.auth.userID, req.body)

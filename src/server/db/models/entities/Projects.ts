@@ -1,13 +1,13 @@
 import Knex from 'knex'
-import { USERS_AUTH_SRP_TABLE } from '../auth/UsersAuthSRP'
 import { updatedAtFieldAutoUpdate } from '~/src/server/db/utility'
+import { VAULTS_TABLE } from './Vaults'
 
 export const PROJECTS_TABLE = 'projects'
 
 interface ProjectInput {
-  publicKey: string
-  encrypted: string
-  creator: string
+  vaultID: string
+  publicKey: string // In clear-text
+  secretKey: string // Encrypted with the vault key
 }
 
 export interface Project extends ProjectInput {
@@ -18,14 +18,14 @@ export interface Project extends ProjectInput {
 
 export const createProject = async (
   db: Knex,
-  userID: string,
+  vaultID: string,
   publicKey: string,
-  encrypted: string
+  secretKey: string
 ): Promise<Project> => {
   const project: ProjectInput = {
+    vaultID,
     publicKey,
-    encrypted,
-    creator: userID
+    secretKey
   }
   const result = await db
     .insert(project)
@@ -46,30 +46,18 @@ export const findProject = async (db: Knex, id: string) => {
   return result[0]
 }
 
-export const updateProject = async (
-  db: Knex,
-  id: string,
-  creator: string,
-  encrypted: string,
-  publicKey?: string
-) => {
-  return await db<Project>(PROJECTS_TABLE)
-    .update({ encrypted, publicKey })
-    .where({ id, creator })
-}
-
-export const deleteProject = async (db: Knex, id: string, creator: string) => {
+export const deleteProject = async (db: Knex, id: string) => {
   return await db
     .from(PROJECTS_TABLE)
-    .where({ id, creator })
+    .where({ id })
     .delete()
 }
 
-export const getAllProjectsForUser = async (db: Knex, userID: string) => {
+export const getAllProjectsInVault = async (db: Knex, vaultID: string) => {
   return await db
     .select<Project[]>('*')
     .from(PROJECTS_TABLE)
-    .where({ creator: userID })
+    .where({ vaultID })
 }
 
 // --
@@ -83,10 +71,10 @@ export const createInitialProjectsTable = async (db: Knex) => {
       .notNullable()
       .defaultTo(db.raw('uuid_generate_v4()'))
       .primary()
+    table.uuid('vaultID').notNullable()
+    table.foreign('vaultID').references(`${VAULTS_TABLE}.id`)
     table.string('publicKey').notNullable()
-    table.text('encrypted').notNullable()
-    table.uuid('creator').notNullable()
-    table.foreign('creator').references(`${USERS_AUTH_SRP_TABLE}.id`)
+    table.string('secretKey').notNullable()
   })
   await updatedAtFieldAutoUpdate(db, PROJECTS_TABLE)
 }

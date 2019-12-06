@@ -1,10 +1,12 @@
 import Knex from 'knex'
 import { updatedAtFieldAutoUpdate } from '~/src/server/db/utility'
+import { USERS_AUTH_SRP_TABLE } from '../auth/UsersAuthSRP'
 
 export const VAULTS_TABLE = 'vaults'
 
 interface VaultInput {
   encrypted: string
+  createdBy: string // userID
 }
 
 export interface Vault extends VaultInput {
@@ -15,13 +17,15 @@ export interface Vault extends VaultInput {
 
 export const createVault = async (
   db: Knex,
-  encrypted: string
+  encrypted: string,
+  createdBy: string
 ): Promise<Vault> => {
-  const project: VaultInput = {
-    encrypted
+  const vault: VaultInput = {
+    encrypted,
+    createdBy
   }
   const result = await db
-    .insert(project)
+    .insert(vault)
     .into(VAULTS_TABLE)
     .returning<Vault[]>('*')
   return result[0]
@@ -63,6 +67,11 @@ export const createInitialVaultsTable = async (db: Knex) => {
       .notNullable()
       .defaultTo(db.raw('uuid_generate_v4()'))
       .primary()
+    table
+      .uuid('createdBy')
+      .notNullable()
+      .index()
+    table.foreign('createdBy').references(`${USERS_AUTH_SRP_TABLE}.id`)
     table.text('encrypted').notNullable()
   })
   await updatedAtFieldAutoUpdate(db, VAULTS_TABLE)

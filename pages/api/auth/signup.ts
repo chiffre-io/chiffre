@@ -16,7 +16,7 @@ import { createJwtCookie } from '~/src/server/cookies'
 import {
   createKeychainRecord,
   KeychainRecord
-} from '~/src/server/db/models/auth/Keychains'
+} from '~/src/server/db/models/entities/Keychains'
 
 export interface SignupParameters {
   username: string

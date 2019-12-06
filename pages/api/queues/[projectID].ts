@@ -6,7 +6,7 @@ import {
   ApiAuth
 } from '~/src/server/middleware/authMiddlewares'
 import { Request } from '~/src/server/types'
-import { findMessagesForProject } from '~/src/server/db/models/projects/ProjectMessageQueue'
+import { findMessagesForProject } from '~/src/server/db/models/entities/ProjectMessageQueue'
 import extractUrlParameter, {
   UrlParams
 } from '~/src/server/middleware/extractUrlParameter'

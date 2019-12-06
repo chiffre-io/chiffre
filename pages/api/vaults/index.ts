@@ -9,7 +9,7 @@ import requireBodyParams, {
   requiredString
 } from '~/src/server/middleware/requireBodyParams'
 import { Request } from '~/src/server/types'
-import { createVault } from '~/src/server/db/models/vaults/Vaults'
+import { createVault } from '~/src/server/db/models/entities/Vaults'
 
 // --
 
@@ -34,9 +34,13 @@ handler.use(apiAuthMiddleware)
 handler.post(
   async (req: Request<Db & ApiAuth, CreateVaultArgs>, res: NextApiResponse) => {
     try {
-      const { id } = await createVault(req.db, req.body.encrypted)
+      const { id: vaultID } = await createVault(
+        req.db,
+        req.body.encrypted,
+        req.auth.userID
+      )
       const response: CreateVaultResponse = {
-        vaultID: id
+        vaultID
       }
       return res.status(201).send(response)
     } catch (error) {

@@ -65,18 +65,12 @@ export interface Keychain {
 
 // -----------------------------------------------------------------------------
 
-/**
- * Vault Keys
- */
 export interface VaultKey {
   vaultID: string
   name: string
   key: CloakKey
 }
 
-/**
- *
- */
 export interface SharedKey {
   userID: string
   boxKey: Uint8Array

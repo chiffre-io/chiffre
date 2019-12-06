@@ -3,10 +3,11 @@ import { createInitialUsersAuthSrpTable } from '../models/auth/UsersAuthSRP'
 import { createInitialLoginChallengesSrpTable } from '../models/auth/LoginChallengesSRP'
 import { createInitialSessionsTable } from '../models/auth/Sessions'
 import { createInitialUsersAuthSettingsTable } from '../models/auth/UsersAuthSettings'
-import { createInitialKeychainsTable } from '../models/auth/Keychains'
-import { createInitialVaultsTable } from '../models/vaults/Vaults'
-import { createInitialProjectsTable } from '../models/projects/Projects'
-import { createInitialProjectMessageQueueTable } from '../models/projects/ProjectMessageQueue'
+import { createInitialKeychainsTable } from '../models/entities/Keychains'
+import { createInitialVaultsTable } from '../models/entities/Vaults'
+import { createInitialProjectsTable } from '../models/entities/Projects'
+import { createInitialProjectMessageQueueTable } from '../models/entities/ProjectMessageQueue'
+import { createInitialUserVaultEdgesTable } from '../models/entities/UserVaultEdges'
 import { setupUpdatedAtFieldAutoUpdate } from '../utility'
 
 export async function up(knex: Knex): Promise<any> {
@@ -25,6 +26,7 @@ export async function up(knex: Knex): Promise<any> {
   // Encrypted business logic
   await createInitialKeychainsTable(knex)
   await createInitialVaultsTable(knex)
+  await createInitialUserVaultEdgesTable(knex)
   await createInitialProjectsTable(knex)
   await createInitialProjectMessageQueueTable(knex)
 }

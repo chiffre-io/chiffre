@@ -1,5 +1,5 @@
 import Knex from 'knex'
-import { USERS_AUTH_SRP_TABLE } from './UsersAuthSRP'
+import { USERS_AUTH_SRP_TABLE } from '../auth/UsersAuthSRP'
 import { updatedAtFieldAutoUpdate } from '~/src/server/db/utility'
 
 export const KEYCHAINS_TABLE = 'keychains'
@@ -7,16 +7,17 @@ export const KEYCHAINS_TABLE = 'keychains'
 export interface KeychainRecord {
   userID: string
   key: string
-  encrypted: string
-  signaturePublicKey: string
-  sharingPublicKey: string
+  // todo: Add sharing later
+  // signaturePublicKey: string
+  // signatureSecretKey: string
+  // sharingPublicKey: string
+  // sharingSecretKey: string
 }
 
 export interface KeychainUpdatableFields {
-  encrypted: string // Always required (will always change)
   key?: string
-  signaturePublicKey?: string
-  sharingPublicKey?: string
+  // signaturePublicKey?: string
+  // sharingPublicKey?: string
 }
 
 // --
@@ -67,10 +68,9 @@ export const createInitialKeychainsTable = async (db: Knex) => {
       .notNullable()
       .primary()
     table.foreign('userID').references(`${USERS_AUTH_SRP_TABLE}.id`)
-    table.text('key').notNullable()
-    table.text('encrypted').notNullable()
-    table.string('signaturePublicKey').notNullable()
-    table.string('sharingPublicKey').notNullable()
+    table.string('key').notNullable()
+    // table.string('signaturePublicKey').notNullable()
+    // table.string('sharingPublicKey').notNullable()
   })
   await updatedAtFieldAutoUpdate(db, KEYCHAINS_TABLE)
 }
