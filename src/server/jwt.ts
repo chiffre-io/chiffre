@@ -1,5 +1,6 @@
 import jsonwebtoken, { SignOptions } from 'jsonwebtoken'
 import serverConfig from './env'
+import { b64, utf8 } from '~/src/client/engine/crypto/primitives/codec'
 
 export interface JwtClaims {
   userID: string
@@ -53,7 +54,7 @@ export const verifyJwt = (jwt: string): JwtClaims => {
 // On the back-end, use verifyJwt for extra security.
 export const extractJwtClaims = (jwt: string): JwtClaims => {
   const [_header, payloadBase64, _sig] = jwt.split('.')
-  const payloadJson = window.btoa(payloadBase64)
+  const payloadJson = utf8.decode(b64.decode(payloadBase64))
   const payload: JwtPayload = JSON.parse(payloadJson)
   return payloadToClaims(payload)
 }
