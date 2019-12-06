@@ -84,7 +84,10 @@
   },
   "jest": {
     "preset": "ts-jest/presets/js-with-ts",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^~/(.*)$": "<rootDir>/$1"
+    }
   },
   "browser": {
     "jsonwebtoken": false,
