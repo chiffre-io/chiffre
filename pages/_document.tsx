@@ -18,7 +18,7 @@ class MyDocument extends Document {
           <Main />
           <NextScript />
           <script
-            src="http://localhost:3000/api/embed/c0ffeeb0-dead-f00d-baad-cafebaadcafe"
+            src={`${process.env.APP_URL}/api/embed/c0ffeeb0-dead-f00d-baad-cafebaadcafe`}
             integrity="sha256-OQ062aRYOPnjgZ2FXCrnFxxVZgurFmTUElca5VMqlqU="
             crossOrigin="anonymous"
             async

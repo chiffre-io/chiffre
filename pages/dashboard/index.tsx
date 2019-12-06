@@ -10,11 +10,15 @@ import {
   decryptMessage
 } from '../../src/client/engine/ingest'
 import { useSet } from 'react-use'
+import { process } from '~/src/client/processing/processor'
+import sessionDurationProcessor from '~/src/client/processing/sessionDuration'
+import { Event } from '~/src/emitter/events'
+import navigationHistoryProcessor from '~/src/client/processing/navigationHistory'
 
 interface Props extends AuthenticatedPage {}
 
 const ProjectView: React.FC<{ project: Project }> = ({ project }) => {
-  const [data, { add }] = useSet<{ id: string }>()
+  const [data, { add }] = useSet<{ id: string; event: Event }>()
 
   React.useEffect(() => {
     fetchProjectDataPoints(project.id).then(messages => {
@@ -24,6 +28,17 @@ const ProjectView: React.FC<{ project: Project }> = ({ project }) => {
       })
     })
   }, [])
+
+  process(
+    Object.values(Array.from(data)).map(d => d.event),
+    sessionDurationProcessor
+  ).then(console.dir)
+
+  process(
+    Object.values(Array.from(data)).map(d => d.event),
+    navigationHistoryProcessor
+  ).then(console.dir)
+
   return (
     <>
       <pre>{JSON.stringify(project, null, 2)}</pre>

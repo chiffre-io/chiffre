@@ -3,17 +3,6 @@ import { pushEvent } from './push'
 import { EmitterConfig } from './config'
 
 export const setupPageVisitListeners = (config: EmitterConfig) => {
-  const events = ['load', 'unload', 'pageshow', 'pagehide']
-  events.forEach(event => {
-    window.addEventListener(
-      event,
-      () => {
-        pushEvent(createEvent(`window:${event}`), config)
-      },
-      false
-    )
-  })
-
   let oldPath = window.location.pathname
 
   setInterval(() => {

@@ -8,6 +8,7 @@ export const sessionID = nanoid()
 export interface SessionData {
   ua: string // user-agent
   lang: string // language
+  ref: string // referer
   vp: {
     // viewport dimensions
     w: number
@@ -19,6 +20,7 @@ export const sessionStart = () => {
   return createEvent<SessionData>('session:start', {
     ua: navigator.userAgent,
     lang: navigator.language,
+    ref: document.referrer,
     vp: {
       w: window.innerWidth,
       h: window.innerHeight
