@@ -10,12 +10,15 @@ import {
 } from '~/src/client/engine/account'
 import { saveLoginCredentials } from '~/src/client/auth'
 import { SignupParameters, SignupResponse } from '~/pages/api/auth/signup'
-import keyStorage from '~/src/client/engine/keyStorage'
+import { saveKeychainKey } from '~/src/client/engine/keyStorage'
+import useQueryString from '~/src/client/hooks/useQueryString'
 
 const SignupPage = () => {
   const showErrorToast = useErrorToast()
 
   const router = useRouter()
+  const redirectUrl = useQueryString('redirect')
+
   const onSubmit = async (values: Values) => {
     const { email: username, password } = values
 
@@ -30,8 +33,8 @@ const SignupPage = () => {
         password,
         params.masterSalt
       )
-      keyStorage.keychainKey = keychainKey
-      return await router.push('/')
+      await saveKeychainKey(keychainKey, false)
+      return await router.push(redirectUrl || '/dashboard')
     } catch (error) {
       showErrorToast(error)
     }

@@ -1,6 +1,6 @@
 import React from 'react'
 import { CloakKey } from '../engine/crypto/cloak'
-import keyStorage from '~/src/client/engine/keyStorage'
+import { loadKeychainKey } from '~/src/client/engine/keyStorage'
 import useRedirectToLogin from './useRedirectToLogin'
 
 export default function useKeychainKey() {
@@ -8,12 +8,13 @@ export default function useKeychainKey() {
   const redirectToLogin = useRedirectToLogin()
 
   React.useEffect(() => {
-    const storedKey = keyStorage.keychainKey
-    if (storedKey) {
-      setKey(storedKey)
-    } else {
-      redirectToLogin()
-    }
+    loadKeychainKey().then(loadedKey => {
+      if (loadedKey) {
+        setKey(loadedKey)
+      } else {
+        redirectToLogin()
+      }
+    })
   }, [])
 
   return key

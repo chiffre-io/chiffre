@@ -16,17 +16,22 @@ import { saveLoginCredentials } from '~/src/client/auth'
 import use2faVerification from './use2faVerification'
 import { publicApi } from '~/src/client/api'
 import { unlockKeychain } from '~/src/client/engine/account'
-import keyStorage from '~/src/client/engine/keyStorage'
+import { saveKeychainKey } from '~/src/client/engine/keyStorage'
 
 interface AuthInfo {
   userID: string
   sessionID: string
   username: string
   password: string
+  rememberMe: boolean
 }
 
 interface Return {
-  login: (username: string, password: string) => Promise<any>
+  login: (
+    username: string,
+    password: string,
+    rememberMe: boolean
+  ) => Promise<any>
   enterTwoFactorToken: (token: string) => Promise<any>
   showTwoFactor: boolean
 }
@@ -50,7 +55,11 @@ export default function useSrpLogin(): Return {
   const verifyTwoFactor = use2faVerification()
   const redirectAfterLogin = useRedirectAfterLogin()
 
-  const login = async (username: string, password: string) => {
+  const login = async (
+    username: string,
+    password: string,
+    rememberMe: boolean
+  ) => {
     const {
       userID,
       challengeID,
@@ -95,15 +104,17 @@ export default function useSrpLogin(): Return {
       sessionID,
       // Store credentials for post-2FA KDF
       username: twoFactor ? null : username,
-      password: twoFactor ? null : password
+      password: twoFactor ? null : password,
+      rememberMe
     })
     if (twoFactor) {
-      setShowTwoFactor(true)
-    } else if (jwt && masterSalt) {
+      return setShowTwoFactor(true)
+    }
+    if (jwt && masterSalt) {
       setError(null)
       saveLoginCredentials(jwt)
       const keychainKey = await unlockKeychain(username, password, masterSalt)
-      keyStorage.keychainKey = keychainKey
+      await saveKeychainKey(keychainKey, rememberMe)
       await redirectAfterLogin()
     }
   }
@@ -121,7 +132,7 @@ export default function useSrpLogin(): Return {
       authInfo.password,
       masterSalt
     )
-    keyStorage.keychainKey = keychainKey
+    await saveKeychainKey(keychainKey, authInfo.rememberMe)
     await redirectAfterLogin()
   }
 

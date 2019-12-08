@@ -2,6 +2,7 @@ import Knex from 'knex'
 import { USERS_AUTH_SRP_TABLE } from './UsersAuthSRP'
 import { userRequiresTwoFactorAuth } from './UsersAuthSettings'
 import { updatedAtFieldAutoUpdate } from '~/src/server/db/utility'
+import { expirationTimes } from '~/src/shared/config'
 
 export const SESSIONS_TABLE = 'sessions'
 
@@ -29,7 +30,7 @@ export const createSession = async (
     userID,
     twoFactorVerified: twoFactorRequired ? false : null,
     ipAddress,
-    expiresAt: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000) // in 7 days
+    expiresAt: expirationTimes.inSevenDays(now)
   }
   const result = await db
     .insert(session)

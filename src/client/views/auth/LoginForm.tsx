@@ -15,12 +15,13 @@ import PasswordField from '~/src/client/components/form/PasswordField'
 import Label from '~/src/client/components/form/Label'
 import { RouteLink } from '~/src/client/components/Links'
 import EmailField from '~/src/client/components/form/EmailField'
-import { Formik, Form, FormikErrors } from 'formik'
+import { Formik, Form, FormikErrors, Field } from 'formik'
 import useQueryString from '~/src/client/hooks/useQueryString'
 
 interface Values {
   email: string
   password: string
+  rememberMe: boolean
 }
 
 export interface Props {
@@ -40,7 +41,8 @@ const LoginForm: React.FC<Props> = ({ onSubmit }) => {
 
   const initialValues: Values = {
     email: '',
-    password: ''
+    password: '',
+    rememberMe: false
   }
 
   return (
@@ -74,7 +76,13 @@ const LoginForm: React.FC<Props> = ({ onSubmit }) => {
               <PasswordField name="password" />
             </Box>
             <Flex justifyContent="space-between" alignItems="baseline">
-              <Checkbox size="sm">Remember me on this device</Checkbox>
+              <Field name="rememberMe">
+                {({ field }) => (
+                  <Checkbox size="sm" {...field}>
+                    Remember me on this device
+                  </Checkbox>
+                )}
+              </Field>
               <Link
                 fontSize="sm"
                 color="gray.500"

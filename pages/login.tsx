@@ -12,7 +12,7 @@ const LoginPage = () => {
         <LoginForm
           onSubmit={async values => {
             window.Chiffre.sendEvent('login:submit', { username: values.email })
-            await login(values.email, values.password)
+            await login(values.email, values.password, values.rememberMe)
           }}
         />
       )}

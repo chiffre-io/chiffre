@@ -1,5 +1,6 @@
 import Knex from 'knex'
 import { USERS_AUTH_SRP_TABLE } from './UsersAuthSRP'
+import { expirationTimes } from '~/src/shared/config'
 
 export const LOGIN_CHALLENGES_SRP_TABLE = 'login_challenges_srp'
 
@@ -24,7 +25,7 @@ export const saveLoginChallenge = async (
   const challenge: LoginChallengeSrpInput = {
     userID,
     ephemeralSecret,
-    expiresAt: new Date(now.getTime() + 5 * 60 * 1000) // in 5 minutes
+    expiresAt: expirationTimes.inFiveMinutes(now)
   }
   const result = await db
     .insert(challenge)

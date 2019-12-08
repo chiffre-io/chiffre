@@ -43,6 +43,7 @@
     "env-alias": "^1.0.0",
     "formik": "^2.0.6",
     "hibp": "^8.0.0",
+    "idb-keyval": "^3.2.0",
     "jsonwebtoken": "^8.5.1",
     "knex": "^0.20.3",
     "nanoid": "^2.1.7",
