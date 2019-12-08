@@ -1,9 +1,9 @@
 import React from 'react'
 import NextLink from 'next/link'
-import { Link as ChakraLink } from '@chakra-ui/core'
+import { Link as ChakraLink, Button } from '@chakra-ui/core'
 
-export const RouteLink = ({ to, children, ...props }) => (
-  <NextLink href={to} passHref>
+export const RouteLink = ({ href, children, ...props }) => (
+  <NextLink href={href} passHref>
     <ChakraLink textDecoration="underline" {...props}>
       {children}
     </ChakraLink>
@@ -14,4 +14,12 @@ export const AnchorLink = ({ href, children, ...props }) => (
   <ChakraLink href={href} textDecoration="underline" {...props}>
     {children}
   </ChakraLink>
+)
+
+export const ButtonLink = ({ href, children, ...props }) => (
+  <NextLink href={href} passHref>
+    <Button as="a" {...props}>
+      {children}
+    </Button>
+  </NextLink>
 )

@@ -21,6 +21,7 @@ import { RouteLink } from '~/src/client/components/Links'
 import AboutPasswords from './signup/AboutPasswords'
 import { PasswordStrength } from './signup/passwordSettings'
 import ErrorText from '~/src/client/components/form/ErrorText'
+import useQueryString from '~/src/client/hooks/useQueryString'
 
 const PasswordStrengthIndicator = dynamic(
   () => import('./signup/PasswordStrengthIndicator'),
@@ -87,8 +88,10 @@ const SignupForm: React.FC<Props> = ({ onSubmit }) => {
     false
   )
   const toast = useToast()
-
   const dark = useColorMode().colorMode === 'dark'
+
+  const redirectQuery = useQueryString('redirect')
+  const loginUrl = `/login${redirectQuery ? '?redirect=' + redirectQuery : ''}`
 
   const initialValues: Values = {
     email: '',
@@ -200,8 +203,14 @@ const SignupForm: React.FC<Props> = ({ onSubmit }) => {
               <Checkbox pt={4} variantColor="green" {...field}>
                 <Text fontSize="sm">
                   I accept the{' '}
-                  <RouteLink to="#todo-url">Terms of Service</RouteLink> and the{' '}
-                  <RouteLink to="#todo-url">Privacy Policy</RouteLink>.
+                  <RouteLink href="/legal/terms-of-service">
+                    Terms of Service
+                  </RouteLink>{' '}
+                  and the{' '}
+                  <RouteLink href="/legal/privacy-policy">
+                    Privacy Policy
+                  </RouteLink>
+                  .
                 </Text>
               </Checkbox>
             )}
@@ -224,7 +233,7 @@ const SignupForm: React.FC<Props> = ({ onSubmit }) => {
             color={dark ? 'gray.500' : 'gray.600'}
           >
             Already have an account ?{' '}
-            <RouteLink to="/login" color={dark ? 'gray.400' : 'gray.700'}>
+            <RouteLink href={loginUrl} color={dark ? 'gray.400' : 'gray.700'}>
               Sign in
             </RouteLink>
           </Text>

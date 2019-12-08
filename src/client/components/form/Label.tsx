@@ -1,5 +1,5 @@
 import React from 'react'
-import { Flex, Text } from '@chakra-ui/core'
+import { Flex, Text, FormLabel } from '@chakra-ui/core'
 
 const LabelAside = ({ children, ...props }) => (
   <Text
@@ -14,25 +14,29 @@ const LabelAside = ({ children, ...props }) => (
   </Text>
 )
 
-export const LabelWithAside = ({ children, aside, htmlFor, ...props }) => (
-  <Flex justifyContent="space-between" alignItems="center" mb={2} {...props}>
+export const LabelWithAside = ({
+  children,
+  aside,
+  asideLeft = false,
+  htmlFor,
+  ...props
+}) => (
+  <Flex
+    justifyContent={asideLeft ? 'flex-start' : 'space-between'}
+    alignItems="baseline"
+    {...props}
+  >
     <Label htmlFor={htmlFor} mb={0}>
       {children}
     </Label>
-    <LabelAside>{aside()}</LabelAside>
+    <LabelAside ml={asideLeft && -1}>{aside()}</LabelAside>
   </Flex>
 )
 
 const Label = ({ children, ...props }) => (
-  <Text
-    as="label"
-    fontWeight="semibold"
-    display="inline-flex"
-    mb={2}
-    {...props}
-  >
+  <FormLabel as="label" fontWeight="semibold" display="inline-flex" {...props}>
     {children}
-  </Text>
+  </FormLabel>
 )
 
 export default Label

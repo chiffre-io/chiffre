@@ -23,11 +23,11 @@ const AboutPasswords = ({ revealed }) => {
     <Collapse isOpen={revealed}>
       <Paragraph>Your master password is the key to your account.</Paragraph>
       <Paragraph>
-        It is never sent to us, so we have{' '}
+        It is never sent to us, so we'll have{' '}
         <Text as="span" fontWeight="semibold">
           no way
         </Text>{' '}
-        to reset it for you.
+        to reset it for you. Keep it somewhere safe !
       </Paragraph>
       <Paragraph>
         We recommend you use a secure password manager to generate a long and
@@ -35,7 +35,7 @@ const AboutPasswords = ({ revealed }) => {
       </Paragraph>
       <Paragraph>
         Learn more about our{' '}
-        <RouteLink to="#todo-url">Security Policy</RouteLink>.
+        <RouteLink href="/legal/security-policy">Security Policy</RouteLink>.
       </Paragraph>
       <Paragraph mb={4}>
         * <i>Recommended : 64+ characters of all sorts</i>
