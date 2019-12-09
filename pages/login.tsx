@@ -11,7 +11,6 @@ const LoginPage = () => {
       {!showTwoFactor && (
         <LoginForm
           onSubmit={async values => {
-            window.Chiffre.sendEvent('login:submit', { username: values.email })
             await login(values.email, values.password, values.rememberMe)
           }}
         />
@@ -19,7 +18,6 @@ const LoginPage = () => {
       {showTwoFactor && (
         <TwoFactorForm
           onSubmit={async values => {
-            window.Chiffre.sendEvent('login:2fa')
             await enterTwoFactorToken(values.twoFactorToken)
           }}
         />
