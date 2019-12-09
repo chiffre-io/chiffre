@@ -36,7 +36,7 @@ interface Return {
   showTwoFactor: boolean
 }
 
-const useRedirectAfterLogin = (defaultRoute = '/') => {
+const useRedirectAfterLogin = (defaultRoute = '/dashboard') => {
   const router = useRouter()
   if (!router || !router.query) {
     // Server-side
