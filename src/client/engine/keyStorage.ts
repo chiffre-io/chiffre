@@ -1,61 +1,20 @@
 import { CloakKey } from './crypto/cloak'
-import { set, get, del } from 'idb-keyval'
 import { expirationTimes } from '~/src/shared/config'
+import SessionKeystore from 'session-keystore'
 
-interface ExpirableKey {
-  key: string
-  expiresAt: Date
+type StorableKeys = 'keychain'
+
+const store = new SessionKeystore<StorableKeys>('chiffre')
+
+export const saveKeychainKey = (key: CloakKey, persist: boolean) => {
+  const expiresAt = persist ? undefined : expirationTimes.inSevenDays()
+  store.set('keychain', key, expiresAt)
 }
 
-interface MemoryKeyStorage {
-  keychainKey: ExpirableKey
-}
-
-const memoryKeyStorage: MemoryKeyStorage = {
-  keychainKey: null
-}
-
-export const saveKeychainKey = async (key: CloakKey, persist: boolean) => {
-  memoryKeyStorage.keychainKey = {
-    key,
-    expiresAt: expirationTimes.inSevenDays()
-  }
-  if (persist) {
-    await set('keys:keychain', memoryKeyStorage.keychainKey)
-  }
-}
-
-export const loadKeychainKey = async () => {
-  if (memoryKeyStorage.keychainKey) {
-    if (handleExpiration(memoryKeyStorage.keychainKey)) {
-      return null
-    }
-    return memoryKeyStorage.keychainKey.key
-  }
-  try {
-    const key = await get<ExpirableKey>('keys:keychain')
-    if (handleExpiration(key)) {
-      return null
-    }
-    return key.key
-  } catch {}
-  return null
+export const loadKeychainKey = () => {
+  return store.get('keychain')
 }
 
 export const deleteKeychainKey = async () => {
-  memoryKeyStorage.keychainKey = null
-  await del('keys:keychain')
-}
-
-// --
-
-const handleExpiration = async (key: ExpirableKey, now = new Date()) => {
-  if (key.expiresAt < now) {
-    try {
-      // Key is expired, revoke it
-      await deleteKeychainKey()
-    } catch {}
-    return true
-  }
-  return false
+  store.delete('keychain')
 }

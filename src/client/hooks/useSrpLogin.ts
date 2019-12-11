@@ -114,7 +114,7 @@ export default function useSrpLogin(): Return {
       setError(null)
       saveLoginCredentials(jwt)
       const keychainKey = await unlockKeychain(username, password, masterSalt)
-      await saveKeychainKey(keychainKey, rememberMe)
+      saveKeychainKey(keychainKey, rememberMe)
       await redirectAfterLogin()
     }
   }
@@ -132,7 +132,7 @@ export default function useSrpLogin(): Return {
       authInfo.password,
       masterSalt
     )
-    await saveKeychainKey(keychainKey, authInfo.rememberMe)
+    saveKeychainKey(keychainKey, authInfo.rememberMe)
     await redirectAfterLogin()
   }
 

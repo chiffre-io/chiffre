@@ -33,7 +33,7 @@ const SignupPage = () => {
         password,
         params.masterSalt
       )
-      await saveKeychainKey(keychainKey, false)
+      saveKeychainKey(keychainKey, false)
       return await router.push(redirectUrl || '/dashboard')
     } catch (error) {
       showErrorToast(error)

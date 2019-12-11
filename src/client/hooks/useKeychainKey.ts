@@ -8,13 +8,12 @@ export default function useKeychainKey() {
   const redirectToLogin = useRedirectToLogin()
 
   React.useEffect(() => {
-    loadKeychainKey().then(loadedKey => {
-      if (loadedKey) {
-        setKey(loadedKey)
-      } else {
-        redirectToLogin()
-      }
-    })
+    const loadedKey = loadKeychainKey()
+    if (loadedKey) {
+      setKey(loadedKey)
+    } else {
+      redirectToLogin()
+    }
   }, [])
 
   return key
