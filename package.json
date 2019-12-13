@@ -56,7 +56,7 @@
     "react-qr-svg": "^2.2.1",
     "react-use": "^13.10.1",
     "secure-remote-password": "^0.3.1",
-    "session-keystore": "0.3.0",
+    "session-keystore": "^0.4.0",
     "socket.io": "^2.3.0",
     "socket.io-client": "^2.3.0",
     "timeago.js": "^4.0.1",

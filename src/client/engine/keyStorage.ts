@@ -4,7 +4,7 @@ import SessionKeystore from 'session-keystore'
 
 type StorableKeys = 'keychain'
 
-const store = new SessionKeystore<StorableKeys>('chiffre')
+const store = new SessionKeystore<StorableKeys>({ name: 'chiffre' })
 
 export const saveKeychainKey = (key: CloakKey, persist: boolean) => {
   const expiresAt = persist ? undefined : expirationTimes.inSevenDays()

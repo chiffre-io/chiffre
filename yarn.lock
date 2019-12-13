@@ -9994,10 +9994,10 @@ serve@^11.2.0:
     serve-handler "6.1.2"
     update-check "1.5.2"
 
-session-keystore@0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/session-keystore/-/session-keystore-0.3.0.tgz#c016be58380c4c0812da3ec9e251f7d987e2417b"
-  integrity sha512-Oplt84uFOVHeVk7kGtk7Dt1JFRA+rGltYANwOGZnJ2EuiEXcuMbOEsn1EgsE/O75NDlFvWRZPY8dkIM3XHIcnQ==
+session-keystore@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/session-keystore/-/session-keystore-0.4.0.tgz#6e042edd9d0b65546d0713758b62b0beb8f41cc7"
+  integrity sha512-RbAATdKZVlUzHy5Y34FCDDYuqdH36wM9Dpi4c4JFCMcj+YrHROKZtHVU5eyhcBuWNSF5SOSSGLYXy6L71phebg==
   dependencies:
     "@stablelib/base64" "^0.7.2"
     "@stablelib/utf8" "^0.10.1"
@@ -10012,7 +10012,7 @@ set-harmonic-interval@^1.0.1:
   resolved "https://registry.yarnpkg.com/set-harmonic-interval/-/set-harmonic-interval-1.0.1.tgz#e1773705539cdfb80ce1c3d99e7f298bb3995249"
   integrity sha512-AhICkFV84tBP1aWqPwLZqFvAwqEoVA9kxNMniGEUvzOlm4vLmOFLiTT3UZ6bziJTy4bOVpzWGTfSCbmaayGx8g==
 
-set-value@^2.0.0, set-value@^2.0.1:
+set-value@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/set-value/-/set-value-2.0.1.tgz#a18d40530e6f07de4228c7defe4227af8cad005b"
   integrity sha512-JxHc1weCN68wRY0fhCoXpyK55m/XPHafOmK4UWD7m2CI14GMcFypt4w/0+NV5f/ZMby2F6S2wwA7fgynh9gWSw==
