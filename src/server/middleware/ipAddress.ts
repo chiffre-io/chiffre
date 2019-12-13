@@ -10,7 +10,7 @@ const ipAddressMiddleware: NextApiMiddleware<IpAddress> = (req, _, next) => {
     req.ipAddress =
       typeof xForwardedFor === 'string'
         ? xForwardedFor.split(',')[0]
-        : xForwardedFor[0]
+        : xForwardedFor[0].split(',')[0]
   } else {
     req.ipAddress = req.socket.remoteAddress
   }
