@@ -86,7 +86,7 @@ export const expandKey = async (key: string, usage: 'encrypt' | 'decrypt') => {
 export const getKeyFingerprint = async (key: string): Promise<string> => {
   const data = utf8.encode(key)
   const hash = await webcrypto.subtle.digest('SHA-256', data)
-  return hex.encode(new Uint8Array(hash)).slice(0, 8)
+  return hex.encode(new Uint8Array(hash)).slice(0, 16)
 }
 
 export const encryptString = async (
