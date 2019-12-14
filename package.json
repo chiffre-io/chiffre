@@ -27,7 +27,7 @@
     "analyze": "ANALYZE=true next build"
   },
   "dependencies": {
-    "@chakra-ui/core": "^0.5.0",
+    "@chakra-ui/core": "^0.5.1",
     "@emotion/core": "^10.0.22",
     "@emotion/styled": "^10.0.23",
     "@stablelib/base64": "^0.7.2",
