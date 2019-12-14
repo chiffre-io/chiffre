@@ -1,12 +1,10 @@
-import nacl from 'tweetnacl'
 import {
   encryptString,
   decryptString,
   CloakKey,
-  CloakedString,
   exportCryptoKey
 } from './crypto/cloak'
-import { b64, encoders, decoders, Encoding } from './crypto/primitives/codec'
+import { b64 } from './crypto/primitives/codec'
 import {
   generateSalt,
   deriveAesGcmKeyFromPassword

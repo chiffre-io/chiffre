@@ -77,7 +77,7 @@ const LeftBackground = ({ ...props }) => (
       r="5"
       fill="#1A202C"
       stroke="#4A5568"
-      stroke-width="2"
+      strokeWidth="2"
     />
     <circle
       cx="145.723"
@@ -85,7 +85,7 @@ const LeftBackground = ({ ...props }) => (
       r="5"
       fill="#1A202C"
       stroke="#4A5568"
-      stroke-width="2"
+      strokeWidth="2"
     />
     <circle
       cx="119.833"
@@ -93,7 +93,7 @@ const LeftBackground = ({ ...props }) => (
       r="5"
       fill="#1A202C"
       stroke="#4A5568"
-      stroke-width="2"
+      strokeWidth="2"
     />
     <circle
       cx="13.4596"
@@ -101,7 +101,7 @@ const LeftBackground = ({ ...props }) => (
       r="5"
       fill="#1A202C"
       stroke="#4A5568"
-      stroke-width="2"
+      strokeWidth="2"
     />
     <circle
       cx="6.99805"
@@ -109,7 +109,7 @@ const LeftBackground = ({ ...props }) => (
       r="5"
       fill="#1A202C"
       stroke="#4A5568"
-      stroke-width="2"
+      strokeWidth="2"
     />
     <circle
       cx="44.4434"
@@ -117,7 +117,7 @@ const LeftBackground = ({ ...props }) => (
       r="5"
       fill="#1A202C"
       stroke="#4A5568"
-      stroke-width="2"
+      strokeWidth="2"
     />
     <circle
       cx="171.757"
@@ -125,7 +125,7 @@ const LeftBackground = ({ ...props }) => (
       r="5"
       fill="#1A202C"
       stroke="#4A5568"
-      stroke-width="2"
+      strokeWidth="2"
     />
     <circle
       cx="89.1444"
@@ -133,7 +133,7 @@ const LeftBackground = ({ ...props }) => (
       r="5"
       fill="#1A202C"
       stroke="#4A5568"
-      stroke-width="2"
+      strokeWidth="2"
     />
     <path
       d="M178.099 102.22H191.789C192.325 102.22 192.82 102.505 193.088 102.97L199.934 114.826C200.202 115.29 200.202 115.862 199.934 116.326L193.088 128.182C192.82 128.646 192.325 128.932 191.789 128.932H178.099C177.563 128.932 177.068 128.646 176.8 128.182L169.954 116.326C169.686 115.862 169.686 115.29 169.954 114.826L176.8 102.97C177.068 102.505 177.563 102.22 178.099 102.22Z"
@@ -195,7 +195,7 @@ const RightBackground = ({ ...props }) => (
       r="5"
       fill="#1A202C"
       stroke="#4A5568"
-      stroke-width="2"
+      strokeWidth="2"
     />
     <circle
       cx="250.685"
@@ -203,7 +203,7 @@ const RightBackground = ({ ...props }) => (
       r="5"
       fill="#1A202C"
       stroke="#4A5568"
-      stroke-width="2"
+      strokeWidth="2"
     />
     <circle
       cx="189.1"
@@ -211,7 +211,7 @@ const RightBackground = ({ ...props }) => (
       r="5"
       fill="#1A202C"
       stroke="#4A5568"
-      stroke-width="2"
+      strokeWidth="2"
     />
     <circle
       cx="158.307"
@@ -219,7 +219,7 @@ const RightBackground = ({ ...props }) => (
       r="5"
       fill="#1A202C"
       stroke="#4A5568"
-      stroke-width="2"
+      strokeWidth="2"
     />
     <circle
       cx="65.9285"
@@ -227,7 +227,7 @@ const RightBackground = ({ ...props }) => (
       r="5"
       fill="#1A202C"
       stroke="#4A5568"
-      stroke-width="2"
+      strokeWidth="2"
     />
     <circle
       cx="96.7214"
@@ -235,7 +235,7 @@ const RightBackground = ({ ...props }) => (
       r="5"
       fill="#1A202C"
       stroke="#4A5568"
-      stroke-width="2"
+      strokeWidth="2"
     />
     <circle
       cx="219.893"
@@ -243,7 +243,7 @@ const RightBackground = ({ ...props }) => (
       r="5"
       fill="#1A202C"
       stroke="#4A5568"
-      stroke-width="2"
+      strokeWidth="2"
     />
     <path
       d="M8.8917 53.512H22.5823C23.1182 53.512 23.6134 53.7979 23.8813 54.262L30.7266 66.1184C30.9946 66.5825 30.9946 67.1543 30.7266 67.6184L23.8813 79.4748C23.6134 79.9389 23.1182 80.2248 22.5823 80.2248H8.8917C8.3558 80.2248 7.86061 79.9389 7.59266 79.4748L0.747362 67.6184C0.479413 67.1543 0.479413 66.5825 0.747363 66.1184L7.59266 54.262C7.86061 53.7979 8.3558 53.512 8.8917 53.512Z"
