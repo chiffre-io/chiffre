@@ -64,7 +64,7 @@
     "zxcvbn": "^4.4.2"
   },
   "devDependencies": {
-    "@next/bundle-analyzer": "^9.1.4",
+    "@next/bundle-analyzer": "^9.1.5",
     "@types/cron": "^1.7.1",
     "@types/dotenv": "^8.2.0",
     "@types/jest": "^24.0.23",
