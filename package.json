@@ -41,7 +41,7 @@
     "cron": "^1.7.2",
     "emotion-theming": "^10.0.19",
     "env-alias": "^1.0.0",
-    "formik": "^2.0.6",
+    "formik": "^2.0.8",
     "hibp": "^8.0.0",
     "jsonwebtoken": "^8.5.1",
     "knex": "^0.20.3",
