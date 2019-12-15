@@ -9,13 +9,13 @@ import { CookieNames } from '~/src/server/cookies'
 const redirectToLogin = async (ctx: NextPageContext) => {
   if (ctx.req) {
     // Server-side
-    ctx.res.writeHead(302, { Location: `/login?redirect=${ctx.pathname}` })
+    ctx.res.writeHead(302, { Location: `/login?redirect=${ctx.asPath}` })
     await new Promise(resolve => {
       ctx.res.end(resolve)
     })
   } else {
     // Client-side
-    const redirectUrl = ctx ? ctx.pathname : window.location.pathname
+    const redirectUrl = ctx ? ctx.asPath : window.location.pathname
     await Router.push(`/login?redirect=${redirectUrl}`)
   }
 }
