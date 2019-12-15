@@ -1,5 +1,6 @@
 import { encryptString, decryptString, CloakKey, exportKey } from '@47ng/cloak'
 import { b64 } from './crypto/primitives/codec'
+import { hashString } from './crypto/primitives/hash'
 import {
   generateSalt,
   deriveAesGcmKeyFromPassword
@@ -24,6 +25,16 @@ export const deriveMasterKey = async (
   return await exportKey(key)
 }
 
+// --
+
+export const createMasterKeyFromToken = async (token: string) => {
+  const username = await hashString(token, 'utf8', 'hex')
+  return await createMasterKey(username, token)
+}
+
+export const deriveMasterKeyFromToken = async (token: string, salt: string) => {
+  const username = await hashString(token, 'utf8', 'hex')
+  return await deriveMasterKey(username, token, salt)
 }
 
 // --
