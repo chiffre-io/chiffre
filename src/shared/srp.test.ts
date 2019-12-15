@@ -1,5 +1,5 @@
 import {
-  clientSignup,
+  generateSrpSignupEntities,
   clientAssembleLoginResponse,
   clientVerifyLogin
 } from '~/src/client/engine/crypto/srp'
@@ -9,7 +9,10 @@ describe('SRP', () => {
   test('complete login flow', async () => {
     const username = 'username'
     const password = 'password'
-    const { srpSalt, srpVerifier } = await clientSignup(username, password)
+    const { srpSalt, srpVerifier } = await generateSrpSignupEntities(
+      username,
+      password
+    )
     const serverEphemeral = serverLoginChallenge(srpVerifier)
     const {
       session: clientSession,
@@ -36,7 +39,7 @@ describe('SRP', () => {
 
   test('login with wrong password', async () => {
     const username = 'username'
-    const { srpSalt, srpVerifier } = await clientSignup(
+    const { srpSalt, srpVerifier } = await generateSrpSignupEntities(
       username,
       'password-signup'
     )
@@ -64,7 +67,7 @@ describe('SRP', () => {
 
   test('login with wrong username', async () => {
     const password = 'password'
-    const { srpSalt, srpVerifier } = await clientSignup(
+    const { srpSalt, srpVerifier } = await generateSrpSignupEntities(
       'username-signup',
       password
     )

@@ -1,5 +1,5 @@
 import { SignupParameters } from '~/pages/api/auth/signup'
-import { clientSignup } from './crypto/srp'
+import { generateSrpSignupEntities } from './crypto/srp'
 import {
   createMasterKey,
   encryptKeychainKey,
@@ -14,7 +14,7 @@ export const createSignupEntities = async (
   password: string
 ): Promise<SignupParameters> => {
   // Generate SRP entities
-  const srpParams = await clientSignup(username, password)
+  const srpEntities = await generateSrpSignupEntities(username, password)
 
   // Create a keychain key & encrypt it with the master key
   const { masterKey, masterSalt } = await createMasterKey(username, password)
@@ -23,7 +23,7 @@ export const createSignupEntities = async (
 
   // Pack everything for signup
   return {
-    ...srpParams,
+    ...srpEntities,
     masterSalt,
     keychain: {
       key: encryptedKeychainKey
@@ -44,23 +44,3 @@ export const unlockKeychain = async (
   const keychainKey = await decryptString(encryptedKeychainKey, masterKey)
   return keychainKey
 }
-
-// export const createUserVaultIfNeeded = async (
-//   username: string,
-//   keychainKey: CloakKey
-// ) => {
-//   const vault = createVault(username)
-//   const vaultKey = await generateKey()
-//   const lockedVault = await lockVault(vault, vaultKey)
-
-//   // Send new vault to the server
-//   const { vaultID } = await clientApi.post<
-//     CreateVaultArgs,
-//     CreateVaultResponse
-//   >('/vaults', {
-//     encrypted: lockedVault
-//   })
-
-//   // Store vault key in the keychain
-//   return addVaultKey(keychain, vaultID, username, vaultKey)
-// }

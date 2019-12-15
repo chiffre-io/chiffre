@@ -25,15 +25,13 @@ type SrpSignupParameters = Pick<
   'username' | 'srpSalt' | 'srpVerifier'
 >
 
-export const clientSignup = async (
+export const generateSrpSignupEntities = async (
   username: string,
   password: string
 ): Promise<SrpSignupParameters> => {
   const salt = srpClient.generateSalt()
-
   const privateKey = await derivePrivateKey(username, password, salt)
   const verifier = srpClient.deriveVerifier(privateKey)
-
   return {
     username,
     srpSalt: hexToBase64url(salt),
