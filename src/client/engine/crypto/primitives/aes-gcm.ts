@@ -1,26 +1,9 @@
 import webcrypto from './webcrypto'
-import { b64, utf8 } from './codec'
+import { utf8 } from './codec'
 
 export interface AesCipher {
   iv: Uint8Array
   text: Uint8Array
-}
-
-// --
-
-export const serializeAesCipher = (cipher: AesCipher): string => {
-  return ['a1', b64.encode(cipher.iv), b64.encode(cipher.text)].join('.')
-}
-
-export const deserializeAesCipher = (cipher: string): AesCipher | null => {
-  if (cipher.startsWith('a1.')) {
-    const [_, iv, text] = cipher.split('.')
-    return {
-      text: b64.decode(text),
-      iv: b64.decode(iv)
-    }
-  }
-  return null
 }
 
 // --
