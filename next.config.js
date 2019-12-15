@@ -24,6 +24,7 @@ module.exports = withBundleAnalyzer(
     // Will only be available on the server side
     serverRuntimeConfig: loadFromEnv([
       'DATABASE_URI',
+      'DATABASE_MAX_CONNECTIONS',
       'JWT_SECRET',
       'JWT_ISSUER',
       'CLOAKING_MASTER_KEY',
