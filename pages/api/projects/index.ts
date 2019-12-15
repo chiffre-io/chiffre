@@ -48,15 +48,15 @@ handler.post(
     try {
       // todo: Make sure req.auth.userID has the right to create a project
       // ie: They have a link to the vaultID with their keychain.
-      const { id: projectID } = await createProject(
+      const project = await createProject(
         req.db,
         req.body.vaultID,
         req.body.publicKey,
         req.body.secretKey
       )
-      const embedScript = await formatEmitterEmbedScript(req.db, projectID)
+      const embedScript = await formatEmitterEmbedScript(project)
       const response: CreateProjectResponse = {
-        projectID,
+        projectID: project.id,
         embedScript
       }
       return res.status(201).send(response)

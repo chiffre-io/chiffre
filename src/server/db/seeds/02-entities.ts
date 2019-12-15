@@ -58,6 +58,6 @@ export const seed = async (knex: Knex) => {
   const encryptedVaultKey = await encryptString(vaultKey, keychainKey)
   await createUserVaultEdge(knex, userID, vaultID, encryptedVaultKey)
 
-  const emitter = await formatEmitterEmbedScript(knex, projectID)
+  const emitter = await formatEmitterEmbedScript(project)
   console.log(emitter)
 }
