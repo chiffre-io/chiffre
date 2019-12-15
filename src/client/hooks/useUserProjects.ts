@@ -2,7 +2,7 @@ import React from 'react'
 import { useSet } from 'react-use'
 import { clientApi } from '~/src/client/api'
 import { Project } from '~/src/server/db/models/entities/Projects'
-import { CloakKey, decryptString } from '~/src/client/engine/crypto/cloak'
+import { CloakKey, decryptString } from '@47ng/cloak'
 import { ProjectsList } from '~/pages/api/projects'
 
 export default function useUserProjects(keychainKey: CloakKey) {

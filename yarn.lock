@@ -2,6 +2,17 @@
 # yarn lockfile v1
 
 
+"@47ng/cloak@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@47ng/cloak/-/cloak-0.3.0.tgz#45d3eed56d82f09be6b172d8e9a400536c90cae6"
+  integrity sha512-CV5HEaXjCqjF24ThA/31b/TwdBbSO4RfXVdV1Rvq2/v9gZPuPeHk0NFYhSybZ9+ZNUoYmirEW0cKnkHGRRWseA==
+  dependencies:
+    "@stablelib/base64" "^0.7.2"
+    "@stablelib/hex" "^0.5.0"
+    "@stablelib/utf8" "^0.10.1"
+    commander "^4.0.1"
+    node-webcrypto-ossl "^1.0.48"
+
 "@ampproject/toolbox-core@^1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@ampproject/toolbox-core/-/toolbox-core-1.1.1.tgz#540c8f3ab0f5d1faa1ba35282cd5f5f3f0e16a76"
@@ -7632,6 +7643,14 @@ nth-check@^1.0.2:
   integrity sha512-WeBOdju8SnzPN5vTUJYxYUxLeXpCaVP5i5e0LF8fg7WORF2Wd7wFX/pk0tYZk7s8T+J7VLy0Da6J1+wCT0AtHg==
   dependencies:
     boolbase "~1.0.0"
+
+null-loader@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/null-loader/-/null-loader-3.0.0.tgz#3e2b6c663c5bda8c73a54357d8fa0708dc61b245"
+  integrity sha512-hf5sNLl8xdRho4UPBOOeoIwT3WhjYcMUQm0zj44EhD6UscMAz72o2udpoDFBgykucdEDGIcd6SXbc/G6zssbzw==
+  dependencies:
+    loader-utils "^1.2.3"
+    schema-utils "^1.0.0"
 
 num2fraction@^1.2.2:
   version "1.2.2"

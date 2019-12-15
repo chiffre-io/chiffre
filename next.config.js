@@ -41,6 +41,14 @@ module.exports = withBundleAnalyzer(
         })
       )
 
+      if (!isServer) {
+        // Don't bundle node-webcrypto-ossl in the client
+        config.module.rules.push({
+          test: path.resolve(__dirname, 'node_modules/node-webcrypto-ossl'),
+          use: 'null-loader'
+        })
+      }
+
       config.resolve.alias['~'] = path.resolve(__dirname)
 
       // if (!isServer) {

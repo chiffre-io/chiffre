@@ -1,9 +1,4 @@
-import {
-  encryptString,
-  decryptString,
-  CloakKey,
-  exportCryptoKey
-} from './crypto/cloak'
+import { encryptString, decryptString, CloakKey, exportKey } from '@47ng/cloak'
 import { b64 } from './crypto/primitives/codec'
 import {
   generateSalt,
@@ -26,7 +21,9 @@ export const deriveMasterKey = async (
     b64.decode(salt),
     20000
   )
-  return await exportCryptoKey(key)
+  return await exportKey(key)
+}
+
 }
 
 // --

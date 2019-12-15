@@ -1,4 +1,4 @@
-import { CloakKey } from './crypto/cloak'
+import { CloakKey } from '@47ng/cloak'
 import { expirationTimes } from '~/src/shared/config'
 import SessionKeystore from 'session-keystore'
 

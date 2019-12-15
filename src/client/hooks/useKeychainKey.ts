@@ -1,5 +1,5 @@
 import React from 'react'
-import { CloakKey } from '../engine/crypto/cloak'
+import { CloakKey } from '@47ng/cloak'
 import { loadKeychainKey } from '~/src/client/engine/keyStorage'
 import useRedirectToLogin from './useRedirectToLogin'
 

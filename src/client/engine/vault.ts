@@ -3,7 +3,7 @@ import {
   CloakedString,
   encryptString,
   decryptString
-} from './crypto/cloak'
+} from '@47ng/cloak'
 
 export interface ProjectKey {
   projectID: string

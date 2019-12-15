@@ -7,11 +7,7 @@ import {
   PROJECTS_TABLE
 } from '~/src/server/db/models/entities/Projects'
 import { createUserVaultEdge } from '../models/entities/UserVaultEdges'
-import {
-  generateKey,
-  encryptString,
-  decryptString
-} from '~/src/client/engine/crypto/cloak'
+import { generateKey, encryptString, decryptString } from '@47ng/cloak'
 import { findUser } from '~/src/server/db/models/auth/UsersAuthSRP'
 import { deriveMasterKey } from '~/src/client/engine/masterKey'
 import { findKeychain } from '../models/entities/Keychains'

@@ -5,7 +5,7 @@ import {
   encryptKeychainKey,
   deriveMasterKey
 } from './masterKey'
-import { generateKey, decryptString } from './crypto/cloak'
+import { generateKey, decryptString } from '@47ng/cloak'
 import { clientApi } from '~/src/client/api'
 import { KeychainRecord } from '~/src/server/db/models/entities/Keychains'
 
