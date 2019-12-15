@@ -1,8 +1,14 @@
 import { Session } from './db/models/auth/Sessions'
+import serverRuntimeConfig from '~/src/server/env'
 
 export enum CookieNames {
   jwt = 'chiffre:jwt'
 }
+
+// Allow overriding for local non-https testing of production builds
+const secureCookies =
+  process.env.NODE_ENV === 'production' &&
+  serverRuntimeConfig.LOCAL_INSECURE_COOKIES !== 'true'
 
 export const createJwtCookie = (jwt: string, session: Session) => {
   return [
@@ -10,7 +16,7 @@ export const createJwtCookie = (jwt: string, session: Session) => {
     'Path=/',
     `Max-Age=${(session.expiresAt.getTime() - Date.now()) / 1000}`,
     'HttpOnly',
-    process.env.NODE_ENV === 'production' ? 'Secure' : '',
+    secureCookies ? 'Secure' : null,
     'SameSite=Strict'
   ]
     .filter(x => !!x)

@@ -27,8 +27,10 @@ module.exports = withBundleAnalyzer(
       'DATABASE_MAX_CONNECTIONS',
       'JWT_SECRET',
       'JWT_ISSUER',
-      'CLOAKING_MASTER_KEY',
-      'CLOAKING_KEYCHAIN'
+      'CLOAK_KEYCHAIN',
+      'CLOAK_MASTER_KEY',
+      'CLOAK_CURRENT_KEY',
+      'LOCAL_INSECURE_COOKIES'
     ]),
     webpack: (config, { isServer, buildId }) => {
       // Fixes npm packages that depend on `fs` module

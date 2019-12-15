@@ -12,10 +12,7 @@ export default (() => {
   if (nextConfig) {
     return nextConfig.serverRuntimeConfig
   }
-  if (process.env.NODE_ENV !== 'production') {
-    dotenv.config()
-    envAlias()
-  }
-
+  dotenv.config()
+  envAlias()
   return process.env
 })()
