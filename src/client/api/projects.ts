@@ -1,11 +1,11 @@
 import nacl from 'tweetnacl'
-import { CloakKey, encryptString, decryptString } from './crypto/cloak'
+import { CloakKey, encryptString, decryptString } from '@47ng/cloak'
 import { clientApi } from '../api'
 import {
   CreateProjectArgs,
   CreateProjectResponse
 } from '~/pages/api/projects/index'
-import { b64 } from './crypto/primitives/codec'
+import { b64 } from '../engine/crypto/primitives/codec'
 import { Project } from '~/src/server/db/models/entities/Projects'
 
 export const createProject = async (
