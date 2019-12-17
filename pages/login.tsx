@@ -11,7 +11,7 @@ const LoginPage = () => {
       {!showTwoFactor && (
         <LoginForm
           onSubmit={async values => {
-            await login(values.email, values.password, values.rememberMe)
+            await login(values.email, values.password)
           }}
         />
       )}

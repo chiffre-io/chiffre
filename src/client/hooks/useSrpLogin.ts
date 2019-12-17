@@ -16,22 +16,17 @@ import { saveLoginCredentials } from '~/src/client/auth'
 import use2faVerification from './use2faVerification'
 import { publicApi } from '~/src/client/api'
 import { unlockKeychain } from '~/src/client/engine/account'
-import { saveKeychainKey } from '~/src/client/engine/keyStorage'
+import { saveKey } from '~/src/client/engine/keyStorage'
 
 interface AuthInfo {
   userID: string
   sessionID: string
   username: string
   password: string
-  rememberMe: boolean
 }
 
 interface Return {
-  login: (
-    username: string,
-    password: string,
-    rememberMe: boolean
-  ) => Promise<any>
+  login: (username: string, password: string) => Promise<any>
   enterTwoFactorToken: (token: string) => Promise<any>
   showTwoFactor: boolean
 }
@@ -55,11 +50,7 @@ export default function useSrpLogin(): Return {
   const verifyTwoFactor = use2faVerification()
   const redirectAfterLogin = useRedirectAfterLogin()
 
-  const login = async (
-    username: string,
-    password: string,
-    rememberMe: boolean
-  ) => {
+  const login = async (username: string, password: string) => {
     const {
       userID,
       challengeID,
@@ -104,8 +95,7 @@ export default function useSrpLogin(): Return {
       sessionID,
       // Store credentials for post-2FA KDF
       username: twoFactor ? null : username,
-      password: twoFactor ? null : password,
-      rememberMe
+      password: twoFactor ? null : password
     })
     if (twoFactor) {
       return setShowTwoFactor(true)
@@ -113,8 +103,14 @@ export default function useSrpLogin(): Return {
     if (jwt && masterSalt) {
       setError(null)
       saveLoginCredentials(jwt)
-      const keychainKey = await unlockKeychain(username, password, masterSalt)
-      saveKeychainKey(keychainKey, rememberMe)
+      const {
+        keychainKey,
+        signatureSecretKey,
+        sharingSecretKey
+      } = await unlockKeychain(username, password, masterSalt)
+      saveKey('keychain', keychainKey)
+      saveKey('signature', signatureSecretKey)
+      saveKey('sharing', sharingSecretKey)
       await redirectAfterLogin()
     }
   }
@@ -127,12 +123,14 @@ export default function useSrpLogin(): Return {
     })
     setError(null)
     saveLoginCredentials(jwt)
-    const keychainKey = await unlockKeychain(
-      authInfo.username,
-      authInfo.password,
-      masterSalt
-    )
-    saveKeychainKey(keychainKey, authInfo.rememberMe)
+    const {
+      keychainKey,
+      signatureSecretKey,
+      sharingSecretKey
+    } = await unlockKeychain(authInfo.username, authInfo.password, masterSalt)
+    saveKey('keychain', keychainKey)
+    saveKey('signature', signatureSecretKey)
+    saveKey('sharing', sharingSecretKey)
     await redirectAfterLogin()
   }
 

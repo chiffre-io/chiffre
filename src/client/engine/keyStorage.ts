@@ -2,19 +2,18 @@ import { CloakKey } from '@47ng/cloak'
 import { expirationTimes } from '~/src/shared/config'
 import SessionKeystore from 'session-keystore'
 
-type StorableKeys = 'keychain'
+type StorableKeys = 'keychain' | 'signature' | 'sharing'
 
 const store = new SessionKeystore<StorableKeys>({ name: 'chiffre' })
 
-export const saveKeychainKey = (key: CloakKey, persist: boolean) => {
-  const expiresAt = persist ? undefined : expirationTimes.inSevenDays()
-  store.set('keychain', key, expiresAt)
+export const saveKey = (keyName: StorableKeys, key: CloakKey) => {
+  store.set(keyName, key, expirationTimes.inSevenDays())
 }
 
-export const loadKeychainKey = () => {
-  return store.get('keychain')
+export const loadKey = (keyName: StorableKeys) => {
+  return store.get(keyName)
 }
 
-export const deleteKeychainKey = async () => {
-  store.delete('keychain')
+export const clearKeys = () => {
+  store.clear()
 }

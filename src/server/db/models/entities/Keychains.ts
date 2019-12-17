@@ -7,17 +7,16 @@ export const KEYCHAINS_TABLE = 'keychains'
 export interface KeychainRecord {
   userID: string
   key: string
-  // todo: Add sharing later
-  // signaturePublicKey: string
-  // signatureSecretKey: string
-  // sharingPublicKey: string
-  // sharingSecretKey: string
+  signaturePublicKey: string
+  signatureSecretKey: string
+  sharingPublicKey: string
+  sharingSecretKey: string
 }
 
 export interface KeychainUpdatableFields {
   key?: string
-  // signaturePublicKey?: string
-  // sharingPublicKey?: string
+  signaturePublicKey?: string
+  sharingPublicKey?: string
 }
 
 // --
@@ -69,8 +68,10 @@ export const createInitialKeychainsTable = async (db: Knex) => {
       .primary()
     table.foreign('userID').references(`${USERS_AUTH_SRP_TABLE}.id`)
     table.string('key').notNullable()
-    // table.string('signaturePublicKey').notNullable()
-    // table.string('sharingPublicKey').notNullable()
+    table.string('signaturePublicKey').notNullable()
+    table.string('sharingPublicKey').notNullable()
+    table.text('signatureSecretKey').notNullable()
+    table.text('sharingSecretKey').notNullable()
   })
   await updatedAtFieldAutoUpdate(db, KEYCHAINS_TABLE)
 }

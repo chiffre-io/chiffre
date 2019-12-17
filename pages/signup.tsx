@@ -10,7 +10,7 @@ import {
 } from '~/src/client/engine/account'
 import { saveLoginCredentials } from '~/src/client/auth'
 import { SignupParameters, SignupResponse } from '~/pages/api/auth/signup'
-import { saveKeychainKey } from '~/src/client/engine/keyStorage'
+import { saveKey } from '~/src/client/engine/keyStorage'
 import useQueryString from '~/src/client/hooks/useQueryString'
 
 const SignupPage = () => {
@@ -28,12 +28,14 @@ const SignupPage = () => {
       type Res = SignupResponse
       const { jwt } = await publicApi.post<Req, Res>('/auth/signup', params)
       saveLoginCredentials(jwt)
-      const keychainKey = await unlockKeychain(
-        username,
-        password,
-        params.masterSalt
-      )
-      saveKeychainKey(keychainKey, false)
+      const {
+        keychainKey,
+        signatureSecretKey,
+        sharingSecretKey
+      } = await unlockKeychain(username, password, params.masterSalt)
+      saveKey('keychain', keychainKey)
+      saveKey('signature', signatureSecretKey)
+      saveKey('sharing', sharingSecretKey)
       return await router.push(redirectUrl || '/dashboard')
     } catch (error) {
       showErrorToast(error)
