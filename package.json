@@ -23,7 +23,8 @@
     "demo:serve": "serve ./demo",
     "db:reset": "./scripts/stop-db.sh && rm -rf .db && ./scripts/start-db.sh",
     "db:setup": "yarn migrate:up && yarn seed:run",
-    "cloak": "yarn tsnode ./src/cli/cloak.ts",
+    "db:rotate-keys": "yarn tsnode ./src/server/db/operations/rotateCloak.ts",
+    "db:new-key": "cloak generate",
     "analyze": "ANALYZE=true next build"
   },
   "dependencies": {
