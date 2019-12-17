@@ -2,15 +2,16 @@
 # yarn lockfile v1
 
 
-"@47ng/cloak@^0.3.0":
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/@47ng/cloak/-/cloak-0.3.0.tgz#45d3eed56d82f09be6b172d8e9a400536c90cae6"
-  integrity sha512-CV5HEaXjCqjF24ThA/31b/TwdBbSO4RfXVdV1Rvq2/v9gZPuPeHk0NFYhSybZ9+ZNUoYmirEW0cKnkHGRRWseA==
+"@47ng/cloak@^0.7.0":
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/@47ng/cloak/-/cloak-0.7.0.tgz#dfe9690727d85c11a922a28ced556dce9e25dc81"
+  integrity sha512-Pcgp+/vItXhD6gTYUzF+oBMA7wG7EfwDcfx2l8knLKmSSw3es3RbTNtEDQkEnWahqnBOkChiAKyCN2M1sINZnQ==
   dependencies:
     "@stablelib/base64" "^0.7.2"
     "@stablelib/hex" "^0.5.0"
     "@stablelib/utf8" "^0.10.1"
     commander "^4.0.1"
+    dotenv "^8.2.0"
     node-webcrypto-ossl "^1.0.48"
 
 "@ampproject/toolbox-core@^1.1.1":
@@ -7292,10 +7293,10 @@ nano-css@^5.2.1:
     stacktrace-js "^2.0.0"
     stylis "3.5.0"
 
-nanoid@^2.1.7:
-  version "2.1.7"
-  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-2.1.7.tgz#d775e3e7c6470bbaaae3da9a647a80e228e0abf7"
-  integrity sha512-fmS3qwDldm4bE01HCIRqNk+f255CNjnAoeV3Zzzv0KemObHKqYgirVaZA9DtKcjogicWjYcHkJs4D5A8CjnuVQ==
+nanoid@^2.1.8:
+  version "2.1.8"
+  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-2.1.8.tgz#2dbb0224231b246e3b4c819de7bfea6384dabf08"
+  integrity sha512-g1z+n5s26w0TGKh7gjn7HCqurNKMZWzH08elXzh/gM/csQHd/UqDV6uxMghQYg9IvqRPm1QpeMk50YMofHvEjQ==
 
 nanomatch@^1.2.9:
   version "1.2.13"

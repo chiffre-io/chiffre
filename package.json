@@ -27,7 +27,7 @@
     "analyze": "ANALYZE=true next build"
   },
   "dependencies": {
-    "@47ng/cloak": "^0.3.0",
+    "@47ng/cloak": "^0.7.0",
     "@chakra-ui/core": "^0.5.1",
     "@emotion/core": "^10.0.22",
     "@emotion/styled": "^10.0.23",
@@ -46,7 +46,7 @@
     "hibp": "^8.0.0",
     "jsonwebtoken": "^8.5.1",
     "knex": "^0.20.3",
-    "nanoid": "^2.1.7",
+    "nanoid": "^2.1.8",
     "next": "9.1.5",
     "next-connect": "^0.5.1",
     "next-cookies": "^2.0.3",

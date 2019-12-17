@@ -1,5 +1,10 @@
 import Knex from 'knex'
 import { updatedAtFieldAutoUpdate } from '~/src/server/db/utility'
+import {
+  cloakValue,
+  decloakValue,
+  getCurrentCloakPrefix
+} from '../../encryption'
 
 export const USERS_AUTH_SRP_TABLE = 'users_auth_srp'
 
@@ -16,6 +21,62 @@ export interface UserAuthSrp extends UserAuthSrpInput {
 
 // --
 
+export const cloak = async (
+  user: UserAuthSrpInput
+): Promise<UserAuthSrpInput> => {
+  return {
+    ...user,
+    srpSalt: await cloakValue(user.srpSalt),
+    srpVerifier: await cloakValue(user.srpVerifier),
+    masterSalt: await cloakValue(user.masterSalt)
+  }
+}
+
+const decloak = async (user: UserAuthSrp): Promise<UserAuthSrp> => {
+  return {
+    ...user,
+    srpSalt: await decloakValue(user.srpSalt),
+    srpVerifier: await decloakValue(user.srpVerifier),
+    masterSalt: await decloakValue(user.masterSalt)
+  }
+}
+
+export const rotateUsersAuthSrpCloak = async (db: Knex) => {
+  const prefix = getCurrentCloakPrefix()
+  const oldRecords = await db
+    .select<UserAuthSrp[]>('*')
+    .from(USERS_AUTH_SRP_TABLE)
+    .whereRaw(
+      `
+    not "srpSalt" like '${prefix}%'
+ or not "srpVerifier" like '${prefix}%'
+ or not "masterSalt" like '${prefix}%'`
+    )
+  // .limit(100)
+  let processed = []
+  let errors = []
+  for (const record of oldRecords) {
+    try {
+      const newRecord = await cloak(await decloak(record))
+      await db(USERS_AUTH_SRP_TABLE)
+        .update(newRecord)
+        .where({
+          // Match ID and old fields to avoid race conditions
+          id: record.id,
+          srpSalt: record.srpSalt,
+          srpVerifier: record.srpVerifier,
+          masterSalt: record.masterSalt
+        })
+      processed.push(record.id)
+    } catch (error) {
+      errors.push({ userID: record.id, error: error.message })
+    }
+  }
+  return { processed, errors }
+}
+
+// --
+
 export const createUser = async (
   db: Knex,
   username: string,
@@ -23,12 +84,12 @@ export const createUser = async (
   srpVerifier: string,
   masterSalt: string
 ): Promise<string> => {
-  const user: UserAuthSrpInput = {
+  const user: UserAuthSrpInput = await cloak({
     username,
     srpSalt,
     srpVerifier,
     masterSalt
-  }
+  })
   const result = await db
     .insert(user)
     .into(USERS_AUTH_SRP_TABLE)
@@ -45,7 +106,7 @@ export const findUserByUsername = async (db: Knex, username: string) => {
   if (result.length === 0) {
     return null
   }
-  return result[0]
+  return await decloak(result[0])
 }
 
 export const findUser = async (db: Knex, userID: string) => {
@@ -57,7 +118,7 @@ export const findUser = async (db: Knex, userID: string) => {
   if (result.length === 0) {
     return null
   }
-  return result[0]
+  return await decloak(result[0])
 }
 
 // --
@@ -77,15 +138,15 @@ export const createInitialUsersAuthSrpTable = async (db: Knex) => {
       .notNullable()
       .index()
     table
-      .string('srpSalt')
+      .text('srpSalt')
       .unique()
       .notNullable()
     table
-      .string('srpVerifier', 512) // 512 would be hex, but we store as b64. Keep some padding anyway
+      .text('srpVerifier')
       .unique()
       .notNullable()
     table
-      .string('masterSalt')
+      .text('masterSalt')
       .unique()
       .notNullable()
   })

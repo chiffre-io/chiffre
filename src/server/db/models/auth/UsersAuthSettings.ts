@@ -1,6 +1,7 @@
 import Knex from 'knex'
 import { USERS_AUTH_SRP_TABLE } from './UsersAuthSRP'
 import { updatedAtFieldAutoUpdate } from '~/src/server/db/utility'
+import { cloakValue, decloakValue } from '../../encryption'
 
 export const USERS_AUTH_SETTINGS_TABLE = 'users_auth_settings'
 
@@ -21,12 +22,36 @@ export interface TwoFactorSettings {
 
 // --
 
+const cloak = async (entity: UserAuthSettings): Promise<UserAuthSettings> => {
+  return {
+    ...entity,
+    twoFactorSecret:
+      entity.twoFactorSecret && (await cloakValue(entity.twoFactorSecret)),
+    twoFactorBackupCodes:
+      entity.twoFactorBackupCodes &&
+      (await cloakValue(entity.twoFactorBackupCodes))
+  }
+}
+
+const decloak = async (entity: UserAuthSettings): Promise<UserAuthSettings> => {
+  return {
+    ...entity,
+    twoFactorSecret:
+      entity.twoFactorSecret && (await decloakValue(entity.twoFactorSecret)),
+    twoFactorBackupCodes:
+      entity.twoFactorBackupCodes &&
+      (await decloakValue(entity.twoFactorBackupCodes))
+  }
+}
+
+// --
+
 export const createUserAuthSettings = async (db: Knex, userID: string) => {
-  const settings: UserAuthSettings = {
+  const settings: UserAuthSettings = await cloak({
     userID,
     twoFactorEnabled: false,
     twoFactorVerified: false
-  }
+  })
   return await db.insert(settings).into(USERS_AUTH_SETTINGS_TABLE)
 }
 
@@ -49,7 +74,7 @@ export const findTwoFactorSettings = async (
     twoFactorSecret,
     twoFactorVerified,
     twoFactorBackupCodes
-  } = result[0]
+  } = await decloak(result[0])
   return {
     enabled: twoFactorEnabled,
     secret: twoFactorSecret,
@@ -74,15 +99,11 @@ export const enableTwoFactor = async (
   secret: string
 ) => {
   return await db<UserAuthSettings>(USERS_AUTH_SETTINGS_TABLE)
-    .where({
-      userID
-      // twoFactorEnabled: false,
-      // twoFactorSecret: null // Don't allow mutating the secret
-    })
+    .where({ userID })
     .update({
       twoFactorEnabled: true,
       twoFactorVerified: false,
-      twoFactorSecret: secret
+      twoFactorSecret: await cloakValue(secret)
     })
 }
 
@@ -98,7 +119,7 @@ export const markTwoFactorVerified = async (
     })
     .update({
       twoFactorVerified: true,
-      twoFactorBackupCodes: backupCodes.join(',')
+      twoFactorBackupCodes: await cloakValue(backupCodes.join(','))
     })
 }
 
@@ -142,13 +163,11 @@ export const consumeBackupCode = async (
   if (!settings.backupCodes.includes(code)) {
     throw new Error('Invalid backup code')
   }
-  const newCodes = settings.backupCodes.filter(c => c !== code)
+  const newCodes = settings.backupCodes.filter(c => c !== code).join(',')
   return await db<UserAuthSettings>(USERS_AUTH_SETTINGS_TABLE)
-    .where({
-      userID
-    })
+    .where({ userID })
     .update({
-      twoFactorBackupCodes: newCodes.join(',')
+      twoFactorBackupCodes: await cloakValue(newCodes)
     })
 }
 
@@ -172,7 +191,7 @@ export const createInitialUsersAuthSettingsTable = async (db: Knex) => {
       .notNullable()
       .defaultTo(false)
     table
-      .string('twoFactorSecret')
+      .text('twoFactorSecret')
       .nullable()
       .defaultTo(null)
     table

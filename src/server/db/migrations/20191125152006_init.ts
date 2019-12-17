@@ -14,6 +14,7 @@ export async function up(knex: Knex): Promise<any> {
   console.info('Setting up database from scratch...')
 
   // Load extensions
+  await knex.raw('create extension if not exists pgcrypto')
   await knex.raw('create extension if not exists "uuid-ossp"') // Generate UUIDv4 IDs
   await setupUpdatedAtFieldAutoUpdate(knex)
 

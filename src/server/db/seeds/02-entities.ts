@@ -1,4 +1,5 @@
 import Knex from 'knex'
+import dotenv from 'dotenv'
 import { testUserCredentials } from './01-users'
 import { formatEmitterEmbedScript } from '~/src/server/emitterScript'
 import { createVault } from '~/src/server/db/models/entities/Vaults'
@@ -20,6 +21,7 @@ export const testProject = {
 }
 
 export const seed = async (knex: Knex) => {
+  dotenv.config()
   if (process.env.NODE_ENV === 'production') {
     return
   }
