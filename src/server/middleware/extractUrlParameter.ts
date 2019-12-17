@@ -4,8 +4,12 @@ export interface UrlParams<P> {
   params?: P
 }
 
-const extractParam = (name: string, req: Request): string => {
-  const value = req.query[name]
+interface QueryLike {
+  [key: string]: string | string[]
+}
+
+export const extractQueryParam = (name: string, query: QueryLike): string => {
+  const value = query[name]
   if (!value) {
     return null
   }
@@ -19,7 +23,7 @@ const extractUrlParameter = <P>(
     if (!req.params) {
       req.params = {} as P
     }
-    req.params[name] = extractParam(name, req)
+    req.params[name] = extractQueryParam(name, req.query)
     next()
   }
 }
