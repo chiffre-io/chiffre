@@ -1,7 +1,10 @@
 import { NextApiResponse } from 'next'
 import { RequestWithBody } from './middleware/requireBodyParams'
+import { ServerContext } from './server'
 
-export type Request<Fields = {}, Body = any> = RequestWithBody<Body> & Fields
+export type Request<Fields = {}, Body = any> = RequestWithBody<Body> &
+  ServerContext &
+  Fields
 
 export type NextApiHandler<Fields = {}, Body = any> = (
   req: Request<Fields, Body>,

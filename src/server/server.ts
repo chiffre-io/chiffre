@@ -1,16 +1,15 @@
+import { createServer } from 'http'
 import { parse } from 'url'
 import next from 'next'
 import socketIO from 'socket.io'
-
-import { createServer } from 'http'
-import { ServerContext } from './storage'
-import { b64 } from '~/src/client/engine/crypto/primitives/codec'
 import setupCronTasks from './cron'
 
+export interface ServerContext {
+  io: socketIO.Server
+}
+
 const context: ServerContext = {
-  publicKey: null,
-  socket: null,
-  dataPoints: []
+  io: null
 }
 
 const dev = process.env.NODE_ENV !== 'production'
@@ -21,7 +20,7 @@ const requestListener = (req: any, res: any) => {
   // Be sure to pass `true` as the second argument to `url.parse`.
   // This tells it to parse the query portion of the URL.
   const parsedUrl = parse(req.url, true)
-  req.context = context
+  req.io = context.io
   handle(req, res, parsedUrl)
 }
 
@@ -34,17 +33,12 @@ app.prepare().then(() => {
     console.log(`> Ready on http://localhost:${port}`)
   })
 
-  const io = socketIO(server)
-  io.on('connection', client => {
+  context.io = socketIO(server)
+  context.io.on('connection', client => {
     console.log(client.handshake.query)
     console.log(client.id, 'connected')
-    context.socket = client
-    context.publicKey = b64.decode(client.handshake.query.publicKey)
     client.on('disconnect', () => {
       console.log(client.id, 'disconnected')
-      if (context.socket && context.socket.id === client.id) {
-        context.socket = null
-      }
     })
   })
 
