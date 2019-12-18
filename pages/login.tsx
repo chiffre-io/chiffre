@@ -17,6 +17,7 @@ const LoginPage = () => {
       )}
       {showTwoFactor && (
         <TwoFactorForm
+          autoFocus
           onSubmit={async values => {
             await enterTwoFactorToken(values.twoFactorToken)
           }}

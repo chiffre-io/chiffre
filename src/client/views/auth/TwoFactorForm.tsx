@@ -17,8 +17,16 @@ export interface Values {
   recoveryToken: string
 }
 
-const TwoFactorTokenField = ({ name, ...props }) => {
+const TwoFactorTokenField = ({ name, autoFocus = false, ...props }) => {
   const [{ onBlur, ...field }] = useField(name)
+  const ref = React.useRef<HTMLInputElement>()
+
+  React.useEffect(() => {
+    if (autoFocus && ref.current) {
+      ref.current.focus()
+    }
+  }, [])
+
   return (
     <>
       <Input
@@ -35,6 +43,7 @@ const TwoFactorTokenField = ({ name, ...props }) => {
         fontSize="1.6rem"
         mx="auto"
         fontFamily={theme.fonts.mono}
+        ref={ref}
         {...field}
         {...props}
       />
@@ -45,6 +54,7 @@ const TwoFactorTokenField = ({ name, ...props }) => {
 
 export interface Props {
   label?: string
+  autoFocus?: boolean
   onSubmit: (v: Values) => void
 }
 
@@ -66,6 +76,7 @@ const DefaultSubmitButton = ({}) => {
 const TwoFactorForm: React.FC<Props> = ({
   onSubmit,
   label = 'Two-Factor Authentication Code',
+  autoFocus = false,
   children = <DefaultSubmitButton />
 }) => {
   const initialValues: Values = {
@@ -89,7 +100,7 @@ const TwoFactorForm: React.FC<Props> = ({
         <Form>
           <Box mb={4}>
             <Label htmlFor="twoFactorToken">{label}</Label>
-            <TwoFactorTokenField name="twoFactorToken" />
+            <TwoFactorTokenField name="twoFactorToken" autoFocus={autoFocus} />
           </Box>
           {children}
         </Form>
