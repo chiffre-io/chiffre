@@ -1,5 +1,19 @@
-import axios, { Method, AxiosInstance, AxiosResponse } from 'axios'
+import axios, { AxiosResponse, AxiosRequestConfig } from 'axios'
 import { getLoginCredentials } from './auth'
+
+export class ApiError<R> extends Error {
+  public req: AxiosRequestConfig
+  public res: AxiosResponse<R>
+  public title: string
+
+  constructor(message: string, req: AxiosRequestConfig, res: AxiosResponse) {
+    super(message)
+    Object.setPrototypeOf(this, new.target.prototype) // restore prototype chain
+    this.name = 'API Error'
+    this.req = req
+    this.res = res
+  }
+}
 
 /**
  * API for public calls (no auth required: signup, login etc...)
@@ -7,6 +21,15 @@ import { getLoginCredentials } from './auth'
 export const _publicApi = axios.create({
   baseURL: '/api'
 })
+
+_publicApi.interceptors.response.use(
+  response => response.data,
+  error => {
+    const message = error.response?.data?.error ?? error
+    const e = new ApiError(message, error.request, error.response)
+    return Promise.reject(e)
+  }
+)
 
 /**
  * API for authenticated calls from the client side,
@@ -26,66 +49,31 @@ _clientApi.interceptors.request.use(config => {
   return config
 })
 
-// --
-
-const wrapBodylessRequest = (client: AxiosInstance, method: Method) => async <
-  Res
->(
-  path: string
-): Promise<Res> => {
-  try {
-    const res: AxiosResponse<Res> = await client(path, { method })
-    return res.data
-  } catch (error) {
-    if (error.response) {
-      // todo: Inject details if present
-      throw new Error(error.response.data.error)
-    }
-    if (error.request) {
-      // todo: handle Timeouts ?
-    }
-    throw new Error(error.message)
+_clientApi.interceptors.response.use(
+  response => response.data,
+  error => {
+    const message = error.response?.data?.error ?? error
+    const e = new ApiError(message, error.request, error.response)
+    return Promise.reject(e)
   }
-}
-
-const wrapBodyfulRequest = (client: AxiosInstance, method: Method) => async <
-  Body,
-  Res
->(
-  path: string,
-  body: Body
-): Promise<Res> => {
-  try {
-    const res: AxiosResponse<Res> = await client(path, { method, data: body })
-    return res.data
-  } catch (error) {
-    if (error.response) {
-      // todo: Inject details if present
-      throw new Error(error.response.data.error)
-    }
-    if (error.request) {
-      // todo: handle Timeouts ?
-    }
-    throw new Error(error.message)
-  }
-}
+)
 
 // --
 
 export const publicApi = {
   raw: _publicApi,
-  get: wrapBodylessRequest(_publicApi, 'GET'),
-  post: wrapBodyfulRequest(_publicApi, 'POST')
+  get: async <R>(path: string): Promise<R> => await _publicApi.get(path),
+  post: async <B, R>(path: string, body: B): Promise<R> =>
+    await _publicApi.post(path, body)
 }
 
 export const clientApi = {
   raw: _clientApi,
-  get: wrapBodylessRequest(_clientApi, 'GET'),
-  post: wrapBodyfulRequest(_clientApi, 'POST'),
-  patch: wrapBodyfulRequest(_clientApi, 'PATCH'),
-  delete: wrapBodylessRequest(_clientApi, 'DELETE')
-  // Uncomment when needed
-  // head: wrapBodylessRequest(_clientApi, 'HEAD'),
-  // options: wrapBodylessRequest(_clientApi, 'OPTIONS'),
-  // put: wrapBodyfulRequest(_clientApi, 'PUT'),
+  get: async <R>(path: string): Promise<R> => await _clientApi.get(path),
+  post: async <B, R>(path: string, body: B): Promise<R> =>
+    await _clientApi.post(path, body),
+  patch: async <B, R>(path: string, body: B): Promise<R> =>
+    await _clientApi.patch(path, body),
+  delete: async <B, R>(path: string, body: B): Promise<R> =>
+    await _clientApi.delete(path, body)
 }

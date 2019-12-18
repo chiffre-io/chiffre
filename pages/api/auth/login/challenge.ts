@@ -37,8 +37,9 @@ handler.post(
 
     const user = await findUserByUsername(req.db, username)
     if (!user) {
-      return res.status(404).json({
-        error: `User ${username} not found`
+      // Don't reveal if the account exists or not
+      return res.status(401).json({
+        error: `Incorrect username or password`
       })
     }
 

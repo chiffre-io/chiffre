@@ -17,6 +17,7 @@ import use2faVerification from './use2faVerification'
 import { publicApi } from '~/src/client/api'
 import { unlockKeychain } from '~/src/client/engine/account'
 import { saveKey } from '~/src/client/engine/keyStorage'
+import useErrorToast from '~/src/client/hooks/useErrorToast'
 
 interface AuthInfo {
   userID: string
@@ -43,9 +44,9 @@ const useRedirectAfterLogin = (defaultRoute = '/dashboard') => {
 }
 
 export default function useSrpLogin(): Return {
-  const [error, setError] = React.useState<Error>(undefined)
   const [authInfo, setAuthInfo] = React.useState<AuthInfo>(null)
   const [showTwoFactor, setShowTwoFactor] = React.useState(false)
+  const showErrorToast = useErrorToast()
 
   const verifyTwoFactor = use2faVerification()
   const redirectAfterLogin = useRedirectAfterLogin()
@@ -94,14 +95,13 @@ export default function useSrpLogin(): Return {
       userID,
       sessionID,
       // Store credentials for post-2FA KDF
-      username: twoFactor ? null : username,
-      password: twoFactor ? null : password
+      username: twoFactor ? username : null,
+      password: twoFactor ? password : null
     })
     if (twoFactor) {
       return setShowTwoFactor(true)
     }
     if (jwt && masterSalt) {
-      setError(null)
       saveLoginCredentials(jwt)
       const {
         keychainKey,
@@ -121,7 +121,6 @@ export default function useSrpLogin(): Return {
       sessionID: authInfo.sessionID,
       twoFactorToken: token
     })
-    setError(null)
     saveLoginCredentials(jwt)
     const {
       keychainKey,
@@ -134,22 +133,13 @@ export default function useSrpLogin(): Return {
     await redirectAfterLogin()
   }
 
-  const saveAndThrowBack = (error: Error) => {
-    setError(error) // For the UI to display
-    throw error // For the original caller to catch
-  }
-
-  React.useEffect(() => {
-    if (error) {
-      // todo: Show using a toast
-      console.error(error)
-    }
-  }, [error])
-
   return {
-    login: (...args) => login(...args).catch(saveAndThrowBack),
+    login: (...args) =>
+      login(...args).catch(e => showErrorToast(e, 'Authentication Error')),
     enterTwoFactorToken: (...args) =>
-      enterTwoFactorToken(...args).catch(saveAndThrowBack),
+      enterTwoFactorToken(...args).catch(e =>
+        showErrorToast(e, 'Authentication Error')
+      ),
     showTwoFactor
   }
 }
