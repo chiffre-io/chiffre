@@ -63,7 +63,7 @@ export const createInitialKeychainsTable = async (db: Knex) => {
   await db.schema.createTable(KEYCHAINS_TABLE, table => {
     table.timestamps(true, true)
     table
-      .uuid('userID')
+      .string('userID')
       .notNullable()
       .primary()
     table.foreign('userID').references(`${USERS_AUTH_SRP_TABLE}.id`)

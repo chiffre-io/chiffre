@@ -83,7 +83,7 @@ export const createUser = async (
   srpSalt: string,
   srpVerifier: string,
   masterSalt: string
-): Promise<string> => {
+): Promise<UserAuthSrp> => {
   const user: UserAuthSrpInput = await cloak({
     username,
     srpSalt,
@@ -93,7 +93,7 @@ export const createUser = async (
   const result = await db
     .insert(user)
     .into(USERS_AUTH_SRP_TABLE)
-    .returning<string[]>('id')
+    .returning<UserAuthSrp[]>('*')
   return result[0]
 }
 
@@ -127,10 +127,10 @@ export const createInitialUsersAuthSrpTable = async (db: Knex) => {
   await db.schema.createTable(USERS_AUTH_SRP_TABLE, table => {
     table.timestamps(true, true)
     table
-      .uuid('id')
+      .string('id')
       .unique()
       .notNullable()
-      .defaultTo(db.raw('uuid_generate_v4()'))
+      .defaultTo(db.raw('generate_b64id()'))
       .primary()
     table
       .string('username')

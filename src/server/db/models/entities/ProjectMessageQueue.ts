@@ -45,12 +45,12 @@ export const findMessagesForProject = async (db: Knex, projectID: string) => {
 export const createInitialProjectMessageQueueTable = async (db: Knex) => {
   await db.schema.createTable(PROJECT_MESSAGE_QUEUE_TABLE, table => {
     table
-      .uuid('id')
+      .string('id')
       .unique()
       .notNullable()
-      .defaultTo(db.raw('uuid_generate_v4()'))
+      .defaultTo(db.raw('generate_b64id()'))
       .primary()
-    table.uuid('projectID').notNullable()
+    table.string('projectID').notNullable()
     table.foreign('projectID').references(`${PROJECTS_TABLE}.id`)
     table.timestamp('created_at').defaultTo(db.fn.now())
     table.float('performance').notNullable()

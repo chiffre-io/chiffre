@@ -78,14 +78,14 @@ export const createInitialLoginChallengesSrpTable = async (db: Knex) => {
   await db.schema.createTable(LOGIN_CHALLENGES_SRP_TABLE, table => {
     table.timestamp('created_at').defaultTo(db.fn.now())
     table
-      .uuid('id')
+      .string('id')
       .unique()
       .notNullable()
-      .defaultTo(db.raw('uuid_generate_v4()'))
+      .defaultTo(db.raw('generate_b64id()'))
       .primary()
 
     table
-      .uuid('userID')
+      .string('userID')
       .notNullable()
       .index()
     table.foreign('userID').references(`${USERS_AUTH_SRP_TABLE}.id`)

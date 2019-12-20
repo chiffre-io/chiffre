@@ -17,12 +17,14 @@ class MyDocument extends Document {
         <body>
           <Main />
           <NextScript />
-          <script
-            src={`${process.env.APP_URL}/api/embed/c0ffeeb0-dead-f00d-baad-cafebaadcafe`}
-            integrity="sha256-OQ062aRYOPnjgZ2FXCrnFxxVZgurFmTUElca5VMqlqU="
-            crossOrigin="anonymous"
-            async
-          ></script>
+          {process.env.NODE_ENV === 'production' && (
+            <script
+              src={`${process.env.APP_URL}/api/embed/testProjectID123`}
+              integrity="sha256-0XYtrQ35XAgpiEpQDV4jSmrm9l0ZoczWyLjlHZsATbI="
+              crossOrigin="anonymous"
+              async
+            ></script>
+          )}
         </body>
       </Html>
     )

@@ -14,7 +14,7 @@ import { deriveMasterKey } from '~/src/client/engine/masterKey'
 import { findKeychain } from '../models/entities/Keychains'
 
 export const testProject = {
-  projectID: 'c0ffeeb0-dead-f00d-baad-cafebaadcafe',
+  projectID: 'testProjectID123',
   key: 'QSBU_0eqn8fBlRuZYuSqcFJe7cxqLTZ5-E5CJYW4Pwk=',
   publicKey: 'AAa5jWhVoFoxunJ_8RzvCT2DbaX1C6eRIo9YBhU7tUY=',
   secretKey: 'mZRAvkB8hZkFU6u_1aQC3GNd6AosZYQjVt0uTNHtnAo='

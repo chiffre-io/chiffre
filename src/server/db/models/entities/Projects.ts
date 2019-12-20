@@ -66,12 +66,12 @@ export const createInitialProjectsTable = async (db: Knex) => {
   await db.schema.createTable(PROJECTS_TABLE, table => {
     table.timestamps(true, true)
     table
-      .uuid('id')
+      .string('id')
       .unique()
       .notNullable()
-      .defaultTo(db.raw('uuid_generate_v4()'))
+      .defaultTo(db.raw('generate_b64id()'))
       .primary()
-    table.uuid('vaultID').notNullable()
+    table.string('vaultID').notNullable()
     table.foreign('vaultID').references(`${VAULTS_TABLE}.id`)
     table.string('publicKey').notNullable()
     table.string('secretKey').notNullable()

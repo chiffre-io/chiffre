@@ -12,7 +12,7 @@ import { createSignupEntities } from '~/src/client/engine/account'
 export const testUserCredentials = {
   username: 'admin@example.com',
   password: 'password',
-  userID: 'facade47-dead-f00d-baad-cafebaadcafe'
+  userID: '___testUserId___'
 }
 
 export const seed = async (knex: Knex) => {

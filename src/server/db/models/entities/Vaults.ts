@@ -62,13 +62,13 @@ export const createInitialVaultsTable = async (db: Knex) => {
   await db.schema.createTable(VAULTS_TABLE, table => {
     table.timestamps(true, true)
     table
-      .uuid('id')
+      .string('id')
       .unique()
       .notNullable()
-      .defaultTo(db.raw('uuid_generate_v4()'))
+      .defaultTo(db.raw('generate_b64id()'))
       .primary()
     table
-      .uuid('createdBy')
+      .string('createdBy')
       .notNullable()
       .index()
     table.foreign('createdBy').references(`${USERS_AUTH_SRP_TABLE}.id`)
