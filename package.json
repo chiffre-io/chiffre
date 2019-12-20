@@ -18,6 +18,7 @@
     "knex": "yarn tsnode ./node_modules/.bin/knex",
     "migrate:make": "yarn knex migrate:make",
     "migrate:up": "yarn knex migrate:up",
+    "migrate:down": "yarn knex migrate:down",
     "seed:make": "yarn knex seed:make",
     "seed:run": "yarn knex seed:run",
     "demo:serve": "serve ./demo",
