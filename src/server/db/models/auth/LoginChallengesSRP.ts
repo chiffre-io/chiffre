@@ -1,5 +1,5 @@
 import Knex from 'knex'
-import { USERS_AUTH_SRP_TABLE } from './UsersAuthSRP'
+import { USERS_TABLE } from './Users'
 import { expirationTimes } from '~/src/shared/config'
 
 export const LOGIN_CHALLENGES_SRP_TABLE = 'login_challenges_srp'
@@ -88,7 +88,7 @@ export const createInitialLoginChallengesSrpTable = async (db: Knex) => {
       .string('userID')
       .notNullable()
       .index()
-    table.foreign('userID').references(`${USERS_AUTH_SRP_TABLE}.id`)
+    table.foreign('userID').references(`${USERS_TABLE}.id`)
 
     table
       .string('ephemeralSecret')

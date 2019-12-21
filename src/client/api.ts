@@ -74,6 +74,5 @@ export const clientApi = {
     await _clientApi.post(path, body),
   patch: async <B, R>(path: string, body: B): Promise<R> =>
     await _clientApi.patch(path, body),
-  delete: async <B, R>(path: string, body: B): Promise<R> =>
-    await _clientApi.delete(path, body)
+  delete: async <R>(path: string): Promise<R> => await _clientApi.delete(path)
 }

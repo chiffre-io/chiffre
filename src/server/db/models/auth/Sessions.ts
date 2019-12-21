@@ -1,6 +1,5 @@
 import Knex from 'knex'
-import { USERS_AUTH_SRP_TABLE } from './UsersAuthSRP'
-import { userRequiresTwoFactorAuth } from './UsersAuthSettings'
+import { USERS_TABLE, userRequiresTwoFactorAuth } from './Users'
 import { updatedAtFieldAutoUpdate } from '~/src/server/db/utility'
 import { expirationTimes } from '~/src/shared/config'
 
@@ -108,7 +107,7 @@ export const createInitialSessionsTable = async (db: Knex) => {
       .string('userID')
       .notNullable()
       .index()
-    table.foreign('userID').references(`${USERS_AUTH_SRP_TABLE}.id`)
+    table.foreign('userID').references(`${USERS_TABLE}.id`)
     table.string('ipAddress').notNullable()
     table.boolean('twoFactorVerified').nullable()
     table.timestamp('expiresAt').notNullable()

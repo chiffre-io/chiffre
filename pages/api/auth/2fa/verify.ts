@@ -9,7 +9,7 @@ import { Request } from '~/src/server/types'
 import {
   findTwoFactorSettings,
   markTwoFactorVerified
-} from '~/src/server/db/models/auth/UsersAuthSettings'
+} from '~/src/server/db/models/auth/Users'
 import { verifyTwoFactorToken, generateBackupCodes } from '~/src/server/2fa'
 import { markTwoFactorVerifiedInSession } from '~/src/server/db/models/auth/Sessions'
 import requireBodyParams, {

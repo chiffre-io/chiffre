@@ -7,15 +7,15 @@ import {
 } from '~/src/server/middleware/authMiddlewares'
 import { Request } from '~/src/server/types'
 import {
-  findTwoFactorSettings,
-  enableTwoFactor,
-  cancelTwoFactor
-} from '~/src/server/db/models/auth/UsersAuthSettings'
-import {
   generateTwoFactorSecret,
   formatTwoFactorSecret
 } from '~/src/server/2fa'
-import { findUser } from '~/src/server/db/models/auth/UsersAuthSRP'
+import {
+  findUser,
+  findTwoFactorSettings,
+  enableTwoFactor,
+  cancelTwoFactor
+} from '~/src/server/db/models/auth/Users'
 
 // --
 

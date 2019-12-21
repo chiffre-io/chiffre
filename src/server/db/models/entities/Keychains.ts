@@ -1,5 +1,5 @@
 import Knex from 'knex'
-import { USERS_AUTH_SRP_TABLE } from '../auth/UsersAuthSRP'
+import { USERS_TABLE } from '../auth/Users'
 import { updatedAtFieldAutoUpdate } from '~/src/server/db/utility'
 
 export const KEYCHAINS_TABLE = 'keychains'
@@ -66,7 +66,7 @@ export const createInitialKeychainsTable = async (db: Knex) => {
       .string('userID')
       .notNullable()
       .primary()
-    table.foreign('userID').references(`${USERS_AUTH_SRP_TABLE}.id`)
+    table.foreign('userID').references(`${USERS_TABLE}.id`)
     table.string('key').notNullable()
     table.string('signaturePublicKey').notNullable()
     table.string('sharingPublicKey').notNullable()

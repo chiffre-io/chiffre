@@ -5,8 +5,7 @@ import requireBodyParams, {
 } from '~/src/server/middleware/requireBodyParams'
 import database, { Db } from '~/src/server/middleware/database'
 import { Request } from '~/src/server/types'
-import { createUser } from '~/src/server/db/models/auth/UsersAuthSRP'
-import { createUserAuthSettings } from '~/src/server/db/models/auth/UsersAuthSettings'
+import { createUser } from '~/src/server/db/models/auth/Users'
 import { createSession } from '~/src/server/db/models/auth/Sessions'
 import ipAddressMiddleware, {
   IpAddress
@@ -56,14 +55,12 @@ handler.post(
 
     try {
       // todo: Pack all operations into a transaction
-      const userID = await createUser(
-        req.db,
+      const { id: userID } = await createUser(req.db, {
         username,
         srpSalt,
         srpVerifier,
         masterSalt
-      )
-      await createUserAuthSettings(req.db, userID)
+      })
       await createKeychainRecord(req.db, { userID, ...keychain })
 
       const session = await createSession(

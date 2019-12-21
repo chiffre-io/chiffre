@@ -10,7 +10,7 @@ import {
   getAllSessionsForUser,
   isSessionExpired
 } from '~/src/server/db/models/auth/Sessions'
-import { findTwoFactorSettings } from '~/src/server/db/models/auth/UsersAuthSettings'
+import { findTwoFactorSettings } from '~/src/server/db/models/auth/Users'
 
 // --
 

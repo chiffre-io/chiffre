@@ -1,6 +1,6 @@
 import Knex from 'knex'
 import { updatedAtFieldAutoUpdate } from '~/src/server/db/utility'
-import { USERS_AUTH_SRP_TABLE } from '../auth/UsersAuthSRP'
+import { USERS_TABLE } from '../auth/Users'
 
 export const VAULTS_TABLE = 'vaults'
 
@@ -71,7 +71,7 @@ export const createInitialVaultsTable = async (db: Knex) => {
       .string('createdBy')
       .notNullable()
       .index()
-    table.foreign('createdBy').references(`${USERS_AUTH_SRP_TABLE}.id`)
+    table.foreign('createdBy').references(`${USERS_TABLE}.id`)
     table.text('encrypted').notNullable()
   })
   await updatedAtFieldAutoUpdate(db, VAULTS_TABLE)

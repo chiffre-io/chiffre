@@ -15,10 +15,12 @@ import {
 import { createJwt } from '~/src/server/jwt'
 import { serverLoginResponse } from '~/src/server/srp'
 import { deleteLoginChallenge } from '~/src/server/db/models/auth/LoginChallengesSRP'
-import { findUser } from '~/src/server/db/models/auth/UsersAuthSRP'
+import {
+  findUser,
+  userRequiresTwoFactorAuth
+} from '~/src/server/db/models/auth/Users'
 import { Session as SrpSession } from 'secure-remote-password/server'
 import { createSession } from '~/src/server/db/models/auth/Sessions'
-import { userRequiresTwoFactorAuth } from '~/src/server/db/models/auth/UsersAuthSettings'
 import { createJwtCookie } from '~/src/server/cookies'
 
 export interface LoginResponseParameters {

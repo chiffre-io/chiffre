@@ -6,7 +6,7 @@ import requireBodyParams, {
 import database, { Db } from '~/src/server/middleware/database'
 import { Request } from '~/src/server/types'
 import { serverLoginChallenge } from '~/src/server/srp'
-import { findUserByUsername } from '~/src/server/db/models/auth/UsersAuthSRP'
+import { findUserByUsername } from '~/src/server/db/models/auth/Users'
 import { saveLoginChallenge } from '~/src/server/db/models/auth/LoginChallengesSRP'
 
 export interface LoginChallengeParameters {

@@ -6,11 +6,13 @@ import requireBodyParams, {
 import database, { Db } from '~/src/server/middleware/database'
 import { Request } from '~/src/server/types'
 import { verifyTwoFactorToken } from '~/src/server/2fa'
-import { findUser } from '~/src/server/db/models/auth/UsersAuthSRP'
+import {
+  findUser,
+  findTwoFactorSettings
+} from '~/src/server/db/models/auth/Users'
 import { findSession } from '~/src/server/db/models/auth/Sessions'
 import { createJwt } from '~/src/server/jwt'
 import { markTwoFactorVerifiedInSession } from '~/src/server/db/models/auth/Sessions'
-import { findTwoFactorSettings } from '~/src/server/db/models/auth/UsersAuthSettings'
 import { createJwtCookie } from '~/src/server/cookies'
 
 export interface Login2FAParameters {

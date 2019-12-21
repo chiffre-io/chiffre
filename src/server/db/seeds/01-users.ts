@@ -1,11 +1,6 @@
 import Knex from 'knex'
 import dotenv from 'dotenv'
-import {
-  cloak as cloakUser,
-  UserAuthSrp,
-  USERS_AUTH_SRP_TABLE
-} from '../models/auth/UsersAuthSRP'
-import { createUserAuthSettings } from '../models/auth/UsersAuthSettings'
+import { cloak as cloakUser, User, USERS_TABLE } from '../models/auth/Users'
 import { createKeychainRecord } from '../models/entities/Keychains'
 import { createSignupEntities } from '~/src/client/engine/account'
 
@@ -23,17 +18,18 @@ export const seed = async (knex: Knex) => {
   try {
     const { username, password, userID } = testUserCredentials
     const params = await createSignupEntities(username, password)
-    const srpUser: UserAuthSrp = {
+    const user: User = {
       id: userID,
       ...(await cloakUser({
         username,
         srpSalt: params.srpSalt,
         srpVerifier: params.srpVerifier,
-        masterSalt: params.masterSalt
+        masterSalt: params.masterSalt,
+        twoFactorEnabled: false,
+        twoFactorVerified: false
       }))
     }
-    await knex.insert(srpUser).into(USERS_AUTH_SRP_TABLE)
-    await createUserAuthSettings(knex, userID)
+    await knex.insert(user).into(USERS_TABLE)
     await createKeychainRecord(knex, { userID, ...params.keychain })
   } catch (error) {
     console.error(error)

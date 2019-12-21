@@ -9,7 +9,7 @@ import {
 } from '~/src/server/db/models/entities/Projects'
 import { createUserVaultEdge } from '../models/entities/UserVaultEdges'
 import { generateKey, encryptString, decryptString } from '@47ng/cloak'
-import { findUser } from '~/src/server/db/models/auth/UsersAuthSRP'
+import { findUser } from '~/src/server/db/models/auth/Users'
 import { deriveMasterKey } from '~/src/client/engine/masterKey'
 import { findKeychain } from '../models/entities/Keychains'
 

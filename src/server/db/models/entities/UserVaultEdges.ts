@@ -1,6 +1,6 @@
 import Knex from 'knex'
 import { updatedAtFieldAutoUpdate } from '~/src/server/db/utility'
-import { USERS_AUTH_SRP_TABLE } from '../auth/UsersAuthSRP'
+import { USERS_TABLE } from '../auth/Users'
 import { VAULTS_TABLE } from './Vaults'
 
 export const USER_VAULT_EDGES_TABLE = 'user_vault_edges'
@@ -72,7 +72,7 @@ export const createInitialUserVaultEdgesTable = async (db: Knex) => {
       .string('userID')
       .notNullable()
       .index()
-    table.foreign('userID').references(`${USERS_AUTH_SRP_TABLE}.id`)
+    table.foreign('userID').references(`${USERS_TABLE}.id`)
     table
       .string('vaultID')
       .notNullable()

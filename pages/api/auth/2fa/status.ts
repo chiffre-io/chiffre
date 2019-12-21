@@ -6,7 +6,7 @@ import {
   ApiAuth
 } from '~/src/server/middleware/authMiddlewares'
 import { Request } from '~/src/server/types'
-import { findTwoFactorSettings } from '~/src/server/db/models/auth/UsersAuthSettings'
+import { findTwoFactorSettings } from '~/src/server/db/models/auth/Users'
 
 // --
 

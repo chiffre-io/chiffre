@@ -1,9 +1,9 @@
 import database from '../database'
-import { rotateUsersAuthSrpCloak } from '../models/auth/UsersAuthSRP'
+import { rotateUsersCloak } from '../models/auth/Users'
 
 const run = async () => {
-  const usersAuthSrpResults = await rotateUsersAuthSrpCloak(database)
-  console.dir(usersAuthSrpResults)
+  const usersResults = await rotateUsersCloak(database)
+  console.dir(usersResults)
   process.exit(0)
 }
 

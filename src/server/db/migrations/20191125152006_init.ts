@@ -1,8 +1,5 @@
 import Knex from 'knex'
-import {
-  createInitialUsersAuthSrpTable,
-  USERS_AUTH_SRP_TABLE
-} from '../models/auth/UsersAuthSRP'
+import { createInitialUsersTable, USERS_TABLE } from '../models/auth/Users'
 import {
   createInitialLoginChallengesSrpTable,
   LOGIN_CHALLENGES_SRP_TABLE
@@ -11,10 +8,6 @@ import {
   createInitialSessionsTable,
   SESSIONS_TABLE
 } from '../models/auth/Sessions'
-import {
-  createInitialUsersAuthSettingsTable,
-  USERS_AUTH_SETTINGS_TABLE
-} from '../models/auth/UsersAuthSettings'
 import {
   createInitialKeychainsTable,
   KEYCHAINS_TABLE
@@ -50,8 +43,7 @@ export async function up(knex: Knex): Promise<any> {
   await setupUpdatedAtFieldAutoUpdate(knex)
 
   // Auth
-  await createInitialUsersAuthSrpTable(knex)
-  await createInitialUsersAuthSettingsTable(knex)
+  await createInitialUsersTable(knex)
   await createInitialLoginChallengesSrpTable(knex)
   await createInitialSessionsTable(knex)
 
@@ -75,6 +67,5 @@ export async function down(knex: Knex): Promise<any> {
   await knex.schema.dropTableIfExists(KEYCHAINS_TABLE)
   await knex.schema.dropTableIfExists(SESSIONS_TABLE)
   await knex.schema.dropTableIfExists(LOGIN_CHALLENGES_SRP_TABLE)
-  await knex.schema.dropTableIfExists(USERS_AUTH_SETTINGS_TABLE)
-  await knex.schema.dropTableIfExists(USERS_AUTH_SRP_TABLE)
+  await knex.schema.dropTableIfExists(USERS_TABLE)
 }
