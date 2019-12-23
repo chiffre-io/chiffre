@@ -10020,10 +10020,10 @@ serve@^11.2.0:
     serve-handler "6.1.2"
     update-check "1.5.2"
 
-session-keystore@^0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/session-keystore/-/session-keystore-0.4.0.tgz#6e042edd9d0b65546d0713758b62b0beb8f41cc7"
-  integrity sha512-RbAATdKZVlUzHy5Y34FCDDYuqdH36wM9Dpi4c4JFCMcj+YrHROKZtHVU5eyhcBuWNSF5SOSSGLYXy6L71phebg==
+session-keystore@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/session-keystore/-/session-keystore-0.5.0.tgz#3d3c79cacc8e8c58dc3fb807f187aa032409e954"
+  integrity sha512-bESG8Q0+JgORAu1z250Z2PawpwGXa64MlOfHROr+iMcKE7xoA68AL8Xg7upp8BmwA20y+OI8n5jQwdoZjrQFtA==
   dependencies:
     "@stablelib/base64" "^0.7.2"
     "@stablelib/utf8" "^0.10.1"
