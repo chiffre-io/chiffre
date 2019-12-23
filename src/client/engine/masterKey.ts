@@ -18,9 +18,9 @@ export const deriveMasterKey = async (
   salt: string
 ): Promise<CloakKey> => {
   const key = await deriveAesGcmKeyFromPassword(
-    [username, password].join(':'),
+    [password, username].join('#'),
     b64.decode(salt),
-    20000
+    100000
   )
   return await exportKey(key)
 }
