@@ -7473,10 +7473,10 @@ next-cookies@^2.0.3:
   dependencies:
     universal-cookie "^4.0.2"
 
-next-logger@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/next-logger/-/next-logger-0.1.0.tgz#da9b03587f4ffb76d897eb53cc4a87380b64d6fd"
-  integrity sha512-/7jlqYMbUerCN9ET+urUT0keGDLi53YhZkBQmAqJ+BqbzCU3HRBLFMoBF3vc3i2UusbGLHnLlKRla1Sv20Tw+Q==
+next-logger@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/next-logger/-/next-logger-0.3.0.tgz#dfc043ada69b9fcf5fa8b16d369c087b377ed927"
+  integrity sha512-o/zY0SuzKaYUaU5WfVw50UzKDLe1/wVysMh+0pjUxDgXrlpKG+KPmPf/lZNZusodCWh4cXRyL3pxx9oCyRrEvA==
   dependencies:
     express-pino-logger "^4.0.0"
     nanoid "^2.1.8"

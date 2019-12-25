@@ -3,9 +3,10 @@ import { parse } from 'url'
 import next from 'next'
 import { loggerMiddleware } from 'next-logger'
 import socketIO from 'socket.io'
+import nanoid from 'nanoid'
 import setupCronTasks from './cron'
-import rootLogger from './logger'
-import express from 'express'
+import { rootLogger, appLogger } from './logger'
+import express, { Request, Response, NextFunction } from 'express'
 
 export interface ServerContext {
   io: socketIO.Server
@@ -27,16 +28,29 @@ const requestListener = (req: any, res: any) => {
   handle(req, res, parsedUrl)
 }
 
+const handleHealthCheck = (req: Request, res: Response, next: NextFunction) => {
+  if (req.headers['X-CleverCloud-Monitoring'] === 'telegraf') {
+    // Handle Clever Cloud health checks
+    // https://github.com/influxdata/telegraf/tree/master/plugins/outputs/health
+    return res.sendStatus(200)
+  }
+  return next()
+}
+
 app.prepare().then(() => {
   const port = parseInt(process.env.PORT || '3000', 10)
 
   const server = express()
 
-  server.use(loggerMiddleware(rootLogger))
+  const fingerprintingSalt = process.env.LOG_FINGERPRINT_SALT || nanoid()
+
+  server.use('/', handleHealthCheck)
+  server.use('/_next', loggerMiddleware(rootLogger, 'http', fingerprintingSalt))
+  server.use('/api', loggerMiddleware(rootLogger, 'api', fingerprintingSalt))
   server.all('*', requestListener)
 
   const httpServer = server.listen(port, () => {
-    rootLogger.info(`Server ready on http://localhost:${port}`)
+    appLogger.info(`Server ready on http://localhost:${port}`)
   })
 
   context.io = socketIO(httpServer)
