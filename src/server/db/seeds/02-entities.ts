@@ -7,11 +7,11 @@ import {
   Project,
   PROJECTS_TABLE
 } from '~/src/server/db/models/entities/Projects'
-import { createUserVaultEdge } from '../models/entities/UserVaultEdges'
+import { createUserVaultEdge } from '~/src/server/db/models/entities/UserVaultEdges'
 import { generateKey, encryptString, decryptString } from '@47ng/cloak'
 import { findUser } from '~/src/server/db/models/auth/Users'
 import { deriveMasterKey } from '~/src/client/engine/masterKey'
-import { findKeychain } from '../models/entities/Keychains'
+import { findKeychain } from '~/src/server/db/models/entities/Keychains'
 
 export const testProject = {
   projectID: 'testProjectID123',
