@@ -27,7 +27,7 @@ export const cloakValue = async (clearText: string): Promise<CloakedString> => {
 
 export const decloakValue = async (encrypted: CloakedString) => {
   const keychain = await getKeychain()
-  const key = await findKeyForMessage(encrypted, keychain)
+  const key = findKeyForMessage(encrypted, keychain)
   return await decryptString(encrypted, key)
 }
 
@@ -39,10 +39,20 @@ export interface RotateTableArgs<T> {
   idFieldName?: keyof T
 }
 
+export type RotationErrorReport = {
+  id: string
+  error: string
+}
+
+export interface RotationResults {
+  processed: string[] // record IDs
+  errors: RotationErrorReport[]
+}
+
 export const rotateTableCloak = async <T>(
   db: Knex,
   args: RotateTableArgs<T>
-) => {
+): Promise<RotationResults> => {
   const id = args.idFieldName || ('id' as keyof T)
   const prefix = getCurrentCloakPrefix()
   const whereClause = args.fields
