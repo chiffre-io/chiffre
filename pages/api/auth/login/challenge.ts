@@ -35,6 +35,8 @@ handler.post(
   async (req: Request<Db, LoginChallengeParameters>, res: NextApiResponse) => {
     const { username } = req.body
 
+    req.log.debug({ msg: 'Login challenge', username })
+
     const user = await findUserByUsername(req.db, username)
     if (!user) {
       // Don't reveal if the account exists or not

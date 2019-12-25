@@ -80,7 +80,7 @@ handler.post(
       try {
         await deleteLoginChallenge(req.db, challenge.id)
       } catch (error) {
-        console.error('Failed to cleanup expired challenge', error)
+        req.log.error({ msg: 'Failed to cleanup expired challenge', error })
       }
       return res.status(403).json({
         error: `Challenge response timeout`

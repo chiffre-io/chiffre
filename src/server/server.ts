@@ -1,8 +1,11 @@
-import { createServer } from 'http'
+import './env'
 import { parse } from 'url'
 import next from 'next'
+import { loggerMiddleware } from 'next-logger'
 import socketIO from 'socket.io'
 import setupCronTasks from './cron'
+import rootLogger from './logger'
+import express from 'express'
 
 export interface ServerContext {
   io: socketIO.Server
@@ -27,13 +30,16 @@ const requestListener = (req: any, res: any) => {
 app.prepare().then(() => {
   const port = parseInt(process.env.PORT || '3000', 10)
 
-  const server = createServer(requestListener)
+  const server = express()
 
-  server.listen(port, () => {
-    console.log(`> Ready on http://localhost:${port}`)
+  server.use(loggerMiddleware(rootLogger))
+  server.all('*', requestListener)
+
+  const httpServer = server.listen(port, () => {
+    rootLogger.info(`Server ready on http://localhost:${port}`)
   })
 
-  context.io = socketIO(server)
+  context.io = socketIO(httpServer)
   context.io.on('connection', client => {
     console.log(client.handshake.query)
     console.log(client.id, 'connected')

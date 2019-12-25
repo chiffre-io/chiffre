@@ -17,7 +17,6 @@ handler.use(apiAuthMiddleware)
 
 handler.post(async (req: Request<Db & ApiAuth>, res: NextApiResponse) => {
   try {
-    // todo: Handle deauth attacks (req.auth.userID !== session.userID)
     await deleteSession(req.db, req.auth.sessionID, req.auth.userID)
     return res
       .status(204) // No Content
