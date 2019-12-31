@@ -1,14 +1,9 @@
 import nextConnect from 'next-connect'
 import { NextApiResponse } from 'next'
 import database, { Db } from '~/src/server/middleware/database'
-import {
-  apiAuthMiddleware,
-  ApiAuth
-} from '~/src/server/middleware/authMiddlewares'
+import { apiAuthMiddleware, ApiAuth } from '~/src/server/middleware/apiAuth'
 import { Request } from '~/src/server/types'
-import requireBodyParams, {
-  requiredString
-} from '~/src/server/middleware/requireBodyParams'
+import requireBodyParams from '~/src/server/middleware/requireBodyParams'
 import {
   findKeychain,
   updateKeychain,
@@ -20,7 +15,7 @@ import {
 const handler = nextConnect()
 
 handler.use(database)
-handler.use(apiAuthMiddleware)
+handler.use(apiAuthMiddleware())
 
 handler.get(async (req: Request<Db & ApiAuth>, res: NextApiResponse) => {
   const keychain = await findKeychain(req.db, req.auth.userID)

@@ -87,7 +87,11 @@ export const isSessionExpired = (session: Session, now: Date = new Date()) => {
   return session.expiresAt < now
 }
 
-export const isSessionValid = async (db: Knex, id: string, userID: string) => {
+export const isSessionValid = async (
+  db: Knex,
+  id: string,
+  skipTwoFactorCheck = false
+) => {
   const session = await findSession(db, id)
   if (!session) {
     return false
@@ -95,14 +99,14 @@ export const isSessionValid = async (db: Knex, id: string, userID: string) => {
   if (isSessionExpired(session)) {
     return false
   }
-  if (session.userID !== userID) {
-    return false
+  if (skipTwoFactorCheck) {
+    return session
   }
   const twoFactorRequired = await userRequiresTwoFactorAuth(db, session.userID)
   if (twoFactorRequired) {
-    return session.twoFactorVerified
+    return session.twoFactorVerified ? session : false
   }
-  return true
+  return session
 }
 
 export const deleteSession = async (db: Knex, id: string, userID: string) => {

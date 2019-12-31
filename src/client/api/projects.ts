@@ -1,6 +1,6 @@
 import nacl from 'tweetnacl'
 import { CloakKey, encryptString, decryptString } from '@47ng/cloak'
-import { clientApi } from '../api'
+import api from '../api'
 import {
   CreateProjectArgs,
   CreateProjectResponse
@@ -22,7 +22,7 @@ export const createProject = async (
   }
   type Req = CreateProjectArgs
   type Res = CreateProjectResponse
-  return await clientApi.post<Req, Res>('/projects', body)
+  return await api.post<Req, Res>('/projects', body)
 }
 
 export const getProject = async (
@@ -30,7 +30,7 @@ export const getProject = async (
   vaultKey: CloakKey
 ): Promise<Project> => {
   const url = `/projects/${projectID}`
-  const project = await clientApi.get<Project>(url)
+  const project = await api.get<Project>(url)
   return {
     ...project,
     secretKey: await decryptString(project.secretKey, vaultKey)

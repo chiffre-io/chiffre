@@ -1,6 +1,6 @@
 import React from 'react'
 import { NextPage, NextPageContext } from 'next'
-import { authenticatePage, AuthenticatedPage } from '~/src/shared/auth'
+import { authenticatePage, AuthenticatedPageProps } from '~/src/shared/auth'
 import useKeychainKey from '~/src/client/hooks/useKeychainKey'
 import useUserProjects from '~/src/client/hooks/useUserProjects'
 import { Box } from '@chakra-ui/core'
@@ -15,7 +15,7 @@ import sessionDurationProcessor from '~/src/client/processing/sessionDuration'
 import { Event } from '~/src/emitter/events'
 import navigationHistoryProcessor from '~/src/client/processing/navigationHistory'
 
-interface Props extends AuthenticatedPage {}
+interface Props extends AuthenticatedPageProps {}
 
 const ProjectView: React.FC<{ project: Project }> = ({ project }) => {
   const [data, { add }] = useSet<{ id: string; event: Event }>()
@@ -29,15 +29,15 @@ const ProjectView: React.FC<{ project: Project }> = ({ project }) => {
     })
   }, [])
 
-  process(
-    Object.values(Array.from(data)).map(d => d.event),
-    sessionDurationProcessor
-  ).then(console.dir)
+  // process(
+  //   Object.values(Array.from(data)).map(d => d.event),
+  //   sessionDurationProcessor
+  // ).then(console.dir)
 
-  process(
-    Object.values(Array.from(data)).map(d => d.event),
-    navigationHistoryProcessor
-  ).then(console.dir)
+  // process(
+  //   Object.values(Array.from(data)).map(d => d.event),
+  //   navigationHistoryProcessor
+  // ).then(console.dir)
 
   return (
     <>

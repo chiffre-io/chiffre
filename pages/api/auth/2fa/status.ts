@@ -1,10 +1,7 @@
 import nextConnect from 'next-connect'
 import { NextApiResponse } from 'next'
 import database, { Db } from '~/src/server/middleware/database'
-import {
-  apiAuthMiddleware,
-  ApiAuth
-} from '~/src/server/middleware/authMiddlewares'
+import { apiAuthMiddleware, ApiAuth } from '~/src/server/middleware/apiAuth'
 import { Request } from '~/src/server/types'
 import { findTwoFactorSettings } from '~/src/server/db/models/auth/Users'
 
@@ -23,7 +20,7 @@ export interface TwoFactorStatusResponse {
 const handler = nextConnect()
 
 handler.use(database)
-handler.use(apiAuthMiddleware)
+handler.use(apiAuthMiddleware())
 
 handler.get(async (req: Request<Db & ApiAuth>, res: NextApiResponse) => {
   const settings = await findTwoFactorSettings(req.db, req.auth.userID)

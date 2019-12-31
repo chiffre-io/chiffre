@@ -7,7 +7,7 @@ import {
   deriveMasterKey
 } from './masterKey'
 import { generateKey, decryptString, encryptString } from '@47ng/cloak'
-import { clientApi } from '~/src/client/api'
+import api from '~/src/client/api'
 import { KeychainRecord } from '~/src/server/db/models/entities/Keychains'
 import { b64 } from '~/src/client/engine/crypto/primitives/codec'
 
@@ -60,7 +60,7 @@ export const unlockKeychain = async (
     key: encryptedKeychainKey,
     signatureSecretKey,
     sharingSecretKey
-  } = await clientApi.get<KeychainRecord>('/keychain')
+  } = await api.get<KeychainRecord>('/keychain')
   const keychainKey = await decryptString(encryptedKeychainKey, masterKey)
   return {
     keychainKey,

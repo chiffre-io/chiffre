@@ -1,6 +1,6 @@
 import React from 'react'
 import { useSet } from 'react-use'
-import { clientApi } from '~/src/client/api'
+import api from '~/src/client/api'
 import { Project } from '~/src/server/db/models/entities/Projects'
 import { CloakKey, decryptString } from '@47ng/cloak'
 import { ProjectsList } from '~/pages/api/projects'
@@ -11,7 +11,7 @@ export default function useUserProjects(keychainKey: CloakKey) {
     if (!keychainKey) {
       return
     }
-    clientApi.get<ProjectsList>('/projects').then(projects => {
+    api.get<ProjectsList>('/projects').then(projects => {
       projects.forEach(async project => {
         const vaultKey = await decryptString(project.vaultKey, keychainKey)
         add({

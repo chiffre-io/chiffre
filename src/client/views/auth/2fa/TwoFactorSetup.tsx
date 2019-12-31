@@ -18,7 +18,7 @@ import TwoFactorSecretDisplay from './TwoFactorSecretDisplay'
 import ErrorText from '~/src/client/components/form/ErrorText'
 import TwoFactorForm, { Values as TwoFactorFormValues } from '../TwoFactorForm'
 import { VerifyTwoFactorParams } from '~/pages/api/auth/2fa/verify'
-import { clientApi } from '~/src/client/api'
+import api from '~/src/client/api'
 
 const useRequestActivation = () => {
   type T = TwoFactorEnableResponse
@@ -26,7 +26,7 @@ const useRequestActivation = () => {
 
   const requestActivation = () =>
     load(async () => {
-      return await clientApi.post<null, T>('/auth/2fa/enable', null)
+      return await api.post<null, T>('/auth/2fa/enable', null)
     })
 
   return {
@@ -45,12 +45,9 @@ const useVerification = () => {
 
   const verifyToken = (token: string) =>
     load(async () => {
-      return await clientApi.post<VerifyTwoFactorParams, T>(
-        '/auth/2fa/verify',
-        {
-          token
-        }
-      )
+      return await api.post<VerifyTwoFactorParams, T>('/auth/2fa/verify', {
+        token
+      })
     })
 
   return {
@@ -216,7 +213,7 @@ const TwoFactorSetup: React.FC = () => {
   const showSecret = twoFactorSecret && !showBackup
 
   const onCancel = async () => {
-    await clientApi.delete('/auth/2fa/enable')
+    await api.delete('/auth/2fa/enable')
     // todo: Close the component, reset state
   }
 

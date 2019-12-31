@@ -1,12 +1,12 @@
 import nacl from 'tweetnacl'
-import { clientApi } from '~/src/client/api'
+import api from '~/src/client/api'
 import { MessageQueueResponse } from '~/pages/api/queues/[projectID]'
 import { Event } from '~/src/emitter/events'
 import { b64, encoders, Encoding } from './crypto/primitives/codec'
 
 export const fetchProjectDataPoints = async (projectID: string) => {
   const url = `/queues/${projectID}`
-  const messages = await clientApi.get<MessageQueueResponse[]>(url)
+  const messages = await api.get<MessageQueueResponse[]>(url)
   return messages
 }
 

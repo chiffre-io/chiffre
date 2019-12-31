@@ -1,10 +1,7 @@
 import nextConnect from 'next-connect'
 import { NextApiResponse } from 'next'
 import database, { Db } from '~/src/server/middleware/database'
-import {
-  apiAuthMiddleware,
-  ApiAuth
-} from '~/src/server/middleware/authMiddlewares'
+import { apiAuthMiddleware, ApiAuth } from '~/src/server/middleware/apiAuth'
 import { Request } from '~/src/server/types'
 import {
   generateTwoFactorSecret,
@@ -27,7 +24,7 @@ export interface TwoFactorEnableResponse {
 const handler = nextConnect()
 
 handler.use(database)
-handler.use(apiAuthMiddleware)
+handler.use(apiAuthMiddleware())
 
 /**
  * Enable 2FA (needs to be verified with ./verify)

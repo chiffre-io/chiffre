@@ -3,7 +3,7 @@ import { useRouter } from 'next/dist/client/router'
 import AuthPage from '~/src/client/views/auth/AuthPage'
 import SignupForm, { Values } from '~/src/client/views/auth/SignupForm'
 import useErrorToast from '~/src/client/hooks/useErrorToast'
-import { publicApi } from '~/src/client/api'
+import api from '~/src/client/api'
 import {
   createSignupEntities,
   unlockKeychain
@@ -26,8 +26,8 @@ const SignupPage = () => {
       const params = await createSignupEntities(username, password)
       type Req = SignupParameters
       type Res = SignupResponse
-      const { jwt } = await publicApi.post<Req, Res>('/auth/signup', params)
-      saveLoginCredentials(jwt)
+      const auth = await api.post<Req, Res>('/auth/signup', params)
+      saveLoginCredentials(auth)
       const {
         keychainKey,
         signatureSecretKey,

@@ -1,10 +1,7 @@
 import nextConnect from 'next-connect'
 import { NextApiResponse } from 'next'
 import database, { Db } from '~/src/server/middleware/database'
-import {
-  apiAuthMiddleware,
-  ApiAuth
-} from '~/src/server/middleware/authMiddlewares'
+import { apiAuthMiddleware, ApiAuth } from '~/src/server/middleware/apiAuth'
 import requireBodyParams, {
   requiredString
 } from '~/src/server/middleware/requireBodyParams'
@@ -29,7 +26,7 @@ handler.use(
   })
 )
 handler.use(database)
-handler.use(apiAuthMiddleware)
+handler.use(apiAuthMiddleware())
 
 handler.post(
   async (req: Request<Db & ApiAuth, CreateVaultArgs>, res: NextApiResponse) => {

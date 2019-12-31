@@ -14,14 +14,13 @@ import {
 } from '~/pages/api/auth/login/response'
 import { saveLoginCredentials } from '~/src/client/auth'
 import use2faVerification from './use2faVerification'
-import { publicApi } from '~/src/client/api'
+import api from '~/src/client/api'
 import { unlockKeychain } from '~/src/client/engine/account'
 import { saveKey } from '~/src/client/engine/keyStorage'
 import useErrorToast from '~/src/client/hooks/useErrorToast'
 
 interface AuthInfo {
   userID: string
-  sessionID: string
   username: string
   password: string
 }
@@ -57,10 +56,10 @@ export default function useSrpLogin(): Return {
       challengeID,
       srpSalt,
       ephemeral: serverEphemeral
-    } = await publicApi.post<
-      LoginChallengeParameters,
-      LoginChallengeResponseBody
-    >('/auth/login/challenge', { username })
+    } = await api.post<LoginChallengeParameters, LoginChallengeResponseBody>(
+      '/auth/login/challenge',
+      { username }
+    )
 
     const {
       session,
@@ -80,11 +79,10 @@ export default function useSrpLogin(): Return {
     }
     const {
       proof: serverProof,
-      jwt,
-      masterSalt,
       twoFactor,
-      sessionID
-    }: LoginResponseResponseBody = await publicApi.post(
+      masterSalt,
+      auth
+    }: LoginResponseResponseBody = await api.post(
       '/auth/login/response',
       responseParams
     )
@@ -93,7 +91,6 @@ export default function useSrpLogin(): Return {
 
     setAuthInfo({
       userID,
-      sessionID,
       // Store credentials for post-2FA KDF
       username: twoFactor ? username : null,
       password: twoFactor ? password : null
@@ -101,8 +98,8 @@ export default function useSrpLogin(): Return {
     if (twoFactor) {
       return setShowTwoFactor(true)
     }
-    if (jwt && masterSalt) {
-      saveLoginCredentials(jwt)
+    if (auth && masterSalt) {
+      saveLoginCredentials(auth)
       const {
         keychainKey,
         signatureSecretKey,
@@ -116,12 +113,10 @@ export default function useSrpLogin(): Return {
   }
 
   const enterTwoFactorToken = async (token: string) => {
-    const { jwt, masterSalt } = await verifyTwoFactor({
-      userID: authInfo.userID,
-      sessionID: authInfo.sessionID,
+    const { masterSalt, ...auth } = await verifyTwoFactor({
       twoFactorToken: token
     })
-    saveLoginCredentials(jwt)
+    saveLoginCredentials(auth)
     const {
       keychainKey,
       signatureSecretKey,

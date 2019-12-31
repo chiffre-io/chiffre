@@ -1,10 +1,15 @@
 import { NextPageContext } from 'next'
 import Router from 'next/router'
 import nextCookie from 'next-cookies'
-import { verifyJwt, JwtClaims, extractJwtClaims } from '~/src/server/jwt'
 import { isSessionValid } from '~/src/server/db/models/auth/Sessions'
 import { getLoginCredentials } from '~/src/client/auth'
 import { CookieNames } from '~/src/server/cookies'
+
+export interface AuthClaims {
+  userID: string
+  sessionID: string
+  sessionExpiresAt: Date
+}
 
 const redirectToLogin = async (ctx: NextPageContext) => {
   if (ctx.req) {
@@ -22,8 +27,8 @@ const redirectToLogin = async (ctx: NextPageContext) => {
 
 // --
 
-export interface AuthenticatedPage {
-  auth: JwtClaims
+export interface AuthenticatedPageProps {
+  auth: AuthClaims
 }
 
 /**
@@ -32,31 +37,30 @@ export interface AuthenticatedPage {
  */
 export const authenticatePage = async (
   ctx: NextPageContext
-): Promise<JwtClaims> => {
+): Promise<AuthClaims> => {
   try {
     if (ctx.req) {
       // Imported here to avoid client-side imports
       const database = require('~/src/server/db/database').default
 
-      // Server-side: get the JWT from the cookies
-      const { [CookieNames.jwt]: jwt } = nextCookie(ctx)
-      const claims = verifyJwt(jwt)
-      const validSession = await isSessionValid(
-        database,
-        claims.sessionID,
-        claims.userID
-      )
-      if (!validSession) {
+      // Server-side: get the SessionID from the cookies
+      const { [CookieNames.sid]: sid } = nextCookie(ctx)
+      const session = await isSessionValid(database, sid)
+      if (!session) {
         throw new Error('Session has expired')
       }
-      return claims
+      return {
+        userID: session.userID,
+        sessionID: session.id,
+        sessionExpiresAt: session.expiresAt
+      }
     } else {
-      // Client-side: get the JWT from localStorage
-      const jwt = getLoginCredentials()
-      if (!jwt) {
+      // Client-side: get the auth claims from localStorage
+      const auth = getLoginCredentials()
+      if (!auth) {
         throw new Error('Not logged in')
       }
-      return extractJwtClaims(jwt)
+      return auth
     }
   } catch (error) {
     console.error('Authentication error:', error)

@@ -1,10 +1,7 @@
 import nextConnect from 'next-connect'
 import { NextApiResponse } from 'next'
 import database, { Db } from '~/src/server/middleware/database'
-import {
-  apiAuthMiddleware,
-  ApiAuth
-} from '~/src/server/middleware/authMiddlewares'
+import { apiAuthMiddleware, ApiAuth } from '~/src/server/middleware/apiAuth'
 import { Request } from '~/src/server/types'
 import {
   getAllSessionsForUser,
@@ -17,7 +14,7 @@ import { findTwoFactorSettings } from '~/src/server/db/models/auth/Users'
 const handler = nextConnect()
 
 handler.use(database)
-handler.use(apiAuthMiddleware)
+handler.use(apiAuthMiddleware())
 
 export interface SessionInfo {
   id: string

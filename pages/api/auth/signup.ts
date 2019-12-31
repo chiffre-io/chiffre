@@ -10,8 +10,8 @@ import { createSession } from '~/src/server/db/models/auth/Sessions'
 import ipAddressMiddleware, {
   IpAddress
 } from '~/src/server/middleware/ipAddress'
-import { createJwt } from '~/src/server/jwt'
-import { createJwtCookie } from '~/src/server/cookies'
+import { createSessionIDCookie } from '~/src/server/cookies'
+import { AuthClaims } from '~/src/shared/auth'
 import {
   createKeychainRecord,
   KeychainRecord
@@ -25,10 +25,7 @@ export interface SignupParameters {
   keychain: Omit<KeychainRecord, 'userID'>
 }
 
-export interface SignupResponse {
-  userID: string
-  jwt: string
-}
+export interface SignupResponse extends AuthClaims {}
 
 // --
 
@@ -70,18 +67,13 @@ handler.post(
         req.ipAddress
       )
 
-      const jwt = createJwt({
+      const sidCookie = createSessionIDCookie(session)
+      res.setHeader('Set-Cookie', [sidCookie])
+
+      const body: SignupResponse = {
         userID,
         sessionID: session.id,
         sessionExpiresAt: session.expiresAt
-      })
-      // Put JWT in a cookie to authenticate SSR requests
-      const jwtCookie = createJwtCookie(jwt, session)
-      res.setHeader('Set-Cookie', [jwtCookie])
-
-      const body: SignupResponse = {
-        jwt,
-        userID
       }
       return res
         .status(201) // Created
@@ -90,7 +82,7 @@ handler.post(
       if (error.code === '23505') {
         // duplicate key value violates unique constraint
         return res.status(409).json({
-          error: 'This username is already in use',
+          error: 'This username is not available',
           details: error.detail
         })
       }

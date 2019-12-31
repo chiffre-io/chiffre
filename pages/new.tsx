@@ -1,8 +1,7 @@
 import { NextPage } from 'next'
-import { Box, Heading, Text } from '@chakra-ui/core'
+import { Box, Heading, Text, Divider } from '@chakra-ui/core'
 import Body from '~/src/client/components/primitives/Body'
 import NewProjectForm, { Values } from '~/src/client/views/new/NewProjectForm'
-import Separator from '~/src/client/components/primitives/Separator'
 
 const NewPage: NextPage = () => {
   const submit = (values: Values) => {}
@@ -27,7 +26,7 @@ const NewPage: NextPage = () => {
         <Text fontSize="sm" color="gray.600" mb={6}>
           A project collects all analytics for a given website or webapp.
         </Text>
-        <Separator />
+        <Divider />
         <NewProjectForm onSubmit={submit} onCancel={cancel} />
       </Box>
     </>

@@ -1,9 +1,9 @@
 import { NextPage, NextPageContext } from 'next'
 import { authenticatePage } from '~/src/shared/auth'
-import { JwtClaims } from '~/src/server/jwt'
+import { AuthClaims } from '~/src/shared/auth'
 import TwoFactorSetup from '~/src/client/views/auth/2fa/TwoFactorSetup'
 
-export interface Props extends JwtClaims {}
+export interface Props extends AuthClaims {}
 
 const AuthSettingsPage: NextPage<Props> = ({ ...props }) => {
   return <TwoFactorSetup />

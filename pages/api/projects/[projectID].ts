@@ -1,10 +1,7 @@
 import nextConnect from 'next-connect'
 import { NextApiResponse } from 'next'
 import database, { Db } from '~/src/server/middleware/database'
-import {
-  apiAuthMiddleware,
-  ApiAuth
-} from '~/src/server/middleware/authMiddlewares'
+import { apiAuthMiddleware, ApiAuth } from '~/src/server/middleware/apiAuth'
 import { Request } from '~/src/server/types'
 import {
   findProject,
@@ -30,7 +27,7 @@ interface UrlParameters {
 }
 
 handler.use(database)
-handler.use(apiAuthMiddleware)
+handler.use(apiAuthMiddleware())
 handler.use(extractUrlParameter<UrlParams<UrlParameters>>('projectID'))
 
 handler.get(

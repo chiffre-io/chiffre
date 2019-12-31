@@ -12,7 +12,6 @@ import {
   findLoginChallenge,
   isChallengeExpired
 } from '~/src/server/db/models/auth/LoginChallengesSRP'
-import { createJwt } from '~/src/server/jwt'
 import { serverLoginResponse } from '~/src/server/srp'
 import { deleteLoginChallenge } from '~/src/server/db/models/auth/LoginChallengesSRP'
 import {
@@ -21,7 +20,8 @@ import {
 } from '~/src/server/db/models/auth/Users'
 import { Session as SrpSession } from 'secure-remote-password/server'
 import { createSession } from '~/src/server/db/models/auth/Sessions'
-import { createJwtCookie } from '~/src/server/cookies'
+import { createSessionIDCookie } from '~/src/server/cookies'
+import { AuthClaims } from '~/src/shared/auth'
 
 export interface LoginResponseParameters {
   userID: string
@@ -32,9 +32,8 @@ export interface LoginResponseParameters {
 
 export interface LoginResponseResponseBody {
   proof: string
-  sessionID: string
   twoFactor: boolean
-  jwt?: string // Will be sent if twoFactor is false
+  auth?: AuthClaims
   masterSalt?: string
 }
 
@@ -120,27 +119,20 @@ handler.post(
       req.ipAddress
     )
 
-    const jwt = twoFactorRequired
-      ? null
-      : createJwt({
-          userID: user.id,
-          sessionID: session.id,
-          sessionExpiresAt: session.expiresAt
-        })
-
-    if (jwt) {
-      // Put JWT in a cookie to authenticate SSR requests
-      const jwtCookie = createJwtCookie(jwt, session)
-      res.setHeader('Set-Cookie', [jwtCookie])
-    }
+    const sidCookie = createSessionIDCookie(session)
+    res.setHeader('Set-Cookie', [sidCookie])
     const masterSalt = twoFactorRequired ? undefined : user.masterSalt
+    const auth: AuthClaims = {
+      userID: user.id,
+      sessionID: session.id,
+      sessionExpiresAt: session.expiresAt
+    }
 
     const body: LoginResponseResponseBody = {
       proof: srpSession.proof,
-      jwt,
+      auth: twoFactorRequired ? undefined : auth,
       masterSalt,
-      twoFactor: twoFactorRequired,
-      sessionID: session.id
+      twoFactor: twoFactorRequired
     }
     res.json(body)
   }

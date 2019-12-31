@@ -10,19 +10,15 @@ import {
   findUser,
   findTwoFactorSettings
 } from '~/src/server/db/models/auth/Users'
-import { findSession } from '~/src/server/db/models/auth/Sessions'
-import { createJwt } from '~/src/server/jwt'
 import { markTwoFactorVerifiedInSession } from '~/src/server/db/models/auth/Sessions'
-import { createJwtCookie } from '~/src/server/cookies'
+import { AuthClaims } from '~/src/shared/auth'
+import { apiAuthMiddleware, ApiAuth } from '~/src/server/middleware/apiAuth'
 
 export interface Login2FAParameters {
-  userID: string
-  sessionID: string
   twoFactorToken: string
 }
 
-export interface Login2FAResponseBody {
-  jwt: string
+export interface Login2FAResponseBody extends AuthClaims {
   masterSalt: string
 }
 
@@ -32,36 +28,30 @@ const handler = nextConnect()
 
 handler.use(
   requireBodyParams<Login2FAParameters>({
-    userID: requiredString,
-    sessionID: requiredString,
     twoFactorToken: requiredString
   })
 )
 handler.use(database)
+handler.use(apiAuthMiddleware(true))
 
 handler.post(
-  async (req: Request<Db, Login2FAParameters>, res: NextApiResponse) => {
-    const { userID, sessionID, twoFactorToken } = req.body
+  async (
+    req: Request<Db & ApiAuth, Login2FAParameters>,
+    res: NextApiResponse
+  ) => {
+    const { twoFactorToken } = req.body
 
-    const user = await findUser(req.db, userID)
+    const user = await findUser(req.db, req.auth.userID)
     if (!user) {
       return res.status(404).json({
         error: `User not found`
       })
     }
-    const session = await findSession(req.db, sessionID)
-    if (!session) {
-      return res.status(404).json({
-        error: `Session not found`
-      })
-    }
 
-    if (session.twoFactorVerified) {
-      // The session is already verified
-      // todo: Then what ?
-    }
-
-    const twoFactorSettings = await findTwoFactorSettings(req.db, user.id)
+    const twoFactorSettings = await findTwoFactorSettings(
+      req.db,
+      req.auth.userID
+    )
     if (
       !twoFactorSettings.enabled ||
       !twoFactorSettings.verified ||
@@ -84,18 +74,10 @@ handler.post(
     }
 
     try {
-      await markTwoFactorVerifiedInSession(req.db, session.id)
-
-      const jwt = createJwt({
-        userID: user.id,
-        sessionID: session.id,
-        sessionExpiresAt: session.expiresAt
-      })
-      const jwtCookie = createJwtCookie(jwt, session)
-      res.setHeader('Set-Cookie', [jwtCookie])
+      await markTwoFactorVerifiedInSession(req.db, req.auth.sessionID)
 
       const body: Login2FAResponseBody = {
-        jwt,
+        ...req.auth,
         masterSalt: user.masterSalt
       }
       res.json(body)
