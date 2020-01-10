@@ -1,10 +1,10 @@
 {
   "apps": [
     {
-      "app_id": "app_5420ed9a-17ba-405e-8b70-914ae5404ad5",
-      "deploy_url": "https://push-par-clevercloud-customers.services.clever-cloud.com/app_5420ed9a-17ba-405e-8b70-914ae5404ad5.git",
-      "name": "chiffre-mvp",
-      "alias": "chiffre-mvp"
+      "app_id": "app_7e248b2a-4660-40ec-8a11-574e109cf873",
+      "deploy_url": "https://push-par-clevercloud-customers.services.clever-cloud.com/app_7e248b2a-4660-40ec-8a11-574e109cf873.git",
+      "name": "api",
+      "alias": "api"
     }
   ]
 }
