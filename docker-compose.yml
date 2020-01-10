@@ -1,0 +1,46 @@
+version: '3'
+
+services:
+  db:
+    image: 'postgres:11.1'
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=chiffre-test
+      - POSTGRES_PASSWORD=password
+
+  api:
+    build:
+      context: .
+      dockerfile: ./packages/api/Dockerfile
+    expose:
+      - '3000'
+    ports:
+      - '3000:3000'
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+      - DATABASE_URI=postgres://postgres:password@db:5432/chiffre-test
+      - DATABASE_MAX_CONNECTIONS=10
+      - LOG_LEVEL=debug
+      - LOG_INSTANCE_ID=chiffre-test
+      - LOG_COMMIT=dev
+      - JWT_SECRET=chiffre-test
+      - JWT_ISSUER=chiffre-test
+      - CLOAK_MASTER_KEY=k1.aesgcm256.eoM9ev9cy3rkfQJkhVNSo9S8dq_3y-NdgvHWNVAzgiU=
+      - CLOAK_KEYCHAIN=v1.aesgcm256.400227d4.LqawzKkgVi5GZJ2q.1US8M5XMSZySElozAUj_91IJX-W7cxeKepZfFkrMOHDx7luxAwFLzj9BJrJ2ZlXAzr3GEaZVc70j36ReECtHN-yK-yISXeRi8l3lA_ESCVH-6DLqwqt7y9ecAVYgaXTEiIVuP71BPqFrRWUW6EC_
+      - CLOAK_CURRENT_KEY=81713bd6
+    links:
+      - db
+
+  test-runner:
+    build:
+      context: .
+      dockerfile: ./packages/api-test-runner/Dockerfile
+    volumes:
+      - './:/app'
+    environment:
+      - DATABASE_URI=postgres://postgres:password@db:5432/chiffre-test
+      - API_URL=http://api:3000
+    links:
+      - db
+      - api

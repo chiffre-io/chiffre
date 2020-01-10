@@ -1,0 +1,54 @@
+{
+  "name": "@chiffre/api",
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "license": "MIT",
+  "scripts": {
+    "dev": "nodemon -e ts,.env -w .env -w ./src ./src/index.ts",
+    "build": "tsc",
+    "knex": "ts-node ./node_modules/.bin/knex",
+    "migrate:make": "yarn knex migrate:make",
+    "migrate:up": "yarn knex migrate:up",
+    "migrate:down": "yarn knex migrate:down",
+    "seed:make": "yarn knex seed:make",
+    "seed:run": "yarn knex seed:run",
+    "db:reset": "./scripts/stop-db.sh && rm -rf .db && ./scripts/start-db.sh",
+    "db:setup": "yarn migrate:up && yarn seed:run",
+    "db:rotate-keys": "ts-node ./src/db/operations/rotateCloak.ts",
+    "db:new-key": "cloak generate"
+  },
+  "dependencies": {
+    "@47ng/check-env": "^2.0.0",
+    "@47ng/cloak": "^0.10.0",
+    "@chiffre/crypto": "^0.0.1",
+    "base32-decode": "^1.0.0",
+    "base32-encode": "^1.1.1",
+    "cron": "^1.7.2",
+    "dotenv": "^8.2.0",
+    "env-alias": "^1.0.0",
+    "fastify": "^2.11.0",
+    "fastify-cookie": "^3.4.1",
+    "fastify-plugin": "^1.6.0",
+    "fastify-sensible": "^2.1.1",
+    "fluent-schema": "^0.9.0",
+    "jsonwebtoken": "^8.5.1",
+    "knex": "^0.20.6",
+    "nanoid": "^2.1.8",
+    "otplib": "^12.0.0-1",
+    "pg": "^7.17.0",
+    "redact-env": "^0.2.0",
+    "sonic-boom": "^0.7.6",
+    "timeago.js": "^4.0.2"
+  },
+  "devDependencies": {
+    "@types/cron": "^1.7.1",
+    "@types/nanoid": "^2.1.0",
+    "@types/pino": "^5.15.1",
+    "@types/pino-http": "^4.3.2",
+    "nodemon": "^2.0.2"
+  },
+  "jest": {
+    "preset": "ts-jest/presets/js-with-ts",
+    "testEnvironment": "node"
+  }
+}

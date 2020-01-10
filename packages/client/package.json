@@ -1,0 +1,9 @@
+{
+  "name": "@chiffre/client",
+  "version": "0.0.1",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "echo -n 'No build yet'"
+  }
+}

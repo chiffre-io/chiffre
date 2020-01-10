@@ -1,0 +1,10 @@
+**/.db
+**/.next
+**/dist
+node_modules
+**/node_modules
+**/Dockerfile
+**/scripts
+**/.env
+docs
+.vscode

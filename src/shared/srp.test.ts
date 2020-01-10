@@ -3,7 +3,7 @@ import {
   clientAssembleLoginResponse,
   clientVerifyLogin
 } from '~/src/client/engine/crypto/srp'
-import { serverLoginChallenge, serverLoginResponse } from '~/src/server/srp'
+import { serverLoginChallenge, serverLoginResponse } from '~/src/srp'
 
 describe('SRP', () => {
   test('complete login flow', async () => {

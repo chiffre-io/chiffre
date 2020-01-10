@@ -1,9 +1,9 @@
 import { NextPageContext } from 'next'
 import Router from 'next/router'
 import nextCookie from 'next-cookies'
-import { isSessionValid } from '~/src/server/db/models/auth/Sessions'
+import { isSessionValid } from '~/src/db/models/auth/Sessions'
 import { getLoginCredentials } from '~/src/client/auth'
-import { CookieNames } from '~/src/server/cookies'
+import { CookieNames } from '~/src/cookies'
 
 export interface AuthClaims {
   userID: string
@@ -41,7 +41,7 @@ export const authenticatePage = async (
   try {
     if (ctx.req) {
       // Imported here to avoid client-side imports
-      const database = require('~/src/server/db/database').default
+      const database = require('~/src/db/database').default
 
       // Server-side: get the SessionID from the cookies
       const { [CookieNames.sid]: sid } = nextCookie(ctx)

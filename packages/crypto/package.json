@@ -1,0 +1,28 @@
+{
+  "name": "@chiffre/crypto",
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest --verbose --logHeapUsage"
+  },
+  "dependencies": {
+    "@47ng/cloak": "^0.10.0",
+    "@stablelib/base64": "^0.7.2",
+    "@stablelib/hex": "^0.5.0",
+    "@stablelib/tss": "^0.7.4",
+    "@stablelib/utf8": "^0.10.1",
+    "otplib": "^12.0.0",
+    "secure-remote-password": "^0.3.1",
+    "tweetnacl": "^1.0.1"
+  },
+  "jest": {
+    "preset": "ts-jest/presets/js-with-ts",
+    "testEnvironment": "node"
+  },
+  "devDependencies": {
+    "@types/faker": "^4.1.8",
+    "faker": "^4.1.0"
+  }
+}
