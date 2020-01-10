@@ -8,8 +8,6 @@ import {
   CloakKeychain
 } from '@47ng/cloak'
 
-const encryptionEnabled = process.env.CLOAK_DISABLED !== 'true'
-
 let _keychain: CloakKeychain = null
 
 const getKeychain = async () => {
@@ -28,7 +26,7 @@ export function getCurrentCloakPrefix() {
 }
 
 export async function cloakValue(clearText: string): Promise<CloakedString> {
-  if (!encryptionEnabled) {
+  if (process.env.CLOAK_DISABLED === 'true') {
     return clearText
   }
   const keychain = await getKeychain()
@@ -37,7 +35,7 @@ export async function cloakValue(clearText: string): Promise<CloakedString> {
 }
 
 export async function decloakValue(encrypted: CloakedString) {
-  if (!encryptionEnabled) {
+  if (process.env.CLOAK_DISABLED === 'true') {
     return encrypted
   }
   const keychain = await getKeychain()

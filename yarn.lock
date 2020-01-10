@@ -4982,6 +4982,14 @@ fastify-cookie@^3.4.1:
     cookie-signature "^1.1.0"
     fastify-plugin "^1.4.0"
 
+fastify-graceful-shutdown@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/fastify-graceful-shutdown/-/fastify-graceful-shutdown-2.0.1.tgz#2ed228dc8eb8b225cdff5ed5b714264462e64d38"
+  integrity sha512-7G+K5Iqo1VVPsykkn3yuXnZvwzAmdIOQWvHzfGZ7yJQW3y7DnHtbiVzLdYBMvbNHQf9nt4LN483heTzGaqz8LA==
+  dependencies:
+    fastify-plugin "^1.5.0"
+    fastparallel "^2.3.0"
+
 fastify-plugin@^1.4.0, fastify-plugin@^1.5.0, fastify-plugin@^1.6.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/fastify-plugin/-/fastify-plugin-1.6.0.tgz#c8198b08608f20c502b5dad26b36e9ae27206d7c"
@@ -5022,6 +5030,14 @@ fastify@^2.11.0:
     rfdc "^1.1.2"
     secure-json-parse "^2.0.0"
     tiny-lru "^7.0.2"
+
+fastparallel@^2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/fastparallel/-/fastparallel-2.3.0.tgz#1e709bfb6a03993f3857e3ce7f01311ce7602613"
+  integrity sha1-HnCb+2oDmT84V+POfwExHOdgJhM=
+  dependencies:
+    reusify "^1.0.0"
+    xtend "^4.0.1"
 
 fastparse@^1.1.1:
   version "1.1.2"
@@ -12377,7 +12393,7 @@ xmlhttprequest-ssl@~1.5.4:
   resolved "https://registry.yarnpkg.com/xmlhttprequest-ssl/-/xmlhttprequest-ssl-1.5.5.tgz#c2876b06168aadc40e57d97e81191ac8f4398b3e"
   integrity sha1-wodrBhaKrcQOV9l+gRkayPQ5iz4=
 
-xtend@^4.0.0, xtend@~4.0.1:
+xtend@^4.0.0, xtend@^4.0.1, xtend@~4.0.1:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/xtend/-/xtend-4.0.2.tgz#bb72779f5fa465186b1f438f674fa347fdb5db54"
   integrity sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==
