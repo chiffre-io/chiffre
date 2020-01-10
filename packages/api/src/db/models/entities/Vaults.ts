@@ -15,11 +15,11 @@ export interface Vault extends VaultInput {
 
 // --
 
-export const createVault = async (
+export async function createVault(
   db: Knex,
   encrypted: string,
   createdBy: string
-): Promise<Vault> => {
+): Promise<Vault> {
   const vault: VaultInput = {
     encrypted,
     createdBy
@@ -31,7 +31,7 @@ export const createVault = async (
   return result[0]
 }
 
-export const findVault = async (db: Knex, id: string) => {
+export async function findVault(db: Knex, id: string) {
   const result = await db
     .select<Vault[]>('*')
     .from(VAULTS_TABLE)
@@ -43,13 +43,13 @@ export const findVault = async (db: Knex, id: string) => {
   return result[0]
 }
 
-export const updateVault = async (db: Knex, id: string, encrypted: string) => {
+export async function updateVault(db: Knex, id: string, encrypted: string) {
   return await db<Vault>(VAULTS_TABLE)
     .update({ encrypted })
     .where({ id })
 }
 
-export const deleteVault = async (db: Knex, id: string) => {
+export async function deleteVault(db: Knex, id: string) {
   return await db
     .from(VAULTS_TABLE)
     .where({ id })
@@ -58,7 +58,7 @@ export const deleteVault = async (db: Knex, id: string) => {
 
 // --
 
-export const createInitialVaultsTable = async (db: Knex) => {
+export async function createInitialVaultsTable(db: Knex) {
   await db.schema.createTable(VAULTS_TABLE, table => {
     table.timestamps(true, true)
     table

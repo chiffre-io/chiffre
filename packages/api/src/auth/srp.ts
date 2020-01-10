@@ -6,7 +6,7 @@ import { base64ToHex, hexToBase64url } from '@chiffre/crypto'
  * @param verifier base64url-encoded
  * @returns The ephemeral public/secret key pair, both base64url-encoded.
  */
-export const serverLoginChallenge = (verifier: string): srpServer.Ephemeral => {
+export function serverLoginChallenge(verifier: string): srpServer.Ephemeral {
   const verifierHex = base64ToHex(verifier)
   const ephemeral = srpServer.generateEphemeral(verifierHex)
   return {
@@ -15,14 +15,14 @@ export const serverLoginChallenge = (verifier: string): srpServer.Ephemeral => {
   }
 }
 
-export const serverLoginResponse = (
+export function serverLoginResponse(
   serverSecretEphemeral: string,
   clientPublicEphemeral: string,
   salt: string,
   username: string,
   verifier: string,
   clientProof: string
-): srpServer.Session => {
+): srpServer.Session {
   const session = srpServer.deriveSession(
     base64ToHex(serverSecretEphemeral),
     base64ToHex(clientPublicEphemeral),

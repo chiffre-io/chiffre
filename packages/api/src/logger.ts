@@ -6,10 +6,10 @@ import redactEnv from 'redact-env'
 import nanoid from 'nanoid'
 import { FastifyRequest } from 'fastify'
 
-export const createRedactedStream = (
+export function createRedactedStream(
   pipeTo: SonicBoom,
   secureEnv: string[]
-): SonicBoom => {
+): SonicBoom {
   const secrets = redactEnv.build(secureEnv, process.env)
   return Object.assign({}, pipeTo, {
     write: (string: string) => {
@@ -19,7 +19,7 @@ export const createRedactedStream = (
   })
 }
 
-export const getLoggerOptions = () => {
+export function getLoggerOptions() {
   const redactedEnv = [
     'DATABASE_URI',
     'CLOAK_MASTER_KEY',

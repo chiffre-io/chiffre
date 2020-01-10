@@ -16,12 +16,12 @@ export interface Project extends ProjectInput {
 
 // --
 
-export const createProject = async (
+export async function createProject(
   db: Knex,
   vaultID: string,
   publicKey: string,
   secretKey: string
-): Promise<Project> => {
+): Promise<Project> {
   const project: ProjectInput = {
     vaultID,
     publicKey,
@@ -34,7 +34,7 @@ export const createProject = async (
   return result[0]
 }
 
-export const findProject = async (db: Knex, id: string) => {
+export async function findProject(db: Knex, id: string) {
   const result = await db
     .select<Project[]>('*')
     .from(PROJECTS_TABLE)
@@ -46,14 +46,14 @@ export const findProject = async (db: Knex, id: string) => {
   return result[0]
 }
 
-export const deleteProject = async (db: Knex, id: string) => {
+export async function deleteProject(db: Knex, id: string) {
   return await db
     .from(PROJECTS_TABLE)
     .where({ id })
     .delete()
 }
 
-export const findAllProjectsInVault = async (db: Knex, vaultID: string) => {
+export async function findAllProjectsInVault(db: Knex, vaultID: string) {
   return await db
     .select<Project[]>('*')
     .from(PROJECTS_TABLE)
@@ -62,7 +62,7 @@ export const findAllProjectsInVault = async (db: Knex, vaultID: string) => {
 
 // --
 
-export const createInitialProjectsTable = async (db: Knex) => {
+export async function createInitialProjectsTable(db: Knex) {
   await db.schema.createTable(PROJECTS_TABLE, table => {
     table.timestamps(true, true)
     table

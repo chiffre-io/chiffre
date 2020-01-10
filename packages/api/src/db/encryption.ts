@@ -4,16 +4,23 @@ import {
   CloakedString,
   encryptString,
   decryptString,
-  findKeyForMessage
+  findKeyForMessage,
+  CloakKeychain
 } from '@47ng/cloak'
 
 const encryptionEnabled = process.env.CLOAK_DISABLED !== 'true'
 
+let _keychain: CloakKeychain = null
+
 const getKeychain = async () => {
-  return await importKeychain(
+  if (_keychain) {
+    return _keychain
+  }
+  _keychain = await importKeychain(
     process.env.CLOAK_KEYCHAIN,
     process.env.CLOAK_MASTER_KEY
   )
+  return _keychain
 }
 
 export function getCurrentCloakPrefix() {

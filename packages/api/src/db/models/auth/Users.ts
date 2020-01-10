@@ -25,9 +25,7 @@ export interface User extends UserInput {
 
 // --
 
-export const cloak = async (
-  user: User | UserInput
-): Promise<User | UserInput> => {
+export async function cloak(user: User | UserInput): Promise<User | UserInput> {
   return {
     ...user,
     srpSalt: await cloakValue(user.srpSalt),
@@ -40,7 +38,7 @@ export const cloak = async (
   }
 }
 
-const decloak = async (user: User): Promise<User> => {
+async function decloak(user: User): Promise<User> {
   return {
     ...user,
     srpSalt: await decloakValue(user.srpSalt),
@@ -54,7 +52,7 @@ const decloak = async (user: User): Promise<User> => {
   }
 }
 
-export const rotateUsersCloak = async (db: Knex) => {
+export async function rotateUsersCloak(db: Knex) {
   return await rotateTableCloak(db, {
     tableName: USERS_TABLE,
     fields: [
@@ -71,10 +69,10 @@ export const rotateUsersCloak = async (db: Knex) => {
 
 // --
 
-export const createUser = async (
+export async function createUser(
   db: Knex,
   input: Omit<UserInput, 'twoFactorEnabled' | 'twoFactorVerified'>
-): Promise<User> => {
+): Promise<User> {
   const user: UserInput = await cloak({
     ...input,
     twoFactorStatus: TwoFactorStatus.disabled,
@@ -88,7 +86,7 @@ export const createUser = async (
   return result[0]
 }
 
-export const findUserByUsername = async (db: Knex, username: string) => {
+export async function findUserByUsername(db: Knex, username: string) {
   const result = await db
     .select<User[]>('*')
     .from(USERS_TABLE)
@@ -100,7 +98,7 @@ export const findUserByUsername = async (db: Knex, username: string) => {
   return await decloak(result[0])
 }
 
-export const findUser = async (db: Knex, userID: string) => {
+export async function findUser(db: Knex, userID: string) {
   const result = await db
     .select<User[]>('*')
     .from(USERS_TABLE)
@@ -114,11 +112,11 @@ export const findUser = async (db: Knex, userID: string) => {
 
 // --
 
-export const enableTwoFactor = async (
+export async function enableTwoFactor(
   db: Knex,
   userID: string,
   secret: string
-) => {
+) {
   return await db<User>(USERS_TABLE)
     .where({
       id: userID
@@ -129,11 +127,11 @@ export const enableTwoFactor = async (
     })
 }
 
-export const markTwoFactorVerified = async (
+export async function markTwoFactorVerified(
   db: Knex,
   userID: string,
   backupCodes: string[]
-) => {
+) {
   return await db<User>(USERS_TABLE)
     .where({
       id: userID,
@@ -145,7 +143,7 @@ export const markTwoFactorVerified = async (
     })
 }
 
-export const cancelTwoFactor = async (db: Knex, userID: string) => {
+export async function cancelTwoFactor(db: Knex, userID: string) {
   return await db<User>(USERS_TABLE)
     .where({
       id: userID
@@ -157,7 +155,7 @@ export const cancelTwoFactor = async (db: Knex, userID: string) => {
     })
 }
 
-export const disableTwoFactor = async (db: Knex, userID: string) => {
+export async function disableTwoFactor(db: Knex, userID: string) {
   return await db<User>(USERS_TABLE)
     .where({
       id: userID,
@@ -171,11 +169,11 @@ export const disableTwoFactor = async (db: Knex, userID: string) => {
     })
 }
 
-export const consumeBackupCode = async (
+export async function consumeBackupCode(
   db: Knex,
   userID: string,
   code: string
-) => {
+) {
   const user = await findUser(db, userID)
   const codes = (user.twoFactorBackupCodes || '').split(',')
   if (codes.length === 0) {
@@ -194,7 +192,7 @@ export const consumeBackupCode = async (
 
 // --
 
-export const createInitialUsersTable = async (db: Knex) => {
+export async function createInitialUsersTable(db: Knex) {
   await db.schema.createTable(USERS_TABLE, table => {
     table.timestamps(true, true)
     table

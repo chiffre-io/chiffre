@@ -15,12 +15,12 @@ export interface ProjectMessage extends ProjectMessageInput {
 
 // --
 
-export const pushMessage = async (
+export async function pushMessage(
   db: Knex,
   projectID: string,
   message: string,
   performance: number
-): Promise<ProjectMessage> => {
+): Promise<ProjectMessage> {
   const msg: ProjectMessageInput = {
     projectID,
     message,
@@ -33,7 +33,7 @@ export const pushMessage = async (
   return result[0]
 }
 
-export const findMessagesForProject = async (db: Knex, projectID: string) => {
+export async function findMessagesForProject(db: Knex, projectID: string) {
   return await db
     .select<ProjectMessage[]>('*')
     .from(PROJECT_MESSAGE_QUEUE_TABLE)
@@ -42,7 +42,7 @@ export const findMessagesForProject = async (db: Knex, projectID: string) => {
 
 // --
 
-export const createInitialProjectMessageQueueTable = async (db: Knex) => {
+export async function createInitialProjectMessageQueueTable(db: Knex) {
   await db.schema.createTable(PROJECT_MESSAGE_QUEUE_TABLE, table => {
     table
       .string('id')

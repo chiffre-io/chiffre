@@ -17,12 +17,12 @@ export interface UserVaultEdge extends UserVaultEdgeInput {
 
 // --
 
-export const createUserVaultEdge = async (
+export async function createUserVaultEdge(
   db: Knex,
   userID: string,
   vaultID: string,
   vaultKey: string
-): Promise<UserVaultEdge> => {
+): Promise<UserVaultEdge> {
   const edge: UserVaultEdgeInput = {
     userID,
     vaultID,
@@ -35,20 +35,20 @@ export const createUserVaultEdge = async (
   return result[0]
 }
 
-export const findVaultEdgesForUser = async (
+export async function findVaultEdgesForUser(
   db: Knex,
   userID: string
-): Promise<UserVaultEdge[]> => {
+): Promise<UserVaultEdge[]> {
   return await db
     .select<UserVaultEdge[]>('*')
     .from(USER_VAULT_EDGES_TABLE)
     .where({ userID })
 }
 
-export const findUserEdgesWhoShareVault = async (
+export async function findUserEdgesWhoShareVault(
   db: Knex,
   vaultID: string
-): Promise<UserVaultEdge[]> => {
+): Promise<UserVaultEdge[]> {
   return await db
     .select<UserVaultEdge[]>('*')
     .from(USER_VAULT_EDGES_TABLE)
@@ -59,7 +59,7 @@ export const findUserEdgesWhoShareVault = async (
 
 // --
 
-export const createInitialUserVaultEdgesTable = async (db: Knex) => {
+export async function createInitialUserVaultEdgesTable(db: Knex) {
   await db.schema.createTable(USER_VAULT_EDGES_TABLE, table => {
     table.timestamps(true, true)
     table

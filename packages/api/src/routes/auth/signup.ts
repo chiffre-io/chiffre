@@ -16,7 +16,7 @@ export default async (app: App) => {
         body: signupParametersSchema
       }
     },
-    async (req, res) => {
+    async function createUserHandler(req, res) {
       const {
         username,
         srpSalt,

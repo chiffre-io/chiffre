@@ -12,10 +12,7 @@ interface CreateJwtOptions {
   expiresIn?: string
 }
 
-export const createJwt = (
-  claims: AuthClaims,
-  options: CreateJwtOptions = {}
-) => {
+export function createJwt(claims: AuthClaims, options: CreateJwtOptions = {}) {
   const signOptions: jwt.SignOptions = {
     algorithm: 'HS512',
     issuer: process.env.JWT_ISSUER,

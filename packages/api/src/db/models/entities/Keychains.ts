@@ -21,19 +21,16 @@ export interface KeychainUpdatableFields {
 
 // --
 
-export const createKeychainRecord = async (
-  db: Knex,
-  record: KeychainRecord
-) => {
+export async function createKeychainRecord(db: Knex, record: KeychainRecord) {
   return await db.insert(record).into(KEYCHAINS_TABLE)
 }
 
 // --
 
-export const findKeychain = async (
+export async function findKeychain(
   db: Knex,
   userID: string
-): Promise<KeychainRecord> => {
+): Promise<KeychainRecord> {
   const result = await db
     .select<KeychainRecord[]>('*')
     .from(KEYCHAINS_TABLE)
@@ -47,11 +44,11 @@ export const findKeychain = async (
 
 // --
 
-export const updateKeychain = async (
+export async function updateKeychain(
   db: Knex,
   userID: string,
   updates: KeychainUpdatableFields
-) => {
+) {
   return await db(KEYCHAINS_TABLE)
     .where({ userID })
     .update(updates)
@@ -59,7 +56,7 @@ export const updateKeychain = async (
 
 // --
 
-export const createInitialKeychainsTable = async (db: Knex) => {
+export async function createInitialKeychainsTable(db: Knex) {
   await db.schema.createTable(KEYCHAINS_TABLE, table => {
     table.timestamps(true, true)
     table

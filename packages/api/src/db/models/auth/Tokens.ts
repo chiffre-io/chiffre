@@ -26,9 +26,9 @@ export interface Token extends TokenInput {
 
 // --
 
-export const cloak = async (
+export async function cloak(
   token: Token | TokenInput
-): Promise<Token | TokenInput> => {
+): Promise<Token | TokenInput> {
   return {
     ...token,
     srpSalt: await cloakValue(token.srpSalt),
@@ -37,7 +37,7 @@ export const cloak = async (
   }
 }
 
-const decloak = async (token: Token): Promise<Token> => {
+async function decloak(token: Token): Promise<Token> {
   return {
     ...token,
     srpSalt: await decloakValue(token.srpSalt),
@@ -46,7 +46,7 @@ const decloak = async (token: Token): Promise<Token> => {
   }
 }
 
-export const rotateTokensCloak = async (db: Knex) => {
+export async function rotateTokensCloak(db: Knex) {
   return await rotateTableCloak(db, {
     tableName: TOKENS_TABLE,
     fields: ['srpSalt', 'srpVerifier', 'masterSalt'],
@@ -57,10 +57,7 @@ export const rotateTokensCloak = async (db: Knex) => {
 
 // --
 
-export const createToken = async (
-  db: Knex,
-  input: TokenInput
-): Promise<Token> => {
+export async function createToken(db: Knex, input: TokenInput): Promise<Token> {
   const token: TokenInput = await cloak(input)
   const result = await db
     .insert(token)
@@ -69,7 +66,7 @@ export const createToken = async (
   return result[0]
 }
 
-export const findTokenByFingerprint = async (db: Knex, fingerprint: string) => {
+export async function findTokenByFingerprint(db: Knex, fingerprint: string) {
   const result = await db
     .select<Token[]>('*')
     .from(TOKENS_TABLE)
@@ -81,7 +78,7 @@ export const findTokenByFingerprint = async (db: Knex, fingerprint: string) => {
   return await decloak(result[0])
 }
 
-export const findToken = async (db: Knex, tokenID: string) => {
+export async function findToken(db: Knex, tokenID: string) {
   const result = await db
     .select<Token[]>('*')
     .from(TOKENS_TABLE)
@@ -93,7 +90,7 @@ export const findToken = async (db: Knex, tokenID: string) => {
   return await decloak(result[0])
 }
 
-export const deleteToken = async (db: Knex, tokenID: string) => {
+export async function deleteToken(db: Knex, tokenID: string) {
   return await db(TOKENS_TABLE)
     .where({ id: tokenID })
     .delete()
@@ -101,7 +98,7 @@ export const deleteToken = async (db: Knex, tokenID: string) => {
 
 // --
 
-export const createInitialTokensTable = async (db: Knex) => {
+export async function createInitialTokensTable(db: Knex) {
   await db.schema.createTable(TOKENS_TABLE, table => {
     table.timestamps(true, true)
     table

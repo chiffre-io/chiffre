@@ -16,12 +16,12 @@ export interface LoginChallengeSrp extends LoginChallengeSrpInput {
 
 // --
 
-export const saveLoginChallenge = async (
+export async function saveLoginChallenge(
   db: Knex,
   userID: string,
   ephemeralSecret: string,
   now: Date = new Date()
-): Promise<string> => {
+): Promise<string> {
   const challenge: LoginChallengeSrpInput = {
     userID,
     ephemeralSecret,
@@ -34,7 +34,7 @@ export const saveLoginChallenge = async (
   return result[0]
 }
 
-export const findLoginChallenge = async (db: Knex, id: string) => {
+export async function findLoginChallenge(db: Knex, id: string) {
   const result = await db
     .select<LoginChallengeSrp[]>('*')
     .from(LOGIN_CHALLENGES_SRP_TABLE)
@@ -46,26 +46,26 @@ export const findLoginChallenge = async (db: Knex, id: string) => {
   return result[0]
 }
 
-export const deleteLoginChallenge = async (db: Knex, id: string) => {
+export async function deleteLoginChallenge(db: Knex, id: string) {
   return await db
     .from(LOGIN_CHALLENGES_SRP_TABLE)
     .where({ id })
     .delete()
 }
 
-export const isChallengeExpired = (
+export function isChallengeExpired(
   challenge: LoginChallengeSrp,
   now: Date = new Date()
-) => {
+) {
   return challenge.expiresAt < now
 }
 
 // --
 
-export const getAllExpiredLoginChallenges = async (
+export async function getAllExpiredLoginChallenges(
   db: Knex,
   before: Date = new Date()
-) => {
+) {
   return await db
     .select<LoginChallengeSrp[]>('*')
     .from(LOGIN_CHALLENGES_SRP_TABLE)
@@ -74,7 +74,7 @@ export const getAllExpiredLoginChallenges = async (
 
 // --
 
-export const createInitialLoginChallengesSrpTable = async (db: Knex) => {
+export async function createInitialLoginChallengesSrpTable(db: Knex) {
   await db.schema.createTable(LOGIN_CHALLENGES_SRP_TABLE, table => {
     table.timestamp('created_at').defaultTo(db.fn.now())
     table
