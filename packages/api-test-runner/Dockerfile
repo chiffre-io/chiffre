@@ -10,5 +10,6 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
   && rm dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
 CMD dockerize -wait tcp://db:5432 -wait tcp://api:3000 -timeout 1m \
+  yarn workspace @chiffre/api run migrate:down && \
   yarn workspace @chiffre/api run migrate:up && \
   yarn workspace @chiffre/api-test-runner run test

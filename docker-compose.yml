@@ -19,6 +19,7 @@ services:
     environment:
       - PORT=3000
       - NODE_ENV=production
+      - API_URL=http://api:3000
       - DATABASE_URI=postgres://postgres:password@db:5432/chiffre-test
       - DATABASE_MAX_CONNECTIONS=10
       - LOG_LEVEL=debug

@@ -32,7 +32,7 @@ describe('/auth/signup', () => {
     )
     const res = await api.post('/auth/signup', body)
     expect(res.status).toEqual(409) // Conflict
-    expect(res.data.error).toEqual('This username is not available')
+    expect(res.data.message).toEqual('This username is not available')
     expect(res.headers['set-cookie']).toBeUndefined()
   })
 })
