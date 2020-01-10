@@ -31,7 +31,7 @@ export default fp((app, _, next) => {
     'authenticate',
     (acceptUnverifiedTwoFactor: boolean = false) => async (
       req: AuthenticatedRequest,
-      res: FastifyReply<any>
+      _res: FastifyReply<any>
     ) => {
       const claims = req.cookies[CookieNames.jwt] || ''
       const signature = req.cookies[CookieNames.sig] || ''
@@ -48,7 +48,8 @@ export default fp((app, _, next) => {
         }
         req.auth = claims
       } catch (error) {
-        res.status(401).send(error)
+        req.log.error(error)
+        throw app.httpErrors.unauthorized(error)
       }
     }
   )

@@ -26,7 +26,7 @@ export default async (app: App) => {
           const { perf } = match.groups
           return parseInt(perf, 10)
         } catch (error) {
-          console.error(error)
+          req.log.error(error)
           return -1
         }
       }
@@ -38,7 +38,7 @@ export default async (app: App) => {
         pushMessage(app.db, projectID, message, performance)
         return res.status(204).send(null)
       } catch (error) {
-        console.error(error)
+        req.log.error(error)
         return res.status(204).send(null)
       }
     }

@@ -142,7 +142,7 @@ export default async (app: App) => {
         await deleteProject(app.db, projectID)
         return res.status(204).send(null)
       } catch (error) {
-        console.error(error)
+        req.log.error(error)
         return res.status(401).send({
           error: 'Unauthorized',
           details: 'You are not allowed to delete this project'

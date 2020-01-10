@@ -38,7 +38,7 @@ export default async (app: App) => {
         await updateKeychain(app.db, req.auth.userID, req.body)
         return res.status(204).send(null)
       } catch (error) {
-        console.error(error)
+        req.log.error(error)
         return res.status(401).send({
           error: 'Unauthorized',
           details: 'You are not allowed to edit this keychain'

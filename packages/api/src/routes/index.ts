@@ -1,16 +1,16 @@
 import { App } from '../types'
 
-const loadRoute = (app: App, path: string) => {
+function loadRoute(app: App, path: string) {
   try {
     app.register(require(path).default, {
       prefix: `/v1`
     })
-  } catch (e) {
-    console.error(e)
+  } catch (error) {
+    app.log.fatal({ msg: 'Failed to load route', error })
   }
 }
 
-export default async (app: App) => {
+export default async function loadRoutes(app: App) {
   app.register(require('./_health').default)
 
   // Auth routes
