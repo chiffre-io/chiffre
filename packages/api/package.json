@@ -45,6 +45,7 @@
     "@types/nanoid": "^2.1.0",
     "@types/pino": "^5.15.1",
     "@types/pino-http": "^4.3.2",
+    "autocannon": "^4.4.2",
     "nodemon": "^2.0.2"
   },
   "jest": {

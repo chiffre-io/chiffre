@@ -26,11 +26,15 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# instrumentation
+**/.clinic
+
 # docker volumes
 .db/
 
 # parcel cache
 .cache/
+
 
 # Generated artifacts
 public/emitter.js

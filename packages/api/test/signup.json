@@ -1,0 +1,11 @@
+{
+  "username": "[<id>]",
+  "srpSalt": "foo",
+  "srpVerifier": "bar",
+  "masterSalt": "egg",
+  "keychainKey": "spam",
+  "keychain": {
+    "signature": { "public": "sig.pub", "secret": "sig.sec" },
+    "sharing": { "public": "shr.pub", "secret": "shr.sec" }
+  }
+}
