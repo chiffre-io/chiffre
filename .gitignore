@@ -21,6 +21,8 @@
 .env*
 *.env
 
+/Dockerfile
+
 # debug
 npm-debug.log*
 yarn-debug.log*
