@@ -9,7 +9,7 @@ export default fp((app: App, _, next) => {
   Sentry.init({
     dsn: process.env.SENTRY_DSN,
     release: process.env.LOG_COMMIT,
-    environment: process.env.LOG_INSTANCE,
+    environment: process.env.LOG_INSTANCE_ID,
     enabled: !!process.env.SENTRY_DSN
   })
 
@@ -37,7 +37,6 @@ export default fp((app: App, _, next) => {
       Sentry.withScope(scope => {
         scope.setUser({
           id: req.auth?.userID || 'no auth provided',
-          ip_address: req.ip,
           username: user?.username || 'no auth provided'
         })
         scope.setTag('path', req.raw.url)
