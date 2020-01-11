@@ -35,6 +35,13 @@ export default fp((app, _, next) => {
     ) => {
       const claims = req.cookies[CookieNames.jwt] || ''
       const signature = req.cookies[CookieNames.sig] || ''
+      if (claims.length === 0 && signature.length === 0) {
+        throw app.httpErrors.unauthorized('Authentication required')
+      }
+      if (claims.length === 0 && signature.length > 0) {
+        // Only signature is present => most likely session expiration
+        throw app.httpErrors.unauthorized('Your session has expired')
+      }
       const token = [claims, signature].join('.')
       try {
         const claims = verifyJwt(token)
