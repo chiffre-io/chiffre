@@ -36,14 +36,10 @@ export default async (app: App) => {
 
       const challenge = await findLoginChallenge(app.db, challengeID)
       if (!challenge) {
-        return res.status(404).send({
-          error: `Invalid challenge ID`
-        })
+        throw app.httpErrors.notFound('Invalid challenge ID')
       }
       if (challenge.userID !== userID) {
-        return res.status(403).send({
-          error: `Invalid user for this challenge`
-        })
+        throw app.httpErrors.forbidden('Invalid user for this challenge')
       }
 
       if (isChallengeExpired(challenge)) {
@@ -52,16 +48,12 @@ export default async (app: App) => {
         } catch (error) {
           req.log.error({ msg: 'Failed to cleanup expired challenge', error })
         }
-        return res.status(403).send({
-          error: `Challenge response timeout`
-        })
+        throw app.httpErrors.requestTimeout('Challenge response timeout')
       }
 
       const user = await findUser(app.db, userID)
       if (!user) {
-        return res.status(404).send({
-          error: `User not found`
-        })
+        throw app.httpErrors.notFound('User not found')
       }
 
       let srpSession: SrpSession = null
@@ -75,9 +67,8 @@ export default async (app: App) => {
           clientProof
         )
       } catch (error) {
-        return res.status(401).send({
-          error: `Incorrect username or password`
-        })
+        req.log.error({ msg: 'SRP login response failure', error })
+        throw app.httpErrors.unauthorized('Incorrect username or password')
       } finally {
         // Cleanup
         await deleteLoginChallenge(app.db, challenge.id)

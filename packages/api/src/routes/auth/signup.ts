@@ -53,7 +53,6 @@ export default async (app: App) => {
 
         setJwtCookies(claims, res)
         req.log.info({ msg: 'Account created', auth: claims })
-
         return res.status(201).send() // Created
       } catch (error) {
         if (error.code === '23505') {

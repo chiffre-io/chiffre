@@ -24,9 +24,7 @@ export default async (app: App) => {
 
       const user = await findUser(app.db, req.auth.userID)
       if (!user) {
-        return res.status(404).send({
-          error: `User not found`
-        })
+        throw app.httpErrors.notFound('User not found')
       }
 
       const body: Login2FAResponseBody = {
@@ -44,9 +42,9 @@ export default async (app: App) => {
         !user.twoFactorSecret
       ) {
         // Don't give too much information
-        return res.status(422).send({
-          error: `Cannot proceed with 2FA authentication`
-        })
+        throw app.httpErrors.conflict(
+          'Two-factor authentication is not activated for this account'
+        )
       }
 
       const verified = verifyTwoFactorToken(
@@ -54,26 +52,16 @@ export default async (app: App) => {
         user.twoFactorSecret
       )
       if (!verified) {
-        return res.status(401).send({
-          error: `Invalid two-factor code`
-        })
+        throw app.httpErrors.unauthorized('Invalid two-factor code')
       }
 
-      try {
-        const claims: AuthClaims = {
-          ...req.auth,
-          twoFactorStatus: TwoFactorStatus.verified
-        }
-        setJwtCookies(claims, res)
-        req.log.info({ msg: '2FA verified', auth: req.auth })
-
-        return res.send(body)
-      } catch (error) {
-        return res.status(401).send({
-          error: `Authentication error`,
-          details: error.message
-        })
+      const claims: AuthClaims = {
+        ...req.auth,
+        twoFactorStatus: TwoFactorStatus.verified
       }
+      setJwtCookies(claims, res)
+      req.log.info({ msg: '2FA verified', auth: req.auth })
+      return res.send(body)
     }
   )
 }

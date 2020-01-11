@@ -37,12 +37,12 @@ export function createServer(): App {
   app.register(require('./plugins/database').default)
   app.register(require('./plugins/sentry').default)
 
-  app.get('/', (req, res) => {
+  app.get('/', async (req, res) => {
     if (req.headers['X-CleverCloud-Monitoring'] === 'telegraf') {
       // Handle Clever Cloud health checks
       // https://github.com/influxdata/telegraf/tree/master/plugins/outputs/health
     }
-    res.status(200).send()
+    return res.send()
   })
 
   app.register(require('./routes').default)

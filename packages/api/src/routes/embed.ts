@@ -13,10 +13,7 @@ export default async (app: App) => {
     const { projectID } = req.params
     const project = await findProject(app.db, projectID)
     if (!project) {
-      return res.status(404).send({
-        error: 'Project not found',
-        details: `Project ID: ${projectID}`
-      })
+      throw app.httpErrors.notFound('Project not found')
     }
     res.header('content-type', 'application/javascript')
     const content = generateEmitterEmbedScriptContent(project)

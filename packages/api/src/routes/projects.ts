@@ -43,27 +43,20 @@ export default async (app: App) => {
       preValidation: [app.authenticate()]
     },
     async (req: PostRequest, res) => {
-      try {
-        // todo: Make sure req.auth.userID has the right to create a project
-        // ie: They have a link to the vaultID with their keychain.
-        const project = await createProject(
-          app.db,
-          req.body.vaultID,
-          req.body.publicKey,
-          req.body.secretKey
-        )
-        const embedScript = await formatEmitterEmbedScript(project)
-        const response: CreateProjectResponse = {
-          projectID: project.id,
-          embedScript
-        }
-        return res.status(201).send(response)
-      } catch (error) {
-        return res.status(401).send({
-          error: 'Failed to create project',
-          details: error.message
-        })
+      // todo: Make sure req.auth.userID has the right to create a project
+      // ie: They have a link to the vaultID with their keychain.
+      const project = await createProject(
+        app.db,
+        req.body.vaultID,
+        req.body.publicKey,
+        req.body.secretKey
+      )
+      const embedScript = await formatEmitterEmbedScript(project)
+      const response: CreateProjectResponse = {
+        projectID: project.id,
+        embedScript
       }
+      return res.status(201).send(response)
     }
   )
 
@@ -76,22 +69,15 @@ export default async (app: App) => {
       preValidation: [app.authenticate()]
     },
     async (req: AuthenticatedRequest, res) => {
-      try {
-        const userProjects: ProjectsList = []
-        const vaultEdges = await findVaultEdgesForUser(app.db, req.auth.userID)
-        for (const { vaultID, vaultKey } of vaultEdges) {
-          const vaultProjects = await findAllProjectsInVault(app.db, vaultID)
-          vaultProjects.forEach(project => {
-            userProjects.push({ ...project, vaultKey })
-          })
-        }
-        return res.send(userProjects)
-      } catch (error) {
-        return res.status(401).send({
-          error: 'Cannot retrieve projects',
-          details: error.message
+      const userProjects: ProjectsList = []
+      const vaultEdges = await findVaultEdgesForUser(app.db, req.auth.userID)
+      for (const { vaultID, vaultKey } of vaultEdges) {
+        const vaultProjects = await findAllProjectsInVault(app.db, vaultID)
+        vaultProjects.forEach(project => {
+          userProjects.push({ ...project, vaultKey })
         })
       }
+      return res.send(userProjects)
     }
   )
 
@@ -106,17 +92,13 @@ export default async (app: App) => {
     async (req: AuthenticatedRequest<any, any, UrlParams>, res) => {
       const { projectID } = req.params
       if (!(await canUserAccessProject(req.auth.userID, projectID))) {
-        return res.status(401).send({
-          error: 'Unauthorized',
-          details: 'You are not allowed to view this project'
-        })
+        throw app.httpErrors.forbidden(
+          'You are not authorized to view this project'
+        )
       }
       const project = await findProject(app.db, projectID)
       if (!project) {
-        return res.status(404).send({
-          error: 'Project not found',
-          details: `Project ID: ${projectID}`
-        })
+        throw app.httpErrors.notFound('Project not found')
       }
       return res.send(project)
     }
@@ -133,21 +115,12 @@ export default async (app: App) => {
     async (req: AuthenticatedRequest<any, any, UrlParams>, res) => {
       const { projectID } = req.params
       if (!(await canUserAccessProject(req.auth.userID, projectID))) {
-        return res.status(401).send({
-          error: 'Unauthorized',
-          details: 'You are not allowed to delete this project'
-        })
+        throw app.httpErrors.forbidden(
+          'You are not authorized to delete this project'
+        )
       }
-      try {
-        await deleteProject(app.db, projectID)
-        return res.status(204).send(null)
-      } catch (error) {
-        req.log.error(error)
-        return res.status(401).send({
-          error: 'Unauthorized',
-          details: 'You are not allowed to delete this project'
-        })
-      }
+      await deleteProject(app.db, projectID)
+      return res.status(204).send(null)
     }
   )
 }

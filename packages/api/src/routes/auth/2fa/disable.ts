@@ -30,41 +30,32 @@ export default async (app: App) => {
       }
     },
     async (req: Request, res) => {
-      try {
-        const user = await findUser(app.db, req.auth.userID)
-        if (!user) {
-          throw new Error('User not found')
-        }
-        if (user.twoFactorStatus === TwoFactorStatus.disabled) {
-          throw new Error('Two Factor is already disabled')
-        }
-
-        const verified = verifyTwoFactorToken(
-          req.body.twoFactorToken,
-          user.twoFactorSecret
-        )
-        if (!verified) {
-          return res.status(401).send({
-            error: 'Invalid two-factor code'
-          })
-        }
-
-        await disableTwoFactor(app.db, req.auth.userID)
-
-        // Update JWT claims
-        const claims: AuthClaims = {
-          ...req.auth,
-          twoFactorStatus: TwoFactorStatus.disabled
-        }
-        setJwtCookies(claims, res)
-        req.log.info({ msg: '2FA Disabled', auth: claims })
-        return res.send()
-      } catch (error) {
-        return res.status(422).send({
-          error: 'Failed to disable two-factor authentication',
-          details: error.message
-        })
+      const user = await findUser(app.db, req.auth.userID)
+      if (!user) {
+        throw app.httpErrors.notFound('User not found')
       }
+      if (user.twoFactorStatus === TwoFactorStatus.disabled) {
+        throw app.httpErrors.conflict('Two Factor is already disabled')
+      }
+
+      const verified = verifyTwoFactorToken(
+        req.body.twoFactorToken,
+        user.twoFactorSecret
+      )
+      if (!verified) {
+        throw app.httpErrors.unauthorized('Invalid two-factor code')
+      }
+
+      await disableTwoFactor(app.db, req.auth.userID)
+
+      // Update JWT claims
+      const claims: AuthClaims = {
+        ...req.auth,
+        twoFactorStatus: TwoFactorStatus.disabled
+      }
+      setJwtCookies(claims, res)
+      req.log.info({ msg: '2FA Disabled', auth: claims })
+      return res.send()
     }
   )
 }

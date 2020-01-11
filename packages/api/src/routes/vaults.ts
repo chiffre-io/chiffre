@@ -14,22 +14,15 @@ export default async (app: App) => {
       preValidation: [app.authenticate()]
     },
     async (req: Request, res) => {
-      try {
-        const { id: vaultID } = await createVault(
-          app.db,
-          req.body.encrypted,
-          req.auth.userID
-        )
-        const response: CreateVaultResponse = {
-          vaultID
-        }
-        return res.status(201).send(response)
-      } catch (error) {
-        return res.status(401).send({
-          error: 'Failed to create vault',
-          details: error.message
-        })
+      const { id: vaultID } = await createVault(
+        app.db,
+        req.body.encrypted,
+        req.auth.userID
+      )
+      const response: CreateVaultResponse = {
+        vaultID
       }
+      return res.status(201).send(response)
     }
   )
 }

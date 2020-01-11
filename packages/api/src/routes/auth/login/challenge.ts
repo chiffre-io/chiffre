@@ -25,9 +25,7 @@ export default async (app: App) => {
 
       const user = await findUserByUsername(app.db, username)
       if (!user) {
-        return res.status(404).send({
-          error: `Username not found`
-        })
+        throw app.httpErrors.notFound('User not found')
       }
 
       const serverEphemeral = serverLoginChallenge(user.srpVerifier)
