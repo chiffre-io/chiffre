@@ -35,6 +35,7 @@ export function createServer(): App {
   app.register(gracefulShutdown)
   app.register(require('./plugins/auth').default)
   app.register(require('./plugins/database').default)
+  app.register(require('./plugins/sentry').default)
 
   app.get('/', (req, res) => {
     if (req.headers['X-CleverCloud-Monitoring'] === 'telegraf') {
