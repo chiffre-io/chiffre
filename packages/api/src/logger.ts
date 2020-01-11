@@ -57,11 +57,6 @@ export function getLoggerOptions() {
         }
       },
       res(res: ServerResponse) {
-        return {
-          ...pino.stdSerializers.res(res)
-          // ...(res.statusCode >= 400 ? { body: res.} : {})
-        }
-
         return pino.stdSerializers.res(res)
       }
     }
