@@ -2,7 +2,6 @@
   "name": "@chiffre/api",
   "version": "0.0.1",
   "main": "dist/index.js",
-  "license": "MIT",
   "scripts": {
     "dev": "nodemon -e ts,.env -w .env -w ./src ./src/index.ts",
     "build": "tsc",

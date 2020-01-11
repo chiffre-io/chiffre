@@ -2,7 +2,6 @@
   "name": "@chiffre/api-test-runner",
   "version": "0.0.1",
   "main": "./src/index.ts",
-  "license": "MIT",
   "scripts": {
     "test": "jest --verbose --runInBand"
   },

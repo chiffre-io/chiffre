@@ -2,7 +2,6 @@
   "name": "@chiffre/crypto",
   "version": "0.0.1",
   "main": "dist/index.js",
-  "license": "MIT",
   "scripts": {
     "build": "tsc",
     "test": "jest --verbose --logHeapUsage"
