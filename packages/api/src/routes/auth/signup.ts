@@ -5,6 +5,7 @@ import { setJwtCookies } from '../../auth/cookies'
 import { AuthClaims, Plans, TwoFactorStatus } from '../../auth/types'
 import { createKeychainRecord } from '../../db/models/entities/Keychains'
 import { signupParametersSchema, SignupParameters } from './signup.schema'
+import { serverLoginChallenge } from '../../auth/srp'
 
 // --
 
@@ -25,6 +26,13 @@ export default async (app: App) => {
         keychain,
         keychainKey
       } = req.body
+
+      try {
+        // Perform an SRP check of the supplied data to avoid storing junk
+        serverLoginChallenge(srpVerifier)
+      } catch (error) {
+        throw app.httpErrors.unprocessableEntity('Invalid SRP parameters')
+      }
 
       try {
         // todo: Pack all operations into a transaction
