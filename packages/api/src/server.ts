@@ -23,7 +23,11 @@ export function createServer(): App {
       'JWT_SECRET',
       'JWT_ISSUER'
     ],
-    unsafe: ['LOCAL_INSECURE_COOKIES', 'CLOAK_DISABLED']
+    unsafe: [
+      'LOCAL_INSECURE_COOKIES',
+      'CLOAK_DISABLED',
+      'CHIFFRE_API_DISABLE_GRACEFUL_SHUTDOWN'
+    ]
   })
 
   const app = Fastify({
@@ -35,7 +39,9 @@ export function createServer(): App {
 
   // Plugins
   app.register(sensible)
-  app.register(gracefulShutdown)
+  if (process.env.CHIFFRE_API_DISABLE_GRACEFUL_SHUTDOWN !== 'true') {
+    app.register(gracefulShutdown)
+  }
   app.register(underPressure, {
     maxEventLoopDelay: 1000, // 1s
     // maxHeapUsedBytes: 100 * (1 << 20), // 100 MiB
