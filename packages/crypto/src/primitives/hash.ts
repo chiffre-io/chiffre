@@ -1,4 +1,4 @@
-import { Encoding, encoders, decoders } from './codec'
+import { Encoding, encoders, decoders } from '@47ng/codec'
 import * as NodeCrypto from 'crypto'
 
 let nodeCrypto: typeof NodeCrypto

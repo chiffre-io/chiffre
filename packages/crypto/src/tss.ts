@@ -1,5 +1,5 @@
 import { split, combine } from '@stablelib/tss'
-import { Encoding, encoders, decoders, b64 } from './primitives/codec'
+import { Encoding, encoders, decoders, b64 } from '@47ng/codec'
 import { generateRandomBytes } from './primitives/webcrypto'
 
 /**

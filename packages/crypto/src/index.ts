@@ -1,4 +1,3 @@
-export * from './primitives/codec'
 export * from './primitives/hash'
 export * from './primitives/pbkdf2'
 export * from './srp'

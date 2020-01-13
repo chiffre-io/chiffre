@@ -1,5 +1,10 @@
-import { encryptString, decryptString, CloakKey, exportKey } from '@47ng/cloak'
-// import { b64 } from './crypto/primitives/codec'
+import {
+  encryptString,
+  decryptString,
+  CloakKey,
+  exportCryptoKey
+} from '@47ng/cloak'
+// import { b64 } from '@47ng/codec'
 // import { hashString } from './crypto/primitives/hash'
 // import {
 //   generateSalt,
@@ -22,7 +27,7 @@ import { encryptString, decryptString, CloakKey, exportKey } from '@47ng/cloak'
 //     b64.decode(salt),
 //     100000
 //   )
-//   return await exportKey(key)
+//   return await exportCryptoKey(key)
 // }
 
 // // --

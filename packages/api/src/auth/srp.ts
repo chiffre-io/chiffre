@@ -1,5 +1,5 @@
 import srpServer from 'secure-remote-password/server'
-import { base64ToHex, hexToBase64url } from '@chiffre/crypto'
+import { base64ToHex, hexToBase64url } from '@47ng/codec'
 
 /**
  *

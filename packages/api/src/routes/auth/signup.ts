@@ -5,7 +5,7 @@ import { setJwtCookies } from '../../auth/cookies'
 import { AuthClaims, Plans, TwoFactorStatus } from '../../auth/types'
 import { createKeychainRecord } from '../../db/models/entities/Keychains'
 import { signupParametersSchema, SignupParameters } from './signup.schema'
-import { serverLoginChallenge } from '../../auth/srp'
+import { base64ToHex } from '@47ng/codec'
 
 // --
 

@@ -1,6 +1,6 @@
 import nacl from 'tweetnacl'
 import { CloakKey, encryptString, decryptString } from '@47ng/cloak'
-import { b64 } from './primitives/codec'
+import { b64 } from '@47ng/codec'
 
 export interface Keychain {
   signature: {

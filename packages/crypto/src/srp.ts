@@ -1,6 +1,6 @@
 import srpClient from 'secure-remote-password/client'
 import { pbkdf2DeriveBytes } from './primitives/pbkdf2'
-import { hex, b64, hexToBase64url, base64ToHex, utf8 } from './primitives/codec'
+import { hex, b64, hexToBase64url, base64ToHex, utf8 } from '@47ng/codec'
 
 async function derivePrivateKey(
   username: string,

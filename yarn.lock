@@ -7,17 +7,27 @@
   resolved "https://registry.yarnpkg.com/@47ng/check-env/-/check-env-2.0.0.tgz#ab377a39fa4ed6f59756e0bd4c31fa7776d636fc"
   integrity sha512-vn5+ofKOQW5dW2G51ZvWfqaHfEXcHQZ5w+RW03SepBEML96FssVV/EQ4yQJu+GBCE5sehBkjouD/2Fy0jgjwqg==
 
-"@47ng/cloak@^0.10.0":
-  version "0.10.0"
-  resolved "https://registry.yarnpkg.com/@47ng/cloak/-/cloak-0.10.0.tgz#a8d34ad9bf855ec4d78c89cd78d7534e3bc3c963"
-  integrity sha512-nRH7/3w0c50A+5OagF5oQHZkRh2fPvOq1XJ/e0FsVWCiygdqTvrO6goGG3SDudUQBNB0Y/7K+EVmjiGkwbkL9g==
+"@47ng/cloak@^0.14.1":
+  version "0.14.1"
+  resolved "https://registry.yarnpkg.com/@47ng/cloak/-/cloak-0.14.1.tgz#4dd800a85aa53b74733a0ad94ffedc8ce35ae226"
+  integrity sha512-GuGCeNz78lvyDfqCeTei1MX8stjQ29rH9Pd8ZwoPrgPpp434grWuI5puM4jfkAzdgV6KQGqs33PX644YJi9FZw==
   dependencies:
+    "@47ng/codec" "^0.3.0"
     "@stablelib/base64" "^0.7.2"
     "@stablelib/hex" "^0.5.0"
     "@stablelib/utf8" "^0.10.1"
+    chalk "^3.0.0"
     commander "^4.0.1"
     dotenv "^8.2.0"
     s-ago "^2.1.0"
+
+"@47ng/codec@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@47ng/codec/-/codec-0.3.0.tgz#e8af94d3c469a5d4ece10ab17fa1fa7146d7094f"
+  integrity sha512-ZSIJIr7fJJp5LDIC/HK1scvO5F10qqvZbUX4e3TyHkR1vuIsVZ3PyI0v0gVDMQfEvNcyYAzjxNuEqLiJjGiZ3A==
+  dependencies:
+    "@stablelib/base64" "^0.7.2"
+    "@stablelib/hex" "^0.5.0"
 
 "@ampproject/toolbox-core@^1.1.1":
   version "1.1.1"

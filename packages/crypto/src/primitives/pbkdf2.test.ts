@@ -1,5 +1,5 @@
+import { b64 } from '@47ng/codec'
 import { pbkdf2DeriveBytes } from './pbkdf2'
-import { b64 } from './codec'
 
 describe('PBKDF2', () => {
   test('deriveBytes', async () => {

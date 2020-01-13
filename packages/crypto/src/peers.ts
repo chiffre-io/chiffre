@@ -1,6 +1,6 @@
 import nacl from 'tweetnacl'
 import { UnlockedKeychain } from './keychain'
-import { b64, utf8 } from './primitives/codec'
+import { b64, utf8 } from '@47ng/codec'
 
 /**
  * Public keys representing a peer in the network

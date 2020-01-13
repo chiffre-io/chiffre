@@ -1,4 +1,5 @@
-import { b64, hashString } from '@chiffre/crypto'
+import { b64 } from '@47ng/codec'
+import { hashString } from '@chiffre/crypto'
 import { Project } from './db/models/entities/Projects'
 
 export const generateEmitterEmbedScriptContent = (project: Project) => {

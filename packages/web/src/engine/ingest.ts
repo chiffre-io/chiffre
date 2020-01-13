@@ -2,7 +2,7 @@ import nacl from 'tweetnacl'
 // import api from '~/src/client/api'
 // import { MessageQueueResponse } from '~/packages/web/pages/api/queues/[projectID]'
 // import { Event } from '~/src/emitter/events'
-// import { b64, encoders, Encoding } from './crypto/primitives/codec'
+// import { b64, encoders, Encoding } from '@47ng/codec'
 
 // export const fetchProjectDataPoints = async (projectID: string) => {
 //   const url = `/queues/${projectID}`

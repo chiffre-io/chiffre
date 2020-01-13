@@ -1,5 +1,5 @@
 import { encryptString, decryptString, CloakKey } from '@47ng/cloak'
-import { b64 } from './primitives/codec'
+import { b64 } from '@47ng/codec'
 import { hashString } from './primitives/hash'
 import { generateSalt, pbkdf2DeriveBytes } from './primitives/pbkdf2'
 import { splitSecret, assembleSecret } from './tss'
