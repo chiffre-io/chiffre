@@ -1,11 +1,17 @@
 {
-  "username": "[<id>]",
-  "srpSalt": "foo",
-  "srpVerifier": "bar",
-  "masterSalt": "egg",
-  "keychainKey": "spam",
+  "username": "load-test.[<id>]",
+  "srpSalt": "Ipzlxuthr2gvNPILX3l5tqt134lewrl_3r9xYPNl3KU=",
+  "srpVerifier": "pu_pW-f2eOZM6nhKGlEeWgM0uRH9JlRL_-tTTyaFHy0TUXel7aFmPb5gDkhmRY9guJBu1CnjyceUVUzIDP2uKom8k_JCUYxGDN4NPayFj8KRJ8lfdeqHgRsWlE5c0b7ISr_B7lqOPKJTnQx7xKkyThqTeKiesD-miWgIa-uHblnPTLe0k-ZDuPA9IfpeBuJXCuSXTT3Hs5W3JYLfwHoS1ia3gB7Q1uLtQHkyRlYw7swxuZANM_H9gVlm6E-V_dzhNpx3bSPqckAaXwdwJoid0SldXHUqw8Vc_0rgcptJB-UosH2LddIIS91-Muj9yy3fz5zR3sXk_bRnJQUPHSNj1A==",
+  "masterSalt": "3d-UcIqdN2ci2VbE2toJBO_pmlps-f4oObR0Pb3TViI=",
+  "keychainKey": "v1.aesgcm256.1373b604._XsdrQWid_AraHHA.ONYsQ1b2_nHLn6Dby_dhMyOS3BbBvFJHBXcmGUSc5iPM2M7kBe5P3u6tiSeawQ7Cfqwq88WlvXEYIHcX1vW1W6CtQEVsCQVIuA==",
   "keychain": {
-    "signature": { "public": "sig.pub", "secret": "sig.sec" },
-    "sharing": { "public": "shr.pub", "secret": "shr.sec" }
+    "signature": {
+      "secret": "v1.aesgcm256.262e20e6.gHJ-ZRGFWSg_G5-l.ZtFFUEw3JDv9F9kYYgv3YEyf62KY92AODgHbAQkzYiW8TOhQz2wx9zfpeuqsKFnWI6-2amuTS1xqFsZm0BAiN03MRcJWoNuhsHTW35Q6Db2QJAI4aWshygtkXj6EAXg2mPYd6X0zdT8=",
+      "public": "Heh16z_vYpEDduXrlhaZRyklT3pqPFW9r_Pm8CGrxFU="
+    },
+    "sharing": {
+      "secret": "v1.aesgcm256.262e20e6.g3p7nPZ9M4cdGOJ8.xc0EVeKPeN_-O7zJe3aIfWtQCYtqACEHZOF5Y7QvJoiertm4sIX89PRg8ZtOt7JCB_NYrQ0LArQqtU7l",
+      "public": "wW1lIZffGeM9pkUuQbtjt5wZnY5-aXN0z0xCrYi7yBY="
+    }
   }
 }

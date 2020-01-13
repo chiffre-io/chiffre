@@ -39,8 +39,11 @@ local entities that will be needed later for authenticating on other devices:
       } = req.body
 
       try {
-        // Perform an SRP check of the supplied data to avoid storing junk
-        serverLoginChallenge(srpVerifier)
+        // Perform a mock SRP check of the supplied data to avoid storing junk
+        if (srpVerifier.length !== 344 || srpSalt.length !== 44) {
+          throw new Error('Invalid SRP parameters')
+        }
+        base64ToHex(srpVerifier)
       } catch (error) {
         throw app.httpErrors.unprocessableEntity('Invalid SRP parameters')
       }
