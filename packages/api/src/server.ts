@@ -4,6 +4,9 @@ import setupCronTasks from './cron'
 import { getLoggerOptions, genReqId } from './logger'
 import sensible from 'fastify-sensible'
 import gracefulShutdown from 'fastify-graceful-shutdown'
+import cors from 'fastify-cors'
+import swagger from 'fastify-swagger'
+import underPressure from 'under-pressure'
 import { App } from './types'
 
 export function createServer(): App {
@@ -33,16 +36,67 @@ export function createServer(): App {
   // Plugins
   app.register(sensible)
   app.register(gracefulShutdown)
+  app.register(underPressure, {
+    maxEventLoopDelay: 1000, // 1s
+    // maxHeapUsedBytes: 100 * (1 << 20), // 100 MiB
+    // maxRssBytes: 100 * (1 << 20), // 100 MiB
+    exposeStatusRoute: {
+      url: '/_health',
+      routeOpts: {
+        logLevel: 'warn'
+      }
+    },
+    healthCheck: async () => {
+      return true
+    }
+  })
+  app.register(cors, {
+    origin: ['http://localhost', /https:\/\/.*\.chiffre\.io$/]
+  })
+  app.register(swagger, {
+    routePrefix: '/documentation',
+    swagger: {
+      info: {
+        title: 'Chiffre API',
+        description: 'API for the Chiffre.io service',
+        version: '0.0.1'
+      },
+      // externalDocs: {
+      //   url: 'https://swagger.io',
+      //   description: 'Find more info here'
+      // },
+      host: (process.env.API_URL || '')
+        .replace('https://', '')
+        .replace('http://', ''),
+      schemes: [process.env.NODE_ENV === 'production' ? 'https' : 'http'],
+      consumes: ['application/json'],
+      produces: ['application/json'],
+      // tags: [
+      //   { name: 'user', description: 'User related end-points' },
+      //   { name: 'code', description: 'Code related end-points' }
+      // ],
+      securityDefinitions: {
+        apiKey: {
+          type: 'apiKey',
+          name: 'apiKey',
+          in: 'header'
+        }
+      }
+    },
+    exposeRoute: true
+  })
+
+  // Local plugins
   app.register(require('./plugins/auth').default)
   app.register(require('./plugins/database').default)
   app.register(require('./plugins/sentry').default)
 
-  app.get('/', async (req, res) => {
-    if (req.headers['X-CleverCloud-Monitoring'] === 'telegraf') {
-      // Handle Clever Cloud health checks
-      // https://github.com/influxdata/telegraf/tree/master/plugins/outputs/health
-    }
-    return res.send()
+  app.get('/', { logLevel: 'silent' }, (_req, res) => {
+    // Handle Clever Cloud health checks (no logging)
+    // https://github.com/influxdata/telegraf/tree/master/plugins/outputs/health
+    // if (req.headers['X-CleverCloud-Monitoring'] === 'telegraf') {
+    // }
+    res.send()
   })
 
   app.register(require('./routes').default)
@@ -50,6 +104,10 @@ export function createServer(): App {
   if (process.env.NODE_ENV === 'development') {
     app.ready(() => console.info(app.printRoutes()))
   }
+
+  app.ready(() => {
+    app.swagger()
+  })
 
   return app as App
 }

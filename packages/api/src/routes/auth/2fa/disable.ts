@@ -26,7 +26,9 @@ export default async (app: App) => {
     {
       preValidation: [app.authenticate()],
       schema: {
-        body: twoFactorDisableParametersSchema
+        body: twoFactorDisableParametersSchema,
+        summary: 'Disable two factor authentication',
+        description: 'Will only succeed if 2FA is fully active'
       }
     },
     async (req: Request, res) => {

@@ -14,7 +14,18 @@ export default async (app: App) => {
     '/auth/signup',
     {
       schema: {
-        body: signupParametersSchema
+        body: signupParametersSchema,
+        summary: 'Create an account on the service',
+        description: `
+We use SRP for authentication, because passwords cannot be sent to the server,
+as they are used for master key derivation.
+
+At signup time, we register the SRP salt and verifier, along with a few other
+local entities that will be needed later for authenticating on other devices:
+
+• Username, that identifies the user (must be unique)
+• Master salt, used to derive the master key (with PBKDF2)
+• Keychain info`
       }
     },
     async function createUserHandler(req, res) {

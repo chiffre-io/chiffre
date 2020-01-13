@@ -11,8 +11,6 @@ function loadRoute(app: App, path: string) {
 }
 
 export default async function loadRoutes(app: App) {
-  app.register(require('./_health').default)
-
   // Auth routes
   loadRoute(app, './auth/signup')
   loadRoute(app, './auth/login/challenge')

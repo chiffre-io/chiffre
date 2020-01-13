@@ -20,7 +20,12 @@ export default async (app: App) => {
   app.post(
     path,
     {
-      preValidation: [app.authenticate()]
+      preValidation: [app.authenticate()],
+      schema: {
+        summary: 'Start enabling two factor authentication',
+        description:
+          'Complete flow for enabling 2FA will require verifying a TOTP token with /auth/2fa/verify.'
+      }
     },
     async (req: AuthenticatedRequest, res) => {
       const user = await findUser(app.db, req.auth.userID)
@@ -49,14 +54,15 @@ export default async (app: App) => {
     }
   )
 
-  /**
-   * Cancel a pending request to enable 2FA.
-   * Will fail if 2FA has been verified, call ./disable instead
-   */
   app.delete(
     path,
     {
-      preValidation: [app.authenticate(true)]
+      preValidation: [app.authenticate(true)],
+      schema: {
+        summary: 'Cancel a pending request to enable two factor authentication',
+        description:
+          'It will fail if 2FA has been fully enabled (verified), use /auth/2fa/disable instead.'
+      }
     },
     async (req: AuthenticatedRequest, res) => {
       const user = await findUser(app.db, req.auth.userID)
