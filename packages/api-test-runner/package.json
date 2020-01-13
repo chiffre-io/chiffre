@@ -2,16 +2,18 @@
   "name": "@chiffre/api-test-runner",
   "version": "0.0.1",
   "main": "./src/index.ts",
+  "private": true,
+  "license": "UNLICENSED",
   "scripts": {
     "test": "jest --verbose --runInBand"
-  },
-  "jest": {
-    "preset": "ts-jest/presets/js-with-ts",
-    "testEnvironment": "node"
   },
   "dependencies": {
     "axios": "^0.19.1",
     "@chiffre/api": "0.0.1",
     "@chiffre/crypto": "^0.0.1"
+  },
+  "jest": {
+    "preset": "ts-jest/presets/js-with-ts",
+    "testEnvironment": "node"
   }
 }

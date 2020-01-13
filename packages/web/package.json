@@ -2,6 +2,7 @@
   "name": "@chiffre/web",
   "version": "0.1.0",
   "private": true,
+  "license": "UNLICENSED",
   "scripts": {
     "dev": "next",
     "build": "next build",

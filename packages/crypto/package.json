@@ -2,6 +2,8 @@
   "name": "@chiffre/crypto",
   "version": "0.0.1",
   "main": "dist/index.js",
+  "private": true,
+  "license": "UNLICENSED",
   "scripts": {
     "build": "tsc",
     "test": "jest --verbose --logHeapUsage"
@@ -17,12 +19,12 @@
     "secure-remote-password": "^0.3.1",
     "tweetnacl": "^1.0.1"
   },
-  "jest": {
-    "preset": "ts-jest/presets/js-with-ts",
-    "testEnvironment": "node"
-  },
   "devDependencies": {
     "@types/faker": "^4.1.8",
     "faker": "^4.1.0"
+  },
+  "jest": {
+    "preset": "ts-jest/presets/js-with-ts",
+    "testEnvironment": "node"
   }
 }
