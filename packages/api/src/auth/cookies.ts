@@ -18,7 +18,7 @@ export function setJwtCookies(claims: AuthClaims, res: FastifyReply<any>) {
   // Allow overriding for local non-https testing of production builds
   const secure =
     process.env.NODE_ENV !== 'development' &&
-    process.env.LOCAL_INSECURE_COOKIES !== 'true'
+    process.env.CHIFFRE_API_INSECURE_COOKIES !== 'true'
 
   res.setCookie(CookieNames.jwt, [header, payload].join('.'), {
     path: '/',

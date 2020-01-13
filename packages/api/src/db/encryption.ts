@@ -26,7 +26,7 @@ export function getCurrentCloakPrefix() {
 }
 
 export async function cloakValue(clearText: string): Promise<CloakedString> {
-  if (process.env.CLOAK_DISABLED === 'true') {
+  if (process.env.CHIFFRE_API_DISABLE_CLOAK === 'true') {
     return clearText
   }
   const keychain = await getKeychain()
@@ -35,7 +35,7 @@ export async function cloakValue(clearText: string): Promise<CloakedString> {
 }
 
 export async function decloakValue(encrypted: CloakedString) {
-  if (process.env.CLOAK_DISABLED === 'true') {
+  if (process.env.CHIFFRE_API_DISABLE_CLOAK === 'true') {
     return encrypted
   }
   const keychain = await getKeychain()

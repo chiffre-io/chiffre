@@ -24,9 +24,9 @@ export function createServer(): App {
       'JWT_ISSUER'
     ],
     unsafe: [
-      'LOCAL_INSECURE_COOKIES',
-      'CLOAK_DISABLED',
-      'CHIFFRE_API_DISABLE_GRACEFUL_SHUTDOWN'
+      'CHIFFRE_API_DISABLE_CLOAK',
+      'CHIFFRE_API_DISABLE_GRACEFUL_SHUTDOWN',
+      'CHIFFRE_API_INSECURE_COOKIES'
     ]
   })
 
