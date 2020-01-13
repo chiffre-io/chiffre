@@ -4,6 +4,7 @@ import { createUser } from '../../db/models/auth/Users'
 import { setJwtCookies } from '../../auth/cookies'
 import { AuthClaims, Plans, TwoFactorStatus } from '../../auth/types'
 import { createKeychainRecord } from '../../db/models/entities/Keychains'
+import { logEvent, EventTypes } from '../../db/models/business/Events'
 import { signupParametersSchema, SignupParameters } from './signup.schema'
 import { base64ToHex } from '@47ng/codec'
 
@@ -74,7 +75,7 @@ local entities that will be needed later for authenticating on other devices:
         }
 
         setJwtCookies(claims, res)
-        req.log.info({ msg: 'Account created', auth: claims })
+        logEvent(app.db, EventTypes.signup, { ...req, auth: claims })
         return res.status(201).send() // Created
       } catch (error) {
         if (error.code === '23505') {

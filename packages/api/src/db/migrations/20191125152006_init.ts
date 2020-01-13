@@ -25,6 +25,10 @@ import {
   USER_VAULT_EDGES_TABLE
 } from '../models/entities/UserVaultEdges'
 import {
+  createInitialEventsTable,
+  EVENTS_TABLE
+} from '../models/business/Events'
+import {
   setupUpdatedAtFieldAutoUpdate,
   setupBase64IdGenerator
 } from '../utility'
@@ -48,6 +52,8 @@ export async function up(knex: Knex): Promise<any> {
   await createInitialUserVaultEdgesTable(knex)
   await createInitialProjectsTable(knex)
   await createInitialProjectMessageQueueTable(knex)
+
+  await createInitialEventsTable(knex)
 }
 
 export async function down(knex: Knex): Promise<any> {
@@ -55,6 +61,7 @@ export async function down(knex: Knex): Promise<any> {
     console.error('Refusing to run initial down migration in production')
   }
 
+  await knex.schema.dropTableIfExists(EVENTS_TABLE)
   await knex.schema.dropTableIfExists(PROJECT_MESSAGE_QUEUE_TABLE)
   await knex.schema.dropTableIfExists(PROJECTS_TABLE)
   await knex.schema.dropTableIfExists(USER_VAULT_EDGES_TABLE)

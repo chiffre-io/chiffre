@@ -45,7 +45,6 @@
     "pg": "^7.17.0",
     "redact-env": "^0.2.0",
     "sonic-boom": "^0.7.6",
-    "timeago.js": "^4.0.2",
     "under-pressure": "^3.2.1"
   },
   "devDependencies": {

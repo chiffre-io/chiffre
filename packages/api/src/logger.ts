@@ -6,13 +6,13 @@ import redactEnv from 'redact-env'
 import nanoid from 'nanoid'
 import { FastifyRequest } from 'fastify'
 
-export function createRedactedStream(
+function createRedactedStream(
   pipeTo: SonicBoom,
   secureEnv: string[]
 ): SonicBoom {
   const secrets = redactEnv.build(secureEnv, process.env)
   return Object.assign({}, pipeTo, {
-    write: (string: string) => {
+    write: function writeRedacted(string: string) {
       const safeString = redactEnv.redact(string, secrets, '[secure]')
       return pipeTo.write(safeString)
     }

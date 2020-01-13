@@ -126,5 +126,5 @@ export function startServer(app: App, port: number) {
       app.log.fatal({ msg: `Application startup error`, error, address })
     }
   })
-  setupCronTasks()
+  setupCronTasks(app)
 }

@@ -5,6 +5,7 @@ import {
 } from '../../../db/models/auth/LoginChallengesSRP'
 import { serverLoginResponse } from '../../../auth/srp'
 import { deleteLoginChallenge } from '../../../db/models/auth/LoginChallengesSRP'
+import { logEvent, EventTypes } from '../../../db/models/business/Events'
 import { findUser } from '../../../db/models/auth/Users'
 import { Session as SrpSession } from 'secure-remote-password/server'
 import { setJwtCookies } from '../../../auth/cookies'
@@ -86,7 +87,6 @@ export default async (app: App) => {
           : TwoFactorStatus.disabled
       }
       setJwtCookies(claims, res)
-      req.log.info({ msg: 'Login response', auth: claims })
 
       const masterSalt = twoFactorRequired ? undefined : user.masterSalt
 
@@ -94,6 +94,7 @@ export default async (app: App) => {
         proof: srpSession.proof,
         masterSalt
       }
+      logEvent(app.db, EventTypes.login, { ...req, auth: claims })
       return res.send(body)
     }
   )

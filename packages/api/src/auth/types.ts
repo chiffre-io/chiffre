@@ -6,6 +6,14 @@ export enum Plans {
   unlimited = 'unlimited' // Internal, no limits, for friends & family
 }
 
+export const allPlans: Plans[] = [
+  Plans.free,
+  Plans.recurring,
+  Plans.usage,
+  Plans.perpetual,
+  Plans.unlimited
+]
+
 export enum TwoFactorStatus {
   /**
    * Two Factor Authentication is not in use for this account

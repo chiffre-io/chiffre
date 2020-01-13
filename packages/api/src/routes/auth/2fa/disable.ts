@@ -1,5 +1,6 @@
 import { App } from '../../../types'
 import { findUser, disableTwoFactor } from '../../../db/models/auth/Users'
+import { logEvent, EventTypes } from '../../../db/models/business/Events'
 import { AuthenticatedRequest } from '../../../plugins/auth'
 import { AuthClaims, TwoFactorStatus } from '../../../auth/types'
 import { setJwtCookies } from '../../../auth/cookies'
@@ -56,7 +57,10 @@ export default async (app: App) => {
         twoFactorStatus: TwoFactorStatus.disabled
       }
       setJwtCookies(claims, res)
-      req.log.info({ msg: '2FA Disabled', auth: claims })
+      logEvent(app.db, EventTypes.twoFactorStatusChanged, req, {
+        from: req.auth.twoFactorStatus,
+        to: claims.twoFactorStatus
+      })
       return res.send()
     }
   )

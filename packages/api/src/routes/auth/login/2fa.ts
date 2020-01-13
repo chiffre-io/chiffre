@@ -1,6 +1,7 @@
 import { App } from '../../../types'
 import { verifyTwoFactorToken } from '../../../auth/2fa'
 import { findUser } from '../../../db/models/auth/Users'
+import { logEvent, EventTypes } from '../../../db/models/business/Events'
 import { AuthenticatedRequest } from '../../../plugins/auth'
 import { TwoFactorStatus, AuthClaims } from '../../../auth/types'
 import {
@@ -60,7 +61,7 @@ export default async (app: App) => {
         twoFactorStatus: TwoFactorStatus.verified
       }
       setJwtCookies(claims, res)
-      req.log.info({ msg: '2FA verified', auth: req.auth })
+      logEvent(app.db, EventTypes.twoFactorVerified, req)
       return res.send(body)
     }
   )
