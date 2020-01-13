@@ -5,6 +5,8 @@
     "packages/*"
   ],
   "scripts": {
+    "ci": "run-s test:unit test:e2e",
+    "test:unit": "yarn workspace @chiffre/crypto run test",
     "test:e2e": "run-s dc:build dc:test dc:down",
     "dc:build": "docker-compose build",
     "dc:test": "docker-compose run test-runner",
