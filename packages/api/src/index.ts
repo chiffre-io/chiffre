@@ -1,9 +1,13 @@
 import dotenv from 'dotenv'
 import envAlias from 'env-alias'
+import { createServer, startServer } from './server'
+
+// Type exports
 export * from './routes'
 export * from './auth/types'
+export { CookieNames } from './auth/cookies'
 
-import { createServer, startServer } from './server'
+// -----------------------------------------------------------------------------
 
 if (require.main === module) {
   // Setup environment
