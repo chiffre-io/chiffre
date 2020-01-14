@@ -15,12 +15,18 @@ export default fp((app: App, _, next) => {
 
   app.setErrorHandler(
     async (error, req: FastifyRequest & Partial<AuthenticatedRequest>, res) => {
-      if (error.statusCode >= 400 && error.statusCode < 500) {
+      if (
+        (error.statusCode >= 400 && error.statusCode < 500) ||
+        error.validation
+      ) {
         req.log.warn(error)
       } else {
         req.log.error(error)
       }
 
+      if (error.validation) {
+        return res.status(400).send(error)
+      }
       if (error.statusCode) {
         // Error object already contains useful information
         return res.send(error)
