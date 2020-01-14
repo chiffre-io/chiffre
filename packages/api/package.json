@@ -14,10 +14,14 @@
     "seed:make": "yarn knex seed:make",
     "seed:run": "yarn knex seed:run",
     "db:reset": "./scripts/stop-db.sh && rm -rf .db && ./scripts/start-db.sh",
-    "db:setup": "yarn migrate:up && yarn seed:run",
+    "db:setup": "run-s migrate:up seed:run",
     "db:rotate-keys": "ts-node ./src/db/operations/rotateCloak.ts",
     "db:new-key": "cloak generate",
-    "decloak": "echo $(pbpaste) | cloak decrypt"
+    "decloak": "echo $(pbpaste) | cloak decrypt",
+    "e2e:db:start": "./scripts/start-e2e-db.sh",
+    "e2e:db:stop": "./scripts/stop-e2e-db.sh",
+    "e2e:test": "jest e2e --runInBand --verbose",
+    "ci": "run-s e2e:db:start e2e:test e2e:db:stop build"
   },
   "dependencies": {
     "@47ng/check-env": "^2.0.0",

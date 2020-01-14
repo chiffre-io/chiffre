@@ -5,6 +5,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "ci": "run-s test build",
     "build": "tsc",
     "test": "jest --verbose --logHeapUsage"
   },

@@ -24,6 +24,7 @@ export function createServer(): App {
       'JWT_ISSUER'
     ],
     unsafe: [
+      'DEBUG',
       'CHIFFRE_API_DISABLE_CLOAK',
       'CHIFFRE_API_DISABLE_GRACEFUL_SHUTDOWN',
       'CHIFFRE_API_INSECURE_COOKIES'
@@ -126,5 +127,5 @@ export function startServer(app: App, port: number) {
       app.log.fatal({ msg: `Application startup error`, error, address })
     }
   })
-  setupCronTasks(app)
+  return setupCronTasks(app)
 }

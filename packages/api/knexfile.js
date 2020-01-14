@@ -1,4 +1,5 @@
 const dotenv = require('dotenv')
+const path = require('path')
 
 // Load environment variables
 dotenv.config()
@@ -7,7 +8,7 @@ const commonConfig = {
   client: 'pg',
   connection: process.env.DATABASE_URI,
   migrations: {
-    directory: './src/db/migrations',
+    directory: path.join(path.dirname(__filename), 'src/db/migrations'),
     extension: 'ts',
     loadExtensions: ['.ts']
   }

@@ -30,7 +30,7 @@ export function getLoggerOptions() {
   return {
     level:
       process.env.LOG_LEVEL ||
-      (process.env.NODE_ENV === 'development' ? 'debug' : 'info'),
+      (process.env.DEBUG === 'true' ? 'debug' : 'info'),
     redact: [
       // Security redactions
       'req.headers["x-secret-token"]',

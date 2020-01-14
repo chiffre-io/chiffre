@@ -5,12 +5,9 @@
     "packages/*"
   ],
   "scripts": {
-    "ci": "run-s test:unit",
-    "test:unit": "yarn workspace @chiffre/crypto run test",
-    "test:e2e": "run-s dc:build dc:test dc:down",
-    "dc:build": "docker-compose build",
-    "dc:test": "docker-compose run test-runner",
-    "dc:down": "docker-compose down"
+    "ci": "run-s ci:crypto ci:api",
+    "ci:crypto": "yarn workspace @chiffre/crypto run ci",
+    "ci:api": "yarn workspace @chiffre/api run ci"
   },
   "devDependencies": {
     "jest": "^24.9.0",
