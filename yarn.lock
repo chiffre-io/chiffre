@@ -7,10 +7,10 @@
   resolved "https://registry.yarnpkg.com/@47ng/check-env/-/check-env-2.0.0.tgz#ab377a39fa4ed6f59756e0bd4c31fa7776d636fc"
   integrity sha512-vn5+ofKOQW5dW2G51ZvWfqaHfEXcHQZ5w+RW03SepBEML96FssVV/EQ4yQJu+GBCE5sehBkjouD/2Fy0jgjwqg==
 
-"@47ng/cloak@^0.14.1":
-  version "0.14.1"
-  resolved "https://registry.yarnpkg.com/@47ng/cloak/-/cloak-0.14.1.tgz#4dd800a85aa53b74733a0ad94ffedc8ce35ae226"
-  integrity sha512-GuGCeNz78lvyDfqCeTei1MX8stjQ29rH9Pd8ZwoPrgPpp434grWuI5puM4jfkAzdgV6KQGqs33PX644YJi9FZw==
+"@47ng/cloak@^0.15.0":
+  version "0.15.0"
+  resolved "https://registry.yarnpkg.com/@47ng/cloak/-/cloak-0.15.0.tgz#af4462e3b900135c67bfb2f6c6ab82735493a2a7"
+  integrity sha512-CNyP9VarETxMwbB1mOmsQDWAiJ9dDyAl8fI4SkXD7NliMBpbvQOFMd5jK2AdWF1ZW8Xp66G/r3h41Z0KezGdZg==
   dependencies:
     "@47ng/codec" "^0.3.0"
     "@stablelib/base64" "^0.7.2"

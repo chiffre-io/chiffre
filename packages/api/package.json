@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "@47ng/check-env": "^2.0.0",
-    "@47ng/cloak": "^0.14.1",
+    "@47ng/cloak": "^0.15.0",
     "@47ng/codec": "^0.3.0",
     "@chiffre/crypto": "^0.0.1",
     "@sentry/node": "^5.11.0",

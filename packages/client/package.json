@@ -8,6 +8,7 @@
     "build": "echo -n 'No build yet'"
   },
   "dependencies": {
+    "@47ng/cloak": "^0.15.0",
     "@chiffre/api-types": "^0.0.1",
     "@chiffre/crypto": "^0.0.1",
     "axios": "^0.19.1",

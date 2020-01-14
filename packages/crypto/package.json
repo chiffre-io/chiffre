@@ -10,7 +10,7 @@
     "test": "jest --verbose --logHeapUsage"
   },
   "dependencies": {
-    "@47ng/cloak": "^0.14.1",
+    "@47ng/cloak": "^0.15.0",
     "@47ng/codec": "^0.3.0",
     "@stablelib/base64": "^0.7.2",
     "@stablelib/hex": "^0.5.0",
