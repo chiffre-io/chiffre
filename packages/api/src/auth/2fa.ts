@@ -28,14 +28,13 @@ export function verifyTwoFactorToken(token: string, secret: string) {
   }
 }
 
-export function generateBackupCodes(number: number, numBytes = 16): string[] {
+export function generateBackupCodes(
+  number: number,
+  numBytes: number = 16
+): string[] {
   return Array(number)
     .fill(undefined)
-    .map(() =>
-      createRandomBytes(numBytes, KeyEncodings.HEX)
-        .match(/.{1,8}/g)
-        .join('-')
-    )
+    .map(() => createRandomBytes(numBytes, KeyEncodings.HEX))
 }
 
 export function formatTwoFactorSecret(secret: string, username: string) {

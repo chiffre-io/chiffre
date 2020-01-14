@@ -38,14 +38,14 @@ export const seed = async (knex: Knex) => {
         masterSalt,
         twoFactorSecret: 'V2F3CZPN3JMZDA4S2DD3IXHYYTYB7Q3F',
         twoFactorBackupCodes: [
-          '7240afa8-3215a4e6-cd78cb3b-0563147b',
-          '523bab2b-8c608131-9c427d2e-74a7b519',
-          '242bc2a7-da454383-2204945c-d9cf1bac',
-          '5cbf429a-4afddc8f-61559fbb-11873181',
-          '29bc2ce3-b2656f6b-5f89a8a4-e35add7e',
-          'dec705ef-8e380128-40d86f68-20bec3ff',
-          'e6f68e4b-2c83e14f-ef74249b-6b83000d',
-          'c298f7de-acc703ab-6497911c-1a611bae'
+          '7240afa83215a4e6cd78cb3b0563147b',
+          '523bab2b8c6081319c427d2e74a7b519',
+          '242bc2a7da4543832204945cd9cf1bac',
+          '5cbf429a4afddc8f61559fbb11873181',
+          '29bc2ce3b2656f6b5f89a8a4e35add7e',
+          'dec705ef8e38012840d86f6820bec3ff',
+          'e6f68e4b2c83e14fef74249b6b83000d',
+          'c298f7deacc703ab6497911c1a611bae'
         ].join(','),
         twoFactorStatus: TwoFactorStatus.verified
       }))
