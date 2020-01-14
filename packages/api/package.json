@@ -20,7 +20,7 @@
     "decloak": "echo $(pbpaste) | cloak decrypt",
     "e2e:db:start": "./scripts/start-e2e-db.sh",
     "e2e:db:stop": "./scripts/stop-e2e-db.sh",
-    "e2e:test": "jest e2e --runInBand --verbose",
+    "e2e:test": "jest e2e --runInBand --verbose --coverage",
     "ci": "run-s e2e:db:start e2e:test e2e:db:stop build"
   },
   "dependencies": {

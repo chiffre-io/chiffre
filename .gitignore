@@ -30,6 +30,7 @@ yarn-error.log*
 
 # instrumentation
 **/.clinic
+**/coverage
 
 # docker volumes
 .db/
