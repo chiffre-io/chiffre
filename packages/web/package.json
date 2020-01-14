@@ -60,8 +60,7 @@
     "serve": "^11.2.0",
     "ts-jest": "^24.2.0",
     "ts-node": "^8.5.4",
-    "tsconfig-paths": "^3.9.0",
-    "typescript": "^3.7.3"
+    "tsconfig-paths": "^3.9.0"
   },
   "jest": {
     "preset": "ts-jest/presets/js-with-ts",

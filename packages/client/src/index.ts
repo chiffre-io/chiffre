@@ -6,7 +6,7 @@ import {
   clientVerifyLogin,
   unlockKeychain
 } from '@chiffre/crypto'
-import {
+import type {
   SignupParameters,
   LoginChallengeResponseBody,
   KeychainResponse,
@@ -22,13 +22,13 @@ const inSevenDays = () => Date.now() + 7 * 24 * 60 * 60 * 1000 // 7 days
 
 export default class Client {
   private api: AxiosInstance
-  private keystore: SessionKeystore<'keychainKey' | 'credentials'>
+  #keystore: SessionKeystore<'keychainKey' | 'credentials'>
 
   constructor(url: string) {
     this.api = axios.create({
       baseURL: `${url}/v1`
     })
-    this.keystore = new SessionKeystore({
+    this.#keystore = new SessionKeystore({
       name: 'chiffre-client'
     })
   }
@@ -44,7 +44,7 @@ export default class Client {
       signupParams.masterSalt
     )
     await this.api.post('/auth/signup', signupParams)
-    this.keystore.set(
+    this.#keystore.set(
       'keychainKey',
       await decryptString(signupParams.keychainKey, masterKey),
       Date.now() + 7 * 24 * 60 * 60 * 1000 // 7 days
@@ -84,7 +84,7 @@ export default class Client {
       return { requireTwoFactorAuthentication: false }
     } else {
       // Two factor is required
-      this.keystore.set(
+      this.#keystore.set(
         'credentials',
         [username, password].join(':'),
         Date.now() + 60 * 1000 // 1 minute, to let 2FA flow happen
@@ -94,7 +94,7 @@ export default class Client {
   }
 
   public async verifyTwoFactorToken(token: string) {
-    const credentials = this.keystore.get('credentials')
+    const credentials = this.#keystore.get('credentials')
     if (!credentials) {
       throw new Error('Session expired, please log in again')
     }
@@ -109,7 +109,7 @@ export default class Client {
       password,
       responseBody.masterSalt
     )
-    this.keystore.delete('credentials')
+    this.#keystore.delete('credentials')
     await this.refreshKeychain(masterKey)
   }
 
@@ -117,7 +117,7 @@ export default class Client {
     const res = await this.api.get('/keychain')
     const responseBody: KeychainResponse = res.data
     const keychainKey = await decryptString(responseBody.key, masterKey)
-    this.keystore.set('keychainKey', keychainKey, inSevenDays())
+    this.#keystore.set('keychainKey', keychainKey, inSevenDays())
     return await unlockKeychain(responseBody, keychainKey)
   }
 }
