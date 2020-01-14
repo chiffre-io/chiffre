@@ -6,5 +6,11 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "echo -n 'No build yet'"
+  },
+  "dependencies": {
+    "@chiffre/api-types": "^0.0.1",
+    "@chiffre/crypto": "^0.0.1",
+    "axios": "^0.19.1",
+    "session-keystore": "^0.5.0"
   }
 }
