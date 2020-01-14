@@ -5,6 +5,7 @@ import {
   updateKeychain,
   KeychainUpdatableFields
 } from '../db/models/entities/Keychains'
+import { KeychainResponse } from './keychain.schema'
 
 // --
 
@@ -24,7 +25,18 @@ export default async (app: App) => {
     },
     async (req: AuthenticatedRequest, res) => {
       const keychain = await findKeychain(app.db, req.auth.userID)
-      return res.send(keychain)
+      const response: KeychainResponse = {
+        key: keychain.key,
+        signature: {
+          public: keychain.signaturePublicKey,
+          secret: keychain.signatureSecretKey
+        },
+        sharing: {
+          public: keychain.sharingPublicKey,
+          secret: keychain.sharingSecretKey
+        }
+      }
+      return res.send(response)
     }
   )
 

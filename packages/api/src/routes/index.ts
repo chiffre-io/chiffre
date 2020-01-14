@@ -27,6 +27,7 @@ export default async function loadRoutes(app: App) {
   loadRoute(app, './vaults')
   loadRoute(app, './projects')
   loadRoute(app, './embed')
+  loadRoute(app, './users.ts')
 }
 
 // Forward API Interface types
@@ -37,6 +38,8 @@ export * from './auth/login/2fa.schema'
 export * from './auth/2fa/enable.schema'
 export * from './auth/2fa/verify.schema'
 export * from './auth/2fa/disable.schema'
+export * from './keychain.schema'
 export * from './vaults.schema'
 export * from './projects.schema'
 export * from './queues.schema'
+export * from './users.schema'
