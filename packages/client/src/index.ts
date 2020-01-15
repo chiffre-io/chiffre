@@ -1,4 +1,12 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios'
+import SessionKeystore from 'session-keystore'
+import { b64, utf8 } from '@47ng/codec'
+import {
+  generateKey,
+  encryptString,
+  decryptString,
+  CloakKey
+} from '@47ng/cloak'
 import {
   createSignupEntities,
   clientAssembleLoginResponse,
@@ -25,9 +33,12 @@ import type {
   FindVaultResponse,
   CreateProjectParameters,
   CreateProjectResponse,
+  AuthClaims,
 } from '@chiffre/api-types'
-import SessionKeystore from 'session-keystore'
-import { generateKey, encryptString, decryptString, CloakKey } from '@47ng/cloak'
+import type { Settings } from './settings'
+import TwoFactorSettings from './settings/2fa'
+
+// --
 
 const inSevenDays = () => Date.now() + 7 * 24 * 60 * 60 * 1000 // 7 days
 
@@ -45,19 +56,26 @@ export interface ClientOptions {
   onLocked?: () => void
 }
 
+// --
+
 export default class Client {
   public projects: Project[]
   public keychain?: UnlockedKeychain
+  public settings: Settings
   private api: AxiosInstance
+
   #keystore: SessionKeystore<'keychainKey' | 'credentials'>
+  #handleAuth: (res: AxiosResponse) => void
   #token?: string
+  #authClaims?: AuthClaims
 
   constructor(options: ClientOptions = {}) {
     this.api = axios.create({
       baseURL: `${options.apiURL || 'https://api.chiffre.io'}/v1`,
       // Use cookies in the browser
-      withCredentials: typeof document !== 'undefined'
+      withCredentials: typeof document !== 'undefined',
     })
+    this.api.defaults.headers.common['Content-Type'] = 'application/json'
     if (typeof document === 'undefined') {
       // Manually inject bearer token in Node.js
       this.api.interceptors.request.use((config) => {
@@ -75,6 +93,7 @@ export default class Client {
     this.keychain = undefined
     this.projects = []
     this.#token = undefined
+    this.#authClaims = undefined
     this.#keystore = new SessionKeystore({
       name: 'chiffre-client',
       onExpired: (keyName) => {
@@ -86,6 +105,57 @@ export default class Client {
         }
       }
     })
+    this.#handleAuth = (res: AxiosResponse) => {
+      const parsePayload = (payload: string): AuthClaims => {
+        const p = JSON.parse(utf8.decode(b64.decode(payload)))
+        return {
+          plan: p.plan,
+          userID: p.sub,
+          tokenID: p.jti,
+          twoFactorStatus: p['2fa']
+        }
+      }
+
+      if (typeof document !== 'undefined') {
+        // We're in the browser, just parse the claims cookie
+        try {
+          const matches = document.cookie.match(/chiffre\:jwt\-claims\=([\w-]+).([\w-]+)/)
+          if (matches.length !== 3) {
+            throw new Error('Invalid JWT')
+          }
+          this.#authClaims = parsePayload(matches[2])
+        } catch {
+          this.#authClaims = undefined
+        }
+        return
+      }
+      const cookies: string[] = res.headers['set-cookie']
+      this.#token = cookies
+        .map(cookie => cookie.split(';')[0]) // Remove scope definitions
+        .filter(cookie => {
+          // Keep only auth cookies
+          const [name] = cookie.split('=')
+          // todo: Use CookieNames (runtime needs to be exported from @chiffre/api)
+          return ['chiffre:jwt-claims', 'chiffre:jwt-sig'].includes(name)
+        })
+        .map(cookie => cookie.split('=')[1]) // Extract the values
+        .join('.') // Recompose JWT
+
+      // Parse auth claims
+      const [_header, payload, _signature] = this.#token.split('.')
+      try {
+        this.#authClaims = parsePayload(payload)
+      } catch {
+        this.#authClaims = undefined
+      }
+    }
+    this.settings = {
+      twoFactor: new TwoFactorSettings(
+        this.api,
+        this.#handleAuth,
+        () => this.#authClaims
+      )
+    }
   }
 
   // --
@@ -101,7 +171,7 @@ export default class Client {
       signupParams.masterSalt
     )
     const res = await this.api.post('/auth/signup', signupParams)
-    this._handleAuthToken(res)
+    this.#handleAuth(res)
     this.#keystore.set(
       'keychainKey',
       await decryptString(signupParams.keychainKey, masterKey),
@@ -131,7 +201,7 @@ export default class Client {
       response.ephemeral,
       response.session
     )
-    this._handleAuthToken(res2)
+    this.#handleAuth(res2)
 
     if (responseBody.masterSalt) {
       const masterKey = await deriveMasterKey(
@@ -169,7 +239,7 @@ export default class Client {
       responseBody.masterSalt
     )
     this.#keystore.delete('credentials')
-    this._handleAuthToken(res)
+    this.#handleAuth(res)
     await this._refresh(masterKey)
   }
 
@@ -265,25 +335,5 @@ export default class Client {
 
   public getProject(id: string) {
     return this.projects.find((p => p.id === id))
-  }
-
-  // --
-
-  private _handleAuthToken(res: AxiosResponse) {
-    if (typeof document !== 'undefined') {
-      // We're in the browser, let it do its thing.
-      return
-    }
-    const cookies: string[] = res.headers['set-cookie']
-    this.#token = cookies
-      .map(cookie => cookie.split(';')[0]) // Remove scope definitions
-      .filter(cookie => {
-        // Keep only auth cookies
-        const [name] = cookie.split('=')
-        // todo: Use CookieNames (runtime needs to be exported from @chiffre/api)
-        return ['chiffre:jwt-claims', 'chiffre:jwt-sig'].includes(name)
-      })
-      .map(cookie => cookie.split('=')[1]) // Extract the values
-      .join('.') // Recompose JWT
   }
 }

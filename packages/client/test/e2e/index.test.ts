@@ -1,4 +1,6 @@
 import { setup, TestContext } from './utility'
+import { TwoFactorStatus } from '@chiffre/api/src/auth/types'
+import { generateTwoFactorToken } from '@chiffre/api/src/auth/2fa'
 
 let ctx: TestContext = undefined
 
@@ -39,4 +41,34 @@ test('Create projects', async () => {
   // Access projects by ID
   expect(ctx.client.getProject(project1.id)).toEqual(project1)
   expect(ctx.client.getProject(project2.id)).toEqual(project2)
+})
+
+// --
+
+let totpSecret: string | undefined = undefined
+
+test('2FA - Start enabling, but cancel', async () => {
+  expect(ctx.client.settings.twoFactor.status).toEqual(TwoFactorStatus.disabled)
+  await ctx.client.settings.twoFactor.enable()
+  expect(ctx.client.settings.twoFactor.status).toEqual(TwoFactorStatus.enabled)
+  await ctx.client.settings.twoFactor.cancel()
+  expect(ctx.client.settings.twoFactor.status).toEqual(TwoFactorStatus.disabled)
+})
+
+test('2FA - Enable', async () => {
+  expect(ctx.client.settings.twoFactor.status).toEqual(TwoFactorStatus.disabled)
+  const { text } = await ctx.client.settings.twoFactor.enable()
+  totpSecret = text
+  expect(ctx.client.settings.twoFactor.status).toEqual(TwoFactorStatus.enabled)
+  const token = generateTwoFactorToken(totpSecret)
+  await ctx.client.settings.twoFactor.verify(token)
+  expect(ctx.client.settings.twoFactor.status).toEqual(TwoFactorStatus.verified)
+})
+
+test('2FA - Disable', async () => {
+  expect(ctx.client.settings.twoFactor.status).toEqual(TwoFactorStatus.verified)
+  const token = generateTwoFactorToken(totpSecret)
+  await ctx.client.settings.twoFactor.disable(token)
+  expect(ctx.client.settings.twoFactor.status).toEqual(TwoFactorStatus.disabled)
+  totpSecret = undefined
 })
