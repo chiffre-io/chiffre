@@ -5,6 +5,7 @@
   "main": "dist/index.d.ts",
   "types": "dist/index.d.ts",
   "scripts": {
+    "ci": "ls -la ./dist && ls -la ../api/dist",
     "clean": "rm -rf ./coverage ./dist ./node_modules"
   }
 }

@@ -11,9 +11,10 @@
     "clean:api": "yarn workspace @chiffre/api run clean",
     "clean:api-types": "yarn workspace @chiffre/api-types run clean",
     "clean:client": "yarn workspace @chiffre/client run clean",
-    "ci": "run-s ci:crypto ci:api ci:client",
+    "ci": "run-s ci:crypto ci:api ci:api-types ci:client",
     "ci:crypto": "yarn workspace @chiffre/crypto run ci",
     "ci:api": "yarn workspace @chiffre/api run ci",
+    "ci:api-types": "yarn workspace @chiffre/api-types run ci",
     "ci:client": "yarn workspace @chiffre/client run ci"
   },
   "devDependencies": {
