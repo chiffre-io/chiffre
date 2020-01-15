@@ -71,7 +71,7 @@ export async function rotateUsersCloak(db: Knex) {
 
 export async function createUser(
   db: Knex,
-  input: Omit<UserInput, 'twoFactorEnabled' | 'twoFactorVerified'>
+  input: Omit<UserInput, 'twoFactorStatus'>
 ): Promise<User> {
   const user: UserInput = await cloak({
     ...input,
@@ -135,7 +135,7 @@ export async function markTwoFactorVerified(
   return await db<User>(USERS_TABLE)
     .where({
       id: userID,
-      twoFactorEnabled: true
+      twoFactorStatus: TwoFactorStatus.enabled
     })
     .update({
       twoFactorStatus: TwoFactorStatus.verified,

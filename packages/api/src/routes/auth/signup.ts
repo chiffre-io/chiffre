@@ -55,8 +55,7 @@ local entities that will be needed later for authenticating on other devices:
           username,
           srpSalt,
           srpVerifier,
-          masterSalt,
-          twoFactorStatus: TwoFactorStatus.disabled
+          masterSalt
         })
         await createKeychainRecord(app.db, {
           userID,
