@@ -91,7 +91,7 @@ export default async (app: App) => {
         from: req.auth.twoFactorStatus,
         to: claims.twoFactorStatus
       })
-      return res.status(204).send(null)
+      return res.status(204).send()
     }
   )
 }

@@ -48,7 +48,7 @@ export default async (app: App) => {
     async (req: PatchRequest, res) => {
       try {
         await updateKeychain(app.db, req.auth.userID, req.body)
-        return res.status(204).send(null)
+        return res.status(204).send()
       } catch (error) {
         throw app.httpErrors.forbidden(
           'You are not allowed to edit this keychain'
