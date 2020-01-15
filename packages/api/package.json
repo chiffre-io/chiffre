@@ -5,6 +5,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "clean": "rm -rf ./coverage ./dist ./node_modules",
     "dev": "nodemon -e ts,.env -w .env -w ./src ./src/index.ts",
     "build": "tsc && cp -rf ../api-types/dist/* ./dist/",
     "knex": "ts-node ./node_modules/.bin/knex",

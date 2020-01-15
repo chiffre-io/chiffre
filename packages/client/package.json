@@ -5,6 +5,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "clean": "rm -rf ./coverage ./dist ./node_modules",
     "build": "tsc",
     "e2e:db:start": "../api/scripts/start-e2e-db.sh",
     "e2e:db:stop": "../api/scripts/stop-e2e-db.sh",

@@ -5,6 +5,12 @@
     "packages/*"
   ],
   "scripts": {
+    "clean": "run-s clean:crypto clean:api clean:api-types clean:client clean:self",
+    "clean:self": "rm -rf ./node_modules",
+    "clean:crypto": "yarn workspace @chiffre/crypto run clean",
+    "clean:api": "yarn workspace @chiffre/api run clean",
+    "clean:api-types": "yarn workspace @chiffre/api-types run clean",
+    "clean:client": "yarn workspace @chiffre/client run clean",
     "ci": "run-s ci:crypto ci:api ci:client",
     "ci:crypto": "yarn workspace @chiffre/crypto run ci",
     "ci:api": "yarn workspace @chiffre/api run ci",
