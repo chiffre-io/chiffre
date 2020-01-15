@@ -8,6 +8,7 @@
     "declarationDir": "../api-types/dist",
     "outDir": "./dist",
     "rootDir": "./src",
+    "preserveSymlinks": true,
 
     // Strict Type-Checking Options
     // "strict": false,
