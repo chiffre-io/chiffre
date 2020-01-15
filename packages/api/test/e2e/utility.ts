@@ -18,8 +18,7 @@ export async function setup(): Promise<TestContext> {
 
   const port = parseInt(process.env.PORT) || 4000
   const server = createServer()
-  const crons = startServer(server, port)
-  await server.ready()
+  const crons = await startServer(server, port)
   const api = axios.create({
     baseURL: process.env.API_URL,
     validateStatus: () => true

@@ -121,11 +121,17 @@ export function createServer(): App {
 
 // --
 
-export function startServer(app: App, port: number) {
-  app.listen({ port, host: '0.0.0.0' }, (error, address) => {
-    if (error) {
-      app.log.fatal({ msg: `Application startup error`, error, address })
-    }
+export async function startServer(app: App, port: number) {
+  await new Promise(resolve => {
+    app.listen({ port, host: '0.0.0.0' }, (error, address) => {
+      if (error) {
+        app.log.fatal({ msg: `Application startup error`, error, address })
+        process.exit(1)
+      } else {
+        resolve()
+      }
+    })
   })
+  await app.ready()
   return setupCronTasks(app)
 }

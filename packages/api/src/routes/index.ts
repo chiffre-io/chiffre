@@ -7,11 +7,11 @@ function loadRoute(app: App, path: string) {
     })
   } catch (error) {
     app.log.fatal({ msg: 'Failed to load route', error })
+    process.exit(1)
   }
 }
 
 export default async function loadRoutes(app: App) {
-  // Auth routes
   loadRoute(app, './auth/signup')
   loadRoute(app, './auth/login/challenge')
   loadRoute(app, './auth/login/response')
@@ -19,10 +19,6 @@ export default async function loadRoutes(app: App) {
   loadRoute(app, './auth/2fa/enable')
   loadRoute(app, './auth/2fa/verify')
   loadRoute(app, './auth/2fa/disable')
-
-  // loadRoute(app, '/push/[projectID]')
-  // loadRoute(app, '/queues/[projectID]')
-
   loadRoute(app, './keychain')
   loadRoute(app, './vaults')
   loadRoute(app, './projects')
