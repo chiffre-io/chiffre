@@ -25,7 +25,6 @@ import type {
   FindVaultResponse,
   CreateProjectParameters,
   CreateProjectResponse,
-  CookieNames
 } from '@chiffre/api-types'
 import SessionKeystore from 'session-keystore'
 import { generateKey, encryptString, decryptString, CloakKey } from '@47ng/cloak'
@@ -34,6 +33,18 @@ const inSevenDays = () => Date.now() + 7 * 24 * 60 * 60 * 1000 // 7 days
 
 export type Project = Omit<ProjectResponse, 'keys' | 'vaultKey'> & UnlockedProject
 
+export interface ClientOptions {
+  /**
+   * The URL to the Chiffre API, defaults to https://api.chiffre.io
+   */
+  apiURL?: string
+
+  /**
+   * Callback function when the keychain self-locks after some amount of time.
+   */
+  onLocked?: () => void
+}
+
 export default class Client {
   public projects: Project[]
   public keychain?: UnlockedKeychain
@@ -41,9 +52,9 @@ export default class Client {
   #keystore: SessionKeystore<'keychainKey' | 'credentials'>
   #token?: string
 
-  constructor(url: string) {
+  constructor(options: ClientOptions = {}) {
     this.api = axios.create({
-      baseURL: `${url}/v1`,
+      baseURL: `${options.apiURL || 'https://api.chiffre.io'}/v1`,
       // Use cookies in the browser
       withCredentials: typeof document !== 'undefined'
     })
@@ -65,7 +76,15 @@ export default class Client {
     this.projects = []
     this.#token = undefined
     this.#keystore = new SessionKeystore({
-      name: 'chiffre-client'
+      name: 'chiffre-client',
+      onExpired: (keyName) => {
+        if (keyName === 'keychainKey') {
+          this.lock()
+          if (options.onLocked) {
+            options.onLocked()
+          }
+        }
+      }
     })
   }
 
@@ -86,7 +105,7 @@ export default class Client {
     this.#keystore.set(
       'keychainKey',
       await decryptString(signupParams.keychainKey, masterKey),
-      Date.now() + 7 * 24 * 60 * 60 * 1000 // 7 days
+      inSevenDays(),
     )
   }
 
@@ -160,7 +179,7 @@ export default class Client {
     this.keychain = undefined
     this.projects = []
     this.#keystore.clear()
-    // todo: Delete cookies ?
+    this.#token = undefined
   }
 
   // --
@@ -261,6 +280,7 @@ export default class Client {
       .filter(cookie => {
         // Keep only auth cookies
         const [name] = cookie.split('=')
+        // todo: Use CookieNames (runtime needs to be exported from @chiffre/api)
         return ['chiffre:jwt-claims', 'chiffre:jwt-sig'].includes(name)
       })
       .map(cookie => cookie.split('=')[1]) // Extract the values

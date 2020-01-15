@@ -5,9 +5,10 @@
     "packages/*"
   ],
   "scripts": {
-    "ci": "run-s ci:crypto ci:api",
+    "ci": "run-s ci:crypto ci:api ci:client",
     "ci:crypto": "yarn workspace @chiffre/crypto run ci",
-    "ci:api": "yarn workspace @chiffre/api run ci"
+    "ci:api": "yarn workspace @chiffre/api run ci",
+    "ci:client": "yarn workspace @chiffre/client run ci"
   },
   "devDependencies": {
     "jest": "^24.9.0",

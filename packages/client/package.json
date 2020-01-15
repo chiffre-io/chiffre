@@ -5,7 +5,11 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "e2e:db:start": "../api/scripts/start-e2e-db.sh",
+    "e2e:db:stop": "../api/scripts/stop-e2e-db.sh",
+    "e2e:test": "jest e2e --runInBand --verbose --coverage",
+    "ci": "run-s e2e:db:start e2e:test e2e:db:stop build"
   },
   "dependencies": {
     "@47ng/cloak": "^0.15.0",

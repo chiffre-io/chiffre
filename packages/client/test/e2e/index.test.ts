@@ -10,6 +10,7 @@ afterAll(async () => {
   for (const cron of ctx.crons) {
     cron.stop()
   }
+  ctx.client.lock()
   await ctx.server.close()
   await ctx.server.db.destroy()
 })
