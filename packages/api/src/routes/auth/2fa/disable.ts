@@ -2,7 +2,7 @@ import { App } from '../../../types'
 import { findUser, disableTwoFactor } from '../../../db/models/auth/Users'
 import { logEvent, EventTypes } from '../../../db/models/business/Events'
 import { AuthenticatedRequest } from '../../../plugins/auth'
-import { AuthClaims, TwoFactorStatus } from '../../../auth/types'
+import { AuthClaims, TwoFactorStatus } from '../../../exports/defs'
 import { setJwtCookies } from '../../../auth/cookies'
 import { verifyTwoFactorToken } from '../../../auth/2fa'
 import {

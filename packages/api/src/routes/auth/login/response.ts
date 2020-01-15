@@ -10,7 +10,7 @@ import { findUser } from '../../../db/models/auth/Users'
 import { Session as SrpSession } from 'secure-remote-password/server'
 import { setJwtCookies } from '../../../auth/cookies'
 import { App } from '../../../types'
-import { AuthClaims, Plans, TwoFactorStatus } from '../../../auth/types'
+import { AuthClaims, Plans, TwoFactorStatus } from '../../../exports/defs'
 import {
   loginResponseParametersSchema,
   LoginResponseParameters,

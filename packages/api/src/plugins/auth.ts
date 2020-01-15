@@ -10,9 +10,8 @@ import {
 } from 'fastify'
 import fastifyCookie from 'fastify-cookie'
 import { IncomingMessage } from 'http'
-import { CookieNames } from '../auth/cookies'
 import { verifyJwt } from '../auth/jwt'
-import { AuthClaims, TwoFactorStatus } from '../auth/types'
+import { AuthClaims, TwoFactorStatus, CookieNames } from '../exports/defs'
 
 export type AuthenticatedRequest<
   R = IncomingMessage,

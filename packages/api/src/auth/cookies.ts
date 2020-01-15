@@ -1,13 +1,8 @@
 import { FastifyReply } from 'fastify'
-import { AuthClaims } from './types'
+import { AuthClaims, CookieNames } from '../exports/defs'
 import { createJwt } from './jwt'
 
 // https://medium.com/lightrail/getting-token-authentication-right-in-a-stateless-single-page-application-57d0c6474e3
-
-export enum CookieNames {
-  jwt = 'chiffre:jwt-claims',
-  sig = 'chiffre:jwt-sig'
-}
 
 // --
 

@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken'
-import { AuthClaims, Plans, TwoFactorStatus } from './types'
+import { AuthClaims, Plans, TwoFactorStatus } from '../exports/defs'
 
 interface Payload {
   sub: string

@@ -3,7 +3,7 @@ import { verifyTwoFactorToken } from '../../../auth/2fa'
 import { findUser } from '../../../db/models/auth/Users'
 import { logEvent, EventTypes } from '../../../db/models/business/Events'
 import { AuthenticatedRequest } from '../../../plugins/auth'
-import { TwoFactorStatus, AuthClaims } from '../../../auth/types'
+import { TwoFactorStatus, AuthClaims } from '../../../exports/defs'
 import {
   Login2FAParameters,
   login2FAParametersSchema,

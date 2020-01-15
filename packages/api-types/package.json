@@ -2,7 +2,7 @@
   "name": "@chiffre/api-types",
   "version": "0.0.1",
   "license": "MIT",
-  "main": "dist/index.d.ts",
+  "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "ci": "ls -la ./dist && ls -la ../api/dist",

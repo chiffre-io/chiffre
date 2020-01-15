@@ -19,7 +19,7 @@ import {
   UnlockedProject,
   unlockProject
 } from '@chiffre/crypto'
-import type {
+import {
   SignupParameters,
   LoginChallengeResponseBody,
   KeychainResponse,
@@ -34,6 +34,7 @@ import type {
   CreateProjectParameters,
   CreateProjectResponse,
   AuthClaims,
+  CookieNames
 } from '@chiffre/api-types'
 import type { Settings } from './settings'
 import TwoFactorSettings from './settings/2fa'
@@ -57,6 +58,8 @@ export interface ClientOptions {
 }
 
 // --
+
+const cookieClaimsRegex = new RegExp(`${CookieNames.jwt}=([\w-]+).([\w-]+)`)
 
 export default class Client {
   public projects: Project[]
@@ -119,7 +122,7 @@ export default class Client {
       if (typeof document !== 'undefined') {
         // We're in the browser, just parse the claims cookie
         try {
-          const matches = document.cookie.match(/chiffre\:jwt\-claims\=([\w-]+).([\w-]+)/)
+          const matches = document.cookie.match(cookieClaimsRegex)
           if (matches.length !== 3) {
             throw new Error('Invalid JWT')
           }
@@ -135,8 +138,10 @@ export default class Client {
         .filter(cookie => {
           // Keep only auth cookies
           const [name] = cookie.split('=')
-          // todo: Use CookieNames (runtime needs to be exported from @chiffre/api)
-          return ['chiffre:jwt-claims', 'chiffre:jwt-sig'].includes(name)
+          return [
+            CookieNames.jwt as string,
+            CookieNames.sig as string
+          ].includes(name)
         })
         .map(cookie => cookie.split('=')[1]) // Extract the values
         .join('.') // Recompose JWT

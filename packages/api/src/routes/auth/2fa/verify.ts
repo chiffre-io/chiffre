@@ -3,8 +3,7 @@ import { AuthenticatedRequest } from '../../../plugins/auth'
 import { logEvent, EventTypes } from '../../../db/models/business/Events'
 import { findUser, markTwoFactorVerified } from '../../../db/models/auth/Users'
 import { verifyTwoFactorToken, generateBackupCodes } from '../../../auth/2fa'
-import { TwoFactorStatus } from '../../../auth/types'
-import { AuthClaims } from '../../../auth/types'
+import { AuthClaims, TwoFactorStatus } from '../../../exports/defs'
 import { setJwtCookies } from '../../../auth/cookies'
 import {
   TwoFactorVerifyParameters,

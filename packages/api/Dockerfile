@@ -23,4 +23,4 @@ COPY --from=builder /app .
 
 EXPOSE 3000
 
-CMD node ./packages/api/dist/index.js
+CMD node ./packages/api/dist/main.js

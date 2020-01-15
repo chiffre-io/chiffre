@@ -1,5 +1,5 @@
 import Knex from 'knex'
-import { Plans, allPlans } from '../../../auth/types'
+import { Plans, allPlans } from '../../../exports/defs'
 import { AuthenticatedRequest } from '../../../plugins/auth'
 import { USERS_TABLE } from '../auth/Users'
 

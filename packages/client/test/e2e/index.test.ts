@@ -1,5 +1,5 @@
 import { setup, TestContext } from './utility'
-import { TwoFactorStatus } from '@chiffre/api/src/auth/types'
+import { TwoFactorStatus, CookieNames } from '@chiffre/api-types'
 import { generateTwoFactorToken } from '@chiffre/api/src/auth/2fa'
 
 let ctx: TestContext = undefined
@@ -18,6 +18,10 @@ afterAll(async () => {
 })
 
 // -----------------------------------------------------------------------------
+
+test('Cookie names should not contain RegExp special characters', () => {
+  expect(CookieNames.jwt).toMatch(/[\w:-]+/)
+})
 
 test('Signup', async () => {
   const p = ctx.client.signup('test.user@example.com', 'password')

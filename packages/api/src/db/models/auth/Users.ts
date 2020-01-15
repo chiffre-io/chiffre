@@ -1,7 +1,7 @@
 import Knex from 'knex'
 import { updatedAtFieldAutoUpdate } from '../../utility'
 import { cloakValue, decloakValue, rotateTableCloak } from '../../encryption'
-import { TwoFactorStatus } from '../../../auth/types'
+import { TwoFactorStatus } from '../../../exports/defs'
 
 export const USERS_TABLE = 'users'
 

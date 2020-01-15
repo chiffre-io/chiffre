@@ -2,7 +2,7 @@ import Knex from 'knex'
 import dotenv from 'dotenv'
 import { cloak as cloakUser, User, USERS_TABLE } from '../models/auth/Users'
 import { createKeychainRecord } from '../models/entities/Keychains'
-import { TwoFactorStatus } from '../../auth/types'
+import { TwoFactorStatus } from '../../exports/defs'
 import {
   generateSrpSignupEntities,
   createMasterKey,

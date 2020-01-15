@@ -42,3 +42,8 @@ export interface AuthClaims {
   plan: Plans
   twoFactorStatus: TwoFactorStatus
 }
+
+export enum CookieNames {
+  jwt = 'chiffre:jwt-claims',
+  sig = 'chiffre:jwt-sig'
+}
