@@ -1,17 +1,16 @@
 import nacl from 'tweetnacl'
-import { encodeURLSafe, decodeURLSafe } from '@stablelib/base64'
-import { encode as encodeUtf8 } from '@stablelib/utf8'
+import { utf8, b64 } from '@47ng/codec'
 import { EmitterConfig } from './config'
 
 const expandPublicKey = (key: string): Uint8Array => {
-  return decodeURLSafe(key)
+  return b64.decode(key)
 }
 
 export const encryptString = (input: string, publicKey: string) => {
   const nonce = nacl.randomBytes(nacl.box.nonceLength)
   const keyPair = nacl.box.keyPair()
   const ciphertext = nacl.box(
-    encodeUtf8(input),
+    utf8.encode(input),
     nonce,
     expandPublicKey(publicKey),
     keyPair.secretKey
@@ -19,10 +18,10 @@ export const encryptString = (input: string, publicKey: string) => {
   return [
     'v1',
     'naclbox',
-    encodeURLSafe(keyPair.publicKey),
+    b64.encode(keyPair.publicKey),
     'utf8',
-    encodeURLSafe(nonce),
-    encodeURLSafe(ciphertext)
+    b64.encode(nonce),
+    b64.encode(ciphertext)
   ].join('.')
 }
 

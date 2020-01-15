@@ -7,8 +7,9 @@ import {
   ColorModeProvider,
   DarkMode
 } from '@chakra-ui/core'
-import theme from '../src/ui/theme'
+import theme from '../ui/theme'
 import { Global, css } from '@emotion/core'
+import { ChiffreClientProvider } from '@chiffre/client-react'
 
 const globalCss = css`
   html {
@@ -63,7 +64,10 @@ class MyApp extends App {
         </Head>
         <CSSReset config={globalConfig} />
         <Global styles={[globalCss]} />
-        <Component {...pageProps} />
+
+        <ChiffreClientProvider apiURL={process.env.API_URL}>
+          <Component {...pageProps} />
+        </ChiffreClientProvider>
         {/* </DarkMode> */}
         {/* </ColorModeProvider> */}
       </ThemeProvider>

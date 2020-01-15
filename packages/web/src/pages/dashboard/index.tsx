@@ -1,7 +1,7 @@
 import React from 'react'
 import { NextPage, NextPageContext } from 'next'
 // import { authenticatePage, AuthenticatedPageProps } from '~/src/shared/auth'
-import useKeychainKey from '../../src/hooks/useKeychainKey'
+import useKeychainKey from '../../hooks/useKeychainKey'
 // import useUserProjects from '../../src/hooks/useUserProjects'
 import { Box } from '@chakra-ui/core'
 // import { Project } from '~/src/db/models/entities/Projects'

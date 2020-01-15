@@ -1,0 +1,20 @@
+{
+  "name": "@chiffre/emitter",
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "private": true,
+  "license": "UNLICENSED",
+  "scripts": {
+    "clean": "rm -rf ./dist ./node_modules",
+    "build": "tsc"
+  },
+  "jest": {
+    "preset": "ts-jest/presets/js-with-ts",
+    "testEnvironment": "node"
+  },
+  "dependencies": {
+    "@47ng/codec": "^0.3.0",
+    "nanoid": "^2.1.9",
+    "tweetnacl": "^1.0.1"
+  }
+}

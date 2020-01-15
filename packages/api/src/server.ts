@@ -58,7 +58,21 @@ export function createServer(): App {
     }
   })
   app.register(cors, {
-    origin: ['http://localhost', /https:\/\/.*\.chiffre\.io$/]
+    origin:
+      process.env.NODE_ENV === 'production'
+        ? /https:\/\/.*\.chiffre\.io$/
+        : process.env.APP_URL,
+    allowedHeaders: [
+      'accept',
+      'authorization',
+      'content-type',
+      'cookie',
+      'origin',
+      'user-agent',
+      'x-forwarded-for'
+    ],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true
   })
   app.register(swagger, {
     routePrefix: '/documentation',

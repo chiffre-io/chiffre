@@ -1,0 +1,16 @@
+{
+  "name": "@chiffre/client-react",
+  "version": "0.0.1",
+  "license": "MIT",
+  "private": true,
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@chiffre/client": "^0.0.1"
+  },
+  "peerDependencies": {
+    "react": "^16.12.0"
+  }
+}

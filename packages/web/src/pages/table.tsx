@@ -9,7 +9,7 @@ import {
   Link,
   Tooltip
 } from '@chakra-ui/core'
-import logs from '../tableData'
+import logs from '../../tableData'
 import { useTable, useExpanded } from 'react-table'
 import { useMap } from 'react-use'
 import { getStatusText } from 'http-status-codes'

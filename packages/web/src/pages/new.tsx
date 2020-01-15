@@ -1,7 +1,7 @@
 import { NextPage } from 'next'
 import { Box, Heading, Text, Divider } from '@chakra-ui/core'
-import Body from '../src/components/primitives/Body'
-import NewProjectForm, { Values } from '../src/views/new/NewProjectForm'
+import Body from '../components/primitives/Body'
+import NewProjectForm, { Values } from '../views/new/NewProjectForm'
 
 const NewPage: NextPage = () => {
   const submit = (values: Values) => {}

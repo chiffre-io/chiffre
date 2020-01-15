@@ -44,6 +44,6 @@ export interface AuthClaims {
 }
 
 export enum CookieNames {
-  jwt = 'chiffre:jwt-claims',
-  sig = 'chiffre:jwt-sig'
+  jwt = 'chiffre:jwt',
+  sig = 'chiffre:sig'
 }
