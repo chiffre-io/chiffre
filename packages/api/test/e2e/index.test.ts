@@ -6,6 +6,7 @@ import {
 import { SignupParameters } from '../../src/routes/auth/signup.schema'
 import { LoginResponseParameters } from '../../src/routes/auth/login/response.schema'
 import { LoginChallengeResponseBody } from '../../src/routes/auth/login/challenge.schema'
+import { CookieNames } from '@chiffre/api-types'
 
 let ctx: TestContext = null
 
@@ -39,8 +40,8 @@ describe('Signup flow', () => {
     const res = await ctx.api.post('/v1/auth/signup', body)
     expect(res.status).toEqual(201) // Created
     expect(res.headers['set-cookie']).toHaveLength(2)
-    expect(res.headers['set-cookie'][0]).toContain('chiffre:jwt-claims')
-    expect(res.headers['set-cookie'][1]).toContain('chiffre:jwt-sig')
+    expect(res.headers['set-cookie'][0]).toContain(CookieNames.jwt)
+    expect(res.headers['set-cookie'][1]).toContain(CookieNames.sig)
   })
 
   test('Username already in use', async () => {
@@ -88,7 +89,7 @@ describe('Login flow', () => {
     const res2 = await ctx.api.post('/v1/auth/login/response', responseBody)
     expect(res2.status).toEqual(200)
     expect(res2.headers['set-cookie']).toHaveLength(2)
-    expect(res2.headers['set-cookie'][0]).toContain('chiffre:jwt-claims')
-    expect(res2.headers['set-cookie'][1]).toContain('chiffre:jwt-sig')
+    expect(res2.headers['set-cookie'][0]).toContain(CookieNames.jwt)
+    expect(res2.headers['set-cookie'][1]).toContain(CookieNames.sig)
   })
 })
