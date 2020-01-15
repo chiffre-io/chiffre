@@ -6,7 +6,7 @@ import {
 import { SignupParameters } from '../../src/routes/auth/signup.schema'
 import { LoginResponseParameters } from '../../src/routes/auth/login/response.schema'
 import { LoginChallengeResponseBody } from '../../src/routes/auth/login/challenge.schema'
-import { CookieNames } from '@chiffre/api-types'
+import { CookieNames } from '../../src/exports/defs'
 
 let ctx: TestContext = null
 
