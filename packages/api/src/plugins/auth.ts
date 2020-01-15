@@ -1,5 +1,6 @@
 import fp from 'fastify-plugin'
 import {
+  FastifyInstance,
   FastifyRequest,
   FastifyReply,
   DefaultBody,
@@ -25,6 +26,19 @@ export type Authenticate = (
   acceptUnverifiedTwoFactor?: boolean
 ) => (req: FastifyRequest, res: FastifyReply<any>) => Promise<any>
 
+function recomposeTokenFromCookies(app: FastifyInstance, req: FastifyRequest) {
+  const claims = req.cookies[CookieNames.jwt] || ''
+  const signature = req.cookies[CookieNames.sig] || ''
+  if (claims.length === 0 && signature.length === 0) {
+    throw app.httpErrors.unauthorized('Authentication required')
+  }
+  if (claims.length === 0 && signature.length > 0) {
+    // Only signature is present => most likely session expiration
+    throw app.httpErrors.unauthorized('Your session has expired')
+  }
+  return [claims, signature].join('.')
+}
+
 export default fp((app, _, next) => {
   app.register(fastifyCookie)
   app.decorate(
@@ -33,16 +47,13 @@ export default fp((app, _, next) => {
       req: AuthenticatedRequest,
       _res: FastifyReply<any>
     ) => {
-      const claims = req.cookies[CookieNames.jwt] || ''
-      const signature = req.cookies[CookieNames.sig] || ''
-      if (claims.length === 0 && signature.length === 0) {
-        throw app.httpErrors.unauthorized('Authentication required')
+      let token = ((req.headers.authorization as string) || '').slice(
+        'Bearer '.length
+      )
+      if (token.length === 0) {
+        token = recomposeTokenFromCookies(app, req)
       }
-      if (claims.length === 0 && signature.length > 0) {
-        // Only signature is present => most likely session expiration
-        throw app.httpErrors.unauthorized('Your session has expired')
-      }
-      const token = [claims, signature].join('.')
+
       try {
         const claims = verifyJwt(token)
         if (
