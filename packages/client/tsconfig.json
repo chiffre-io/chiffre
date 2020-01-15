@@ -29,5 +29,5 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
-  "exclude": ["./src/**/*.test.ts", "./dist", "./node_modules"]
+  "exclude": ["./src/**/*.test.ts", "./dist", "./test/e2e", "./node_modules"]
 }

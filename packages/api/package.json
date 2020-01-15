@@ -6,7 +6,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "dev": "nodemon -e ts,.env -w .env -w ./src ./src/index.ts",
-    "build": "tsc",
+    "build": "tsc && cp -rf ../api-types/dist/* ./dist/",
     "knex": "ts-node ./node_modules/.bin/knex",
     "migrate:make": "yarn knex migrate:make",
     "migrate:up": "yarn knex migrate:up",

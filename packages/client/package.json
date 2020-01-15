@@ -1,11 +1,11 @@
 {
   "name": "@chiffre/client",
   "version": "0.0.1",
-  "main": "index.js",
+  "main": "dist/index.js",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "echo -n 'No build yet'"
+    "build": "tsc"
   },
   "dependencies": {
     "@47ng/cloak": "^0.15.0",
@@ -13,5 +13,12 @@
     "@chiffre/crypto": "^0.0.1",
     "axios": "^0.19.1",
     "session-keystore": "^0.5.0"
+  },
+  "devDependencies": {
+    "@chiffre/api": "^0.0.1"
+  },
+  "jest": {
+    "preset": "ts-jest/presets/js-with-ts",
+    "testEnvironment": "node"
   }
 }
