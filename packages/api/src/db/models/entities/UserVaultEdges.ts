@@ -35,6 +35,22 @@ export async function createUserVaultEdge(
   return result[0]
 }
 
+export async function findUserVaultEdge(
+  db: Knex,
+  userID: string,
+  vaultID: string
+): Promise<UserVaultEdge> {
+  const result = await db
+    .select<UserVaultEdge[]>('*')
+    .from(USER_VAULT_EDGES_TABLE)
+    .where({ userID, vaultID })
+    .limit(1)
+  if (result.length === 0) {
+    return null
+  }
+  return result[0]
+}
+
 export async function findVaultEdgesForUser(
   db: Knex,
   userID: string

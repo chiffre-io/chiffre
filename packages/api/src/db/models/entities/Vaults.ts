@@ -5,7 +5,6 @@ import { USERS_TABLE } from '../auth/Users'
 export const VAULTS_TABLE = 'vaults'
 
 interface VaultInput {
-  encrypted: string
   createdBy: string // userID
 }
 
@@ -15,13 +14,8 @@ export interface Vault extends VaultInput {
 
 // --
 
-export async function createVault(
-  db: Knex,
-  encrypted: string,
-  createdBy: string
-): Promise<Vault> {
+export async function createVault(db: Knex, createdBy: string): Promise<Vault> {
   const vault: VaultInput = {
-    encrypted,
     createdBy
   }
   const result = await db
@@ -41,12 +35,6 @@ export async function findVault(db: Knex, id: string) {
     return null
   }
   return result[0]
-}
-
-export async function updateVault(db: Knex, id: string, encrypted: string) {
-  return await db<Vault>(VAULTS_TABLE)
-    .update({ encrypted })
-    .where({ id })
 }
 
 export async function deleteVault(db: Knex, id: string) {
@@ -72,7 +60,6 @@ export async function createInitialVaultsTable(db: Knex) {
       .notNullable()
       .index()
     table.foreign('createdBy').references(`${USERS_TABLE}.id`)
-    table.text('encrypted').notNullable()
   })
   await updatedAtFieldAutoUpdate(db, VAULTS_TABLE)
 }

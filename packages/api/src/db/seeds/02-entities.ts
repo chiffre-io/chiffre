@@ -26,8 +26,7 @@ export const seed = async (knex: Knex) => {
 
   // Step 1: create a vault
   const vaultKey = generateKey()
-  const vaultPayload = await encryptString('empty', vaultKey)
-  const { id: vaultID } = await createVault(knex, vaultPayload, userID)
+  const { id: vaultID } = await createVault(knex, userID)
 
   // Step 2: create a project (put it in the vault)
   const { projectID, publicKey, secretKey } = testProject
