@@ -219,9 +219,11 @@ export default class Client {
     )
     const res = await this.#api.post('/auth/signup', signupParams)
     this.#username = username
+    const keychainKey = await decloakString(signupParams.keychainKey, masterKey)
+    this.#keychain = await unlockKeychain(signupParams.keychain, keychainKey)
     this.#keystore.set(
       'keychainKey',
-      await decloakString(signupParams.keychainKey, masterKey),
+      keychainKey,
       getExpirationDate(maxAgeInSeconds.session)
     )
     this.#handleAuth(res)
