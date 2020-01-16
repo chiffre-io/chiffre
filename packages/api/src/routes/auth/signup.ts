@@ -74,7 +74,7 @@ local entities that will be needed later for authenticating on other devices:
         }
 
         setJwtCookies(claims, res)
-        logEvent(app.db, EventTypes.signup, { ...req, auth: claims })
+        await logEvent(app.db, EventTypes.signup, { ...req, auth: claims })
         return res.status(201).send() // Created
       } catch (error) {
         if (error.code === '23505') {

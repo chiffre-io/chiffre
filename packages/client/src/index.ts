@@ -34,7 +34,9 @@ import {
   CreateProjectParameters,
   CreateProjectResponse,
   AuthClaims,
-  CookieNames
+  CookieNames,
+  Plans,
+  ActivityResponse
 } from '@chiffre/api-types'
 import type { Settings } from './settings'
 import TwoFactorSettings from './settings/2fa'
@@ -44,6 +46,16 @@ import TwoFactorSettings from './settings/2fa'
 const inSevenDays = () => Date.now() + 7 * 24 * 60 * 60 * 1000 // 7 days
 
 export type Project = Omit<ProjectResponse, 'keys' | 'vaultKey'> & UnlockedProject
+
+export interface Identity {
+  username: string
+  userID: string
+  plan: Plans
+  publicKeys: {
+    signature: Uint8Array
+    sharing: Uint8Array
+  }
+}
 
 export interface ClientOptions {
   /**
@@ -71,6 +83,7 @@ export default class Client {
   #handleAuth: (res: AxiosResponse) => void
   #token?: string
   #authClaims?: AuthClaims
+  #username?: string
 
   constructor(options: ClientOptions = {}) {
     this.api = axios.create({
@@ -97,6 +110,7 @@ export default class Client {
     this.projects = []
     this.#token = undefined
     this.#authClaims = undefined
+    this.#username = undefined
     this.#keystore = new SessionKeystore({
       name: 'chiffre-client',
       onExpired: (keyName) => {
@@ -177,6 +191,7 @@ export default class Client {
     )
     const res = await this.api.post('/auth/signup', signupParams)
     this.#handleAuth(res)
+    this.#username = username
     this.#keystore.set(
       'keychainKey',
       await decryptString(signupParams.keychainKey, masterKey),
@@ -207,6 +222,7 @@ export default class Client {
       response.session
     )
     this.#handleAuth(res2)
+    this.#username = username
 
     if (responseBody.masterSalt) {
       const masterKey = await deriveMasterKey(
@@ -250,10 +266,38 @@ export default class Client {
 
   // --
 
+  public get identity(): Identity | null {
+    if (!this.keychain || !this.#username || !this.#authClaims) {
+      return null
+    }
+    return {
+      username: this.#username,
+      userID: this.#authClaims.userID,
+      plan: this.#authClaims.plan,
+      publicKeys: {
+        signature: this.keychain.signature.publicKey,
+        sharing: this.keychain.sharing.publicKey
+      }
+    }
+  }
+
+  public async getAccountActivity(): Promise<ActivityResponse[]> {
+    const res = await this.api.get('/activity')
+    const events: ActivityResponse[] = res.data
+    return events.map(event => ({
+      ...event,
+      date: new Date(event.date)
+    }))
+  }
+
+  // --
+
   public lock() {
     this.keychain = undefined
     this.projects = []
     this.#keystore.clear()
+    this.#authClaims = undefined
+    this.#username = undefined
     this.#token = undefined
   }
 

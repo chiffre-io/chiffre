@@ -94,7 +94,7 @@ export default async (app: App) => {
         proof: srpSession.proof,
         masterSalt
       }
-      logEvent(app.db, EventTypes.login, { ...req, auth: claims })
+      await logEvent(app.db, EventTypes.login, { ...req, auth: claims })
       return res.send(body)
     }
   )

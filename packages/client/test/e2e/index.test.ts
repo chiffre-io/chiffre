@@ -1,6 +1,8 @@
+import 'jest-extended'
 import { setup, TestContext } from './utility'
-import { TwoFactorStatus, CookieNames } from '@chiffre/api-types'
+import { TwoFactorStatus, CookieNames, Plans } from '@chiffre/api-types'
 import { generateTwoFactorToken } from '@chiffre/api/src/auth/2fa'
+import { EventTypes } from '@chiffre/api/src/db/models/business/Events'
 
 let ctx: TestContext = undefined
 
@@ -23,6 +25,10 @@ test('Cookie names should not contain RegExp special characters', () => {
   expect(CookieNames.jwt).toMatch(/[\w:-]+/)
 })
 
+test('Identity should be null before logging in', () => {
+  expect(ctx.client.identity).toBeNull()
+})
+
 test('Signup', async () => {
   const p = ctx.client.signup('test.user@example.com', 'password')
   await expect(p).resolves.toBeUndefined()
@@ -33,6 +39,12 @@ test('Login', async () => {
   await expect(p).resolves.toMatchObject({
     requireTwoFactorAuthentication: false
   })
+})
+
+test('Identity', () => {
+  expect(ctx.client.identity).not.toBeNull()
+  expect(ctx.client.identity.username).toEqual('test.user@example.com')
+  expect(ctx.client.identity.plan).toEqual(Plans.free)
 })
 
 test('Create projects', async () => {
@@ -75,4 +87,26 @@ test('2FA - Disable', async () => {
   await ctx.client.settings.twoFactor.disable(token)
   expect(ctx.client.settings.twoFactor.status).toEqual(TwoFactorStatus.disabled)
   totpSecret = undefined
+})
+
+test('Account activity', async () => {
+  const activity = await ctx.client.getAccountActivity()
+  expect(activity.length).toBe(9)
+  // Events are sorted most recent first
+  expect(activity[1].type).toEqual(EventTypes.twoFactorStatusChanged)
+  expect(activity[1].type).toEqual(EventTypes.twoFactorStatusChanged)
+  expect(activity[2].type).toEqual(EventTypes.twoFactorStatusChanged)
+  expect(activity[3].type).toEqual(EventTypes.twoFactorStatusChanged)
+  expect(activity[4].type).toEqual(EventTypes.twoFactorStatusChanged)
+  expect(activity[5].type).toEqual(EventTypes.projectCreated)
+  expect(activity[6].type).toEqual(EventTypes.projectCreated)
+  expect(activity[7].type).toEqual(EventTypes.login)
+  expect(activity[8].type).toEqual(EventTypes.signup)
+})
+
+test('Lock', () => {
+  expect(ctx.client.lock())
+  expect(ctx.client.identity).toBeNil()
+  expect(ctx.client.projects).toBeEmpty()
+  expect(ctx.client.settings.twoFactor.status).toBeNil()
 })

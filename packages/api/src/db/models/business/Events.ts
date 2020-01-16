@@ -13,7 +13,9 @@ export enum EventTypes {
   twoFactorVerified = 'auth/2fa/verified',
 
   // Business
-  changePlan = 'plan/changed'
+  changePlan = 'plan/changed',
+
+  projectCreated = 'projects/created'
 }
 
 export interface Event<T = any> {
@@ -24,6 +26,11 @@ export interface Event<T = any> {
   ip: string
   requestID: string
   tokenID: string
+}
+
+export interface DatedEvent<T> extends Event<T> {
+  id: string
+  created_at: Date
 }
 
 export async function logEvent<T>(
@@ -42,7 +49,26 @@ export async function logEvent<T>(
     meta
   }
   req.log.info({ event, msg: 'Event' })
-  await db.insert(event).into(EVENTS_TABLE)
+  return await db.insert(event).into(EVENTS_TABLE)
+}
+
+// --
+
+export async function findEventsForUser(db: Knex, userID: string) {
+  return await db
+    .select<DatedEvent<any>[]>('*')
+    .from(EVENTS_TABLE)
+    .where({
+      userID
+    })
+    .and.whereIn('type', [
+      EventTypes.signup,
+      EventTypes.login,
+      EventTypes.twoFactorStatusChanged,
+      EventTypes.projectCreated
+    ])
+    .orderBy('created_at', 'desc')
+    .limit(100)
 }
 
 // --
@@ -64,7 +90,8 @@ export async function createInitialEventsTable(db: Knex) {
         EventTypes.login,
         EventTypes.twoFactorStatusChanged,
         EventTypes.twoFactorVerified,
-        EventTypes.changePlan
+        EventTypes.changePlan,
+        EventTypes.projectCreated
       ])
       .notNullable()
     table.json('meta').nullable()

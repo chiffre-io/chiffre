@@ -61,7 +61,7 @@ export default async (app: App) => {
         twoFactorStatus: TwoFactorStatus.verified
       }
       setJwtCookies(claims, res)
-      logEvent(app.db, EventTypes.twoFactorVerified, req)
+      await logEvent(app.db, EventTypes.twoFactorVerified, req)
       return res.send(body)
     }
   )

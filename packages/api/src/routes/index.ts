@@ -23,7 +23,8 @@ export default async function loadRoutes(app: App) {
   loadRoute(app, './vaults')
   loadRoute(app, './projects')
   loadRoute(app, './embed')
-  loadRoute(app, './users.ts')
+  loadRoute(app, './users')
+  loadRoute(app, './activity')
 }
 
 // Forward API Interface types
@@ -39,3 +40,4 @@ export * from './vaults.schema'
 export * from './projects.schema'
 export * from './queues.schema'
 export * from './users.schema'
+export * from './activity.schema'

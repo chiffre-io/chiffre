@@ -1,5 +1,6 @@
 import { App } from '../types'
 import { AuthenticatedRequest } from '../plugins/auth'
+import { logEvent, EventTypes } from '../db/models/business/Events'
 import {
   findVaultEdgesForUser,
   findUserVaultEdge
@@ -67,6 +68,9 @@ export default async (app: App) => {
         projectID: project.id,
         embedScript
       }
+      await logEvent(app.db, EventTypes.projectCreated, req, {
+        projectID: project.id
+      })
       return res.status(201).send(response)
     }
   )
