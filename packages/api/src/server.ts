@@ -72,7 +72,8 @@ export function createServer(): App {
       'x-forwarded-for'
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials: true
+    credentials: true,
+    maxAge: 600 // 10 minutes
   })
   app.register(swagger, {
     routePrefix: '/documentation',
