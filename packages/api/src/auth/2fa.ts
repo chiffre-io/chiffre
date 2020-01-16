@@ -8,7 +8,8 @@ const authenticator = new Authenticator({
   createDigest,
   createRandomBytes,
   keyDecoder,
-  keyEncoder
+  keyEncoder,
+  window: 1 // Allow 1 period before and after the current one
 })
 
 export function generateTwoFactorSecret() {
