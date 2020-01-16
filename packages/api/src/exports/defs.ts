@@ -47,3 +47,14 @@ export enum CookieNames {
   jwt = 'chiffre:jwt',
   sig = 'chiffre:sig'
 }
+
+export const maxAgeInSeconds = {
+  session: 7 // * 24 * 60 * 60 // 7 days
+}
+
+export function getExpirationDate(
+  maxAgeSeconds: number,
+  now: Date = new Date()
+): Date {
+  return new Date(now.getTime() + maxAgeSeconds * 1000)
+}
