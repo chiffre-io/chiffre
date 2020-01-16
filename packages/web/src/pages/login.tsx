@@ -1,26 +1,37 @@
 import React from 'react'
+import { useRouter } from 'next/dist/client/router'
+import { useChiffreClient } from '@chiffre/client-react'
 import AuthPage from '../views/auth/AuthPage'
 import LoginForm from '../views/auth/LoginForm'
 import TwoFactorForm from '../views/auth/TwoFactorForm'
-import { useChiffreClient } from '@chiffre/client-react'
+import useQueryString from '../hooks/useQueryString'
+import useErrorToast from '../hooks/useErrorToast'
 
 const LoginPage = () => {
+  const showErrorToast = useErrorToast()
   const client = useChiffreClient()
   const [show2fa, setShow2fa] = React.useState(false)
+  const router = useRouter()
+  const redirectUrl = useQueryString('redirect')
 
   return (
     <AuthPage>
       {!show2fa && (
         <LoginForm
           onSubmit={async values => {
-            const { requireTwoFactorAuthentication } = await client.login(
-              values.email,
-              values.password
-            )
-            if (requireTwoFactorAuthentication) {
-              setShow2fa(true)
+            try {
+              const { requireTwoFactorAuthentication } = await client.login(
+                values.email,
+                values.password
+              )
+              if (requireTwoFactorAuthentication) {
+                setShow2fa(true)
+              } else {
+                await router.push(redirectUrl || '/dashboard')
+              }
+            } catch (error) {
+              showErrorToast(error)
             }
-            // else => redirect
           }}
         />
       )}
@@ -28,8 +39,12 @@ const LoginPage = () => {
         <TwoFactorForm
           autoFocus
           onSubmit={async values => {
-            await client.verifyTwoFactorToken(values.twoFactorToken)
-            // todo: redirect
+            try {
+              await client.verifyTwoFactorToken(values.twoFactorToken)
+              return await router.push(redirectUrl || '/dashboard')
+            } catch (error) {
+              showErrorToast(error)
+            }
           }}
         />
       )}

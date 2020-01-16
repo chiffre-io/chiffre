@@ -4,8 +4,8 @@ const Error = ({ statusCode }) => {
   return (
     <p>
       {statusCode
-        ? `An error ${statusCode} occurred on server`
-        : 'An error occurred on client'}
+        ? `An error ${statusCode} occurred on the server`
+        : 'An error occurred on the client'}
     </p>
   )
 }

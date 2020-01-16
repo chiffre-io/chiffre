@@ -16,17 +16,11 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "baseUrl": ".",
-    "composite": true,
     "paths": {
       "~/*": ["./*"]
     },
     "module": "esnext"
   },
   "exclude": ["node_modules"],
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
-  "references": [
-    {
-      "path": "../client-react"
-    }
-  ]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"]
 }

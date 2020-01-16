@@ -1,6 +1,6 @@
 import React from 'react'
-import { useChiffreClient } from '@chiffre/client-react'
 import { useRouter } from 'next/dist/client/router'
+import { useChiffreClient } from '@chiffre/client-react'
 import AuthPage from '../views/auth/AuthPage'
 import SignupForm, { Values } from '../views/auth/SignupForm'
 import useErrorToast from '../hooks/useErrorToast'

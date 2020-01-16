@@ -1,10 +1,20 @@
+import React from 'react'
 import { NextPage } from 'next'
 import { Box, Heading, Text, Divider } from '@chakra-ui/core'
+import { useChiffreClient } from '@chiffre/client-react'
 import Body from '../components/primitives/Body'
 import NewProjectForm, { Values } from '../views/new/NewProjectForm'
 
 const NewPage: NextPage = () => {
-  const submit = (values: Values) => {}
+  const client = useChiffreClient()
+  const availableVaults = React.useMemo(() => {
+    return Array.from(new Set(client.projects.map(p => p.vaultID)))
+  }, [client.projects])
+
+  const submit = async (values: Values) => {
+    const project = await client.createProject()
+    // now what ?
+  }
   const cancel = () => {}
 
   return (

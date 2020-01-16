@@ -17,14 +17,6 @@ class MyDocument extends Document {
         <body>
           <Main />
           <NextScript />
-          {process.env.NODE_ENV === 'production' && (
-            <script
-              src={`${process.env.APP_URL}/api/embed/testProjectID123`}
-              integrity="sha256-0XYtrQ35XAgpiEpQDV4jSmrm9l0ZoczWyLjlHZsATbI="
-              crossOrigin="anonymous"
-              async
-            ></script>
-          )}
         </body>
       </Html>
     )
