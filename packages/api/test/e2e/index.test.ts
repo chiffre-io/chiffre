@@ -2,7 +2,7 @@ import { setup, TestContext } from './utility'
 import {
   createSignupEntities,
   clientAssembleLoginResponse
-} from '@chiffre/crypto'
+} from '@chiffre/crypto-client'
 import { SignupParameters } from '../../src/routes/auth/signup.schema'
 import { LoginResponseParameters } from '../../src/routes/auth/login/response.schema'
 import { LoginChallengeResponseBody } from '../../src/routes/auth/login/challenge.schema'

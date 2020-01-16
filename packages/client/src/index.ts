@@ -4,9 +4,10 @@ import { b64, utf8 } from '@47ng/codec'
 import {
   generateKey,
   encryptString,
-  decryptString,
+  decryptString as decloakString,
   CloakKey
 } from '@47ng/cloak'
+import { decryptString as unboxString } from '@chiffre/crypto-base'
 import {
   createSignupEntities,
   clientAssembleLoginResponse,
@@ -18,7 +19,7 @@ import {
   lockProject,
   UnlockedProject,
   unlockProject
-} from '@chiffre/crypto'
+} from '@chiffre/crypto-client'
 import {
   SignupParameters,
   LoginChallengeResponseBody,
@@ -45,7 +46,13 @@ import TwoFactorSettings from './settings/2fa'
 
 const inSevenDays = () => Date.now() + 7 * 24 * 60 * 60 * 1000 // 7 days
 
-export type Project = Omit<ProjectResponse, 'keys' | 'vaultKey'> & UnlockedProject
+export interface Project {
+  id: string
+  vaultID: string
+  publicKey: string
+  embedScript: string,
+  decryptMessage: (message: string) => string
+}
 
 export interface Identity {
   username: string
@@ -71,11 +78,17 @@ export interface ClientOptions {
 
 // --
 
+const buildMessageDecryptor = (project: UnlockedProject) =>
+  function decryptMessage(message: string) {
+    return unboxString(message, project.keyPair.secretKey)
+  }
+
+// --
+
 const cookieClaimsRegex = new RegExp(`${CookieNames.jwt}=([\w-]+).([\w-]+)`)
 
 export default class Client {
   public projects: Project[]
-  public keychain?: UnlockedKeychain
   public settings: Settings
   private api: AxiosInstance
 
@@ -84,6 +97,7 @@ export default class Client {
   #token?: string
   #authClaims?: AuthClaims
   #username?: string
+  #keychain?: UnlockedKeychain
 
   constructor(options: ClientOptions = {}) {
     this.api = axios.create({
@@ -106,11 +120,11 @@ export default class Client {
       })
     }
 
-    this.keychain = undefined
     this.projects = []
     this.#token = undefined
     this.#authClaims = undefined
     this.#username = undefined
+    this.#keychain = undefined
     this.#keystore = new SessionKeystore({
       name: 'chiffre-client',
       onExpired: (keyName) => {
@@ -194,7 +208,7 @@ export default class Client {
     this.#username = username
     this.#keystore.set(
       'keychainKey',
-      await decryptString(signupParams.keychainKey, masterKey),
+      await decloakString(signupParams.keychainKey, masterKey),
       inSevenDays(),
     )
   }
@@ -267,7 +281,7 @@ export default class Client {
   // --
 
   public get identity(): Identity | null {
-    if (!this.keychain || !this.#username || !this.#authClaims) {
+    if (!this.#keychain || !this.#username || !this.#authClaims) {
       return null
     }
     return {
@@ -275,8 +289,8 @@ export default class Client {
       userID: this.#authClaims.userID,
       plan: this.#authClaims.plan,
       publicKeys: {
-        signature: this.keychain.signature.publicKey,
-        sharing: this.keychain.sharing.publicKey
+        signature: this.#keychain.signature.publicKey,
+        sharing: this.#keychain.sharing.publicKey
       }
     }
   }
@@ -293,8 +307,8 @@ export default class Client {
   // --
 
   public lock() {
-    this.keychain = undefined
     this.projects = []
+    this.#keychain = undefined
     this.#keystore.clear()
     this.#authClaims = undefined
     this.#username = undefined
@@ -309,9 +323,9 @@ export default class Client {
     {
       const res = await this.api.get('/keychain')
       const responseBody: KeychainResponse = res.data
-      keychainKey = await decryptString(responseBody.key, masterKey)
+      keychainKey = await decloakString(responseBody.key, masterKey)
       this.#keystore.set('keychainKey', keychainKey, inSevenDays())
-      this.keychain = await unlockKeychain(responseBody, keychainKey)
+      this.#keychain = await unlockKeychain(responseBody, keychainKey)
     }
 
     // Retrieve projects
@@ -320,13 +334,14 @@ export default class Client {
       const responseBody: ProjectResponse[] = res.data
       const projects: Project[] = []
       for (const project of responseBody) {
-        const vaultKey = await decryptString(project.vaultKey, keychainKey)
+        const vaultKey = await decloakString(project.vaultKey, keychainKey)
         const unlockedProject = await unlockProject(project, vaultKey)
         projects.push({
           id: project.id,
           vaultID: project.vaultID,
+          publicKey: project.keys.public,
           embedScript: project.embedScript,
-          keyPair: unlockedProject.keyPair
+          decryptMessage: buildMessageDecryptor(unlockedProject)
         })
       }
       this.projects = projects
@@ -359,7 +374,7 @@ export default class Client {
       // Use an existing vault
       const res = await this.api.get(`/vaults/${vaultID}`)
       const responseBody: FindVaultResponse = res.data
-      vaultKey = await decryptString(responseBody.key, keychainKey)
+      vaultKey = await decloakString(responseBody.key, keychainKey)
     }
 
     // Create the project and associate it with the vault
@@ -374,9 +389,10 @@ export default class Client {
     const responseBody: CreateProjectResponse = res.data
     const project: Project = {
       id: responseBody.projectID,
-      keyPair: unlockedProject.keyPair,
       vaultID,
-      embedScript: responseBody.embedScript
+      publicKey: lockedProject.keys.public,
+      embedScript: responseBody.embedScript,
+      decryptMessage: buildMessageDecryptor(unlockedProject)
     }
     this.projects.push(project)
     return project

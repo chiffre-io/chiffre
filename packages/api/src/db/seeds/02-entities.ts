@@ -1,6 +1,6 @@
 import Knex from 'knex'
 import dotenv from 'dotenv'
-import { deriveMasterKey } from '@chiffre/crypto'
+import { deriveMasterKey } from '@chiffre/crypto-client'
 import { generateKey, encryptString, decryptString } from '@47ng/cloak'
 import { testUserCredentials } from './01-users'
 import { formatEmitterEmbedScript } from '../../emitterScript'

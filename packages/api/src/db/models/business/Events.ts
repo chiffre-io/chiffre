@@ -94,6 +94,7 @@ export async function createInitialEventsTable(db: Knex) {
         EventTypes.projectCreated
       ])
       .notNullable()
+      .index()
     table.json('meta').nullable()
 
     table

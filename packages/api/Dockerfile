@@ -4,13 +4,13 @@ FROM mhart/alpine-node:12 AS builder
 
 WORKDIR /app
 
-COPY package.json yarn.lock ./
-COPY packages/crypto  ./packages/crypto
-COPY packages/api     ./packages/api
+COPY package.json yarn.lock   ./
+COPY packages/crypto-client   ./packages/crypto-client
+COPY packages/api             ./packages/api
 
 RUN yarn --pure-lockfile
-RUN yarn workspace @chiffre/crypto run build
-RUN yarn workspace @chiffre/api    run build
+RUN yarn workspace @chiffre/crypto-client run build
+RUN yarn workspace @chiffre/api           run build
 RUN rm -rf node_modules/
 RUN yarn --production --pure-lockfile
 

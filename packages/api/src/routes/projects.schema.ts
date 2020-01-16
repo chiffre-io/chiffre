@@ -1,5 +1,5 @@
 import S from 'fluent-schema'
-import { Project as LockedProject } from '@chiffre/crypto'
+import { Project as LockedProject } from '@chiffre/crypto-client'
 
 export interface CreateProjectParameters {
   vaultID: string

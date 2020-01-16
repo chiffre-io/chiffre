@@ -1,5 +1,5 @@
 {
-  "name": "@chiffre/crypto",
+  "name": "@chiffre/crypto-base",
   "version": "0.0.1",
   "main": "dist/index.js",
   "private": true,
@@ -11,19 +11,8 @@
     "test": "jest --verbose --logHeapUsage"
   },
   "dependencies": {
-    "@47ng/cloak": "^0.15.0",
     "@47ng/codec": "^0.3.0",
-    "@stablelib/base64": "^0.7.2",
-    "@stablelib/hex": "^0.5.0",
-    "@stablelib/tss": "^0.7.4",
-    "@stablelib/utf8": "^0.10.1",
-    "otplib": "^12.0.0",
-    "secure-remote-password": "^0.3.1",
     "tweetnacl": "^1.0.1"
-  },
-  "devDependencies": {
-    "@types/faker": "^4.1.8",
-    "faker": "^4.1.0"
   },
   "jest": {
     "preset": "ts-jest/presets/js-with-ts",

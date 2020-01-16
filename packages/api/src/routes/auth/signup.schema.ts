@@ -1,5 +1,5 @@
 import S from 'fluent-schema'
-import { Keychain } from '@chiffre/crypto'
+import { Keychain } from '@chiffre/crypto-client'
 
 export interface SignupParameters {
   username: string

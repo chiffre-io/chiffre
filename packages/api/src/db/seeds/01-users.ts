@@ -8,7 +8,7 @@ import {
   createMasterKey,
   createKeychain,
   lockKeychain
-} from '@chiffre/crypto'
+} from '@chiffre/crypto-client'
 import { generateKey, encryptString } from '@47ng/cloak'
 
 export const testUserCredentials = {
