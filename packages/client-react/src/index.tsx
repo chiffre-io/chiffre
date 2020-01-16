@@ -1,42 +1,58 @@
 import React from 'react'
-import Client, { ClientOptions } from '@chiffre/client'
+import type Client from '@chiffre/client'
+import type { ClientOptions } from '@chiffre/client'
 
 interface ContextState {
   client: Client
-  lockCounter: number
+}
+
+const stubClient = {
+  identity: null,
+  projects: []
 }
 
 const ClientContext = React.createContext<ContextState>({
-  client: null,
-  lockCounter: 0
+  client: stubClient as Client
 })
 
 export const ChiffreClientProvider: React.FC<ClientOptions> = ({
   children,
   ...options
 }) => {
-  const [lockCounter, setLockCounter] = React.useState(0)
+  const [client, setClient] = React.useState<Client>(stubClient as Client)
+  const [counter, setCounter] = React.useState(0)
 
   const onLocked = React.useCallback(() => {
     if (options.onLocked) {
       options.onLocked()
     }
-    setLockCounter(lockCounter + 1)
+    setCounter(c => c + 1)
+  }, [])
+  const onUpdate = React.useCallback(() => {
+    if (options.onUpdate) {
+      options.onUpdate()
+    }
+    setCounter(c => c + 1)
   }, [])
 
-  const client = React.useMemo<Client>(
-    () =>
-      new Client({
-        ...options,
-        onLocked
-      }),
-    []
-  )
-  const state = React.useMemo<ContextState>(() => ({ client, lockCounter }), [
-    client,
-    lockCounter
-  ])
+  React.useEffect(() => {
+    import(/* webpackChunkName: "chiffre-client" */ '@chiffre/client')
+      .then(module => {
+        const Class = (module.default as any).default
+        setClient(
+          new Class({
+            ...options,
+            onLocked,
+            onUpdate,
+          })
+        )
+      })
+  }, [])
 
+  const state = React.useMemo<ContextState>(() => ({ client }), [
+    client,
+    counter
+  ])
   return (
     <ClientContext.Provider value={state}>{children}</ClientContext.Provider>
   )

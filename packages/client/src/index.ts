@@ -37,14 +37,14 @@ import {
   AuthClaims,
   CookieNames,
   Plans,
-  ActivityResponse
+  ActivityResponse,
+  getExpirationDate,
+  maxAgeInSeconds
 } from '@chiffre/api-types'
 import type { Settings } from './settings'
 import TwoFactorSettings from './settings/2fa'
 
 // --
-
-const inSevenDays = () => Date.now() + 7 * 24 * 60 * 60 * 1000 // 7 days
 
 export interface Project {
   id: string
@@ -71,6 +71,12 @@ export interface ClientOptions {
   apiURL?: string
 
   /**
+   * Callback function when the internal state is updated.
+   * Will not be called when locked.
+   */
+  onUpdate?: () => void
+
+  /**
    * Callback function when the keychain self-locks after some amount of time.
    */
   onLocked?: () => void
@@ -90,25 +96,26 @@ const cookieClaimsRegex = new RegExp(`${CookieNames.jwt}=([\w-]+).([\w-]+)`)
 export default class Client {
   public projects: Project[]
   public settings: Settings
-  private api: AxiosInstance
 
+  #api: AxiosInstance
   #keystore: SessionKeystore<'keychainKey' | 'credentials'>
   #handleAuth: (res: AxiosResponse) => void
   #token?: string
   #authClaims?: AuthClaims
   #username?: string
   #keychain?: UnlockedKeychain
+  #onUpdate: () => void
 
   constructor(options: ClientOptions = {}) {
-    this.api = axios.create({
+    this.#api = axios.create({
       baseURL: `${options.apiURL || 'https://api.chiffre.io'}/v1`,
       // Use cookies in the browser
       withCredentials: typeof document !== 'undefined',
     })
-    this.api.defaults.headers.common['Content-Type'] = 'application/json'
+    this.#api.defaults.headers.common['Content-Type'] = 'application/json'
     if (typeof document === 'undefined') {
       // Manually inject bearer token in Node.js
-      this.api.interceptors.request.use((config) => {
+      this.#api.interceptors.request.use((config) => {
         if (!this.#token) {
           return config
         }
@@ -136,6 +143,7 @@ export default class Client {
         }
       }
     })
+    this.#onUpdate = options.onUpdate || (() => {})
     this.#handleAuth = (res: AxiosResponse) => {
       const parsePayload = (payload: string): AuthClaims => {
         const p = JSON.parse(utf8.decode(b64.decode(payload)))
@@ -180,14 +188,20 @@ export default class Client {
         this.#authClaims = parsePayload(payload)
       } catch {
         this.#authClaims = undefined
+      } finally {
+        this.#onUpdate()
       }
     }
     this.settings = {
       twoFactor: new TwoFactorSettings(
-        this.api,
+        this.#api,
         this.#handleAuth,
         () => this.#authClaims
       )
+    }
+    // Hydrate keychain after a page reload
+    if (this.#keystore.get('keychainKey')) {
+      this._refresh()
     }
   }
 
@@ -203,18 +217,18 @@ export default class Client {
       password,
       signupParams.masterSalt
     )
-    const res = await this.api.post('/auth/signup', signupParams)
-    this.#handleAuth(res)
+    const res = await this.#api.post('/auth/signup', signupParams)
     this.#username = username
     this.#keystore.set(
       'keychainKey',
       await decloakString(signupParams.keychainKey, masterKey),
-      inSevenDays(),
+      getExpirationDate(maxAgeInSeconds.session)
     )
+    this.#handleAuth(res)
   }
 
   public async login(username: string, password: string) {
-    const res1 = await this.api.post('/auth/login/challenge', { username })
+    const res1 = await this.#api.post('/auth/login/challenge', { username })
     const challengeResponse: LoginChallengeResponseBody = res1.data
     const response = await clientAssembleLoginResponse(
       username,
@@ -228,7 +242,7 @@ export default class Client {
       ephemeral: response.ephemeral.public,
       proof: response.session.proof
     }
-    const res2 = await this.api.post('/auth/login/response', responseParams)
+    const res2 = await this.#api.post('/auth/login/response', responseParams)
     const responseBody: LoginResponseResponseBody = res2.data
     await clientVerifyLogin(
       responseBody.proof,
@@ -244,14 +258,15 @@ export default class Client {
         password,
         responseBody.masterSalt
       )
-      await this._refresh(masterKey)
+      await this._refreshKeychain(masterKey)
+      await this._refresh()
       return { requireTwoFactorAuthentication: false }
     } else {
       // Two factor is required
       this.#keystore.set(
         'credentials',
         [username, password].join(':'),
-        Date.now() + 60 * 1000 // 1 minute, to let 2FA flow happen
+        getExpirationDate(60) // 1 minute, to let 2FA flow happen
       )
       return { requireTwoFactorAuthentication: true }
     }
@@ -266,7 +281,7 @@ export default class Client {
     const body: Login2FAParameters = {
       twoFactorToken: token
     }
-    const res = await this.api.post('/auth/login/2fa', body)
+    const res = await this.#api.post('/auth/login/2fa', body)
     const responseBody: Login2FAResponseBody = res.data
     const masterKey = await deriveMasterKey(
       username,
@@ -275,13 +290,23 @@ export default class Client {
     )
     this.#keystore.delete('credentials')
     this.#handleAuth(res)
-    await this._refresh(masterKey)
+    await this._refreshKeychain(masterKey)
+    await this._refresh()
   }
 
   // --
 
+  public get isLocked(): boolean {
+    return !(
+      this.#keychain &&
+      this.#username &&
+      this.#authClaims &&
+      this.#keystore.get('keychainKey')
+    )
+  }
+
   public get identity(): Identity | null {
-    if (!this.#keychain || !this.#username || !this.#authClaims) {
+    if (this.isLocked) {
       return null
     }
     return {
@@ -296,7 +321,7 @@ export default class Client {
   }
 
   public async getAccountActivity(): Promise<ActivityResponse[]> {
-    const res = await this.api.get('/activity')
+    const res = await this.#api.get('/activity')
     const events: ActivityResponse[] = res.data
     return events.map(event => ({
       ...event,
@@ -317,35 +342,40 @@ export default class Client {
 
   // --
 
-  private async _refresh(masterKey: CloakKey) {
-    let keychainKey: CloakKey
-    // Retrieve keychain
-    {
-      const res = await this.api.get('/keychain')
-      const responseBody: KeychainResponse = res.data
-      keychainKey = await decloakString(responseBody.key, masterKey)
-      this.#keystore.set('keychainKey', keychainKey, inSevenDays())
-      this.#keychain = await unlockKeychain(responseBody, keychainKey)
-    }
+  private async _refreshKeychain(masterKey: CloakKey) {
+    const res = await this.#api.get('/keychain')
+    const responseBody: KeychainResponse = res.data
+    const keychainKey = await decloakString(responseBody.key, masterKey)
+    this.#keystore.set(
+      'keychainKey',
+      keychainKey,
+      getExpirationDate(maxAgeInSeconds.session)
+    )
+    this.#keychain = await unlockKeychain(responseBody, keychainKey)
+  }
 
-    // Retrieve projects
-    {
-      const res = await this.api.get('/projects')
-      const responseBody: ProjectResponse[] = res.data
-      const projects: Project[] = []
-      for (const project of responseBody) {
-        const vaultKey = await decloakString(project.vaultKey, keychainKey)
-        const unlockedProject = await unlockProject(project, vaultKey)
-        projects.push({
-          id: project.id,
-          vaultID: project.vaultID,
-          publicKey: project.keys.public,
-          embedScript: project.embedScript,
-          decryptMessage: buildMessageDecryptor(unlockedProject)
-        })
-      }
-      this.projects = projects
+  private async _refresh() {
+    const keychainKey = this.#keystore.get('keychainKey')
+    if (!keychainKey) {
+      throw new Error('Session expired, please login again')
     }
+    // Refresh projects
+    const res = await this.#api.get('/projects')
+    const responseBody: ProjectResponse[] = res.data
+    const projects: Project[] = []
+    for (const project of responseBody) {
+      const vaultKey = await decloakString(project.vaultKey, keychainKey)
+      const unlockedProject = await unlockProject(project, vaultKey)
+      projects.push({
+        id: project.id,
+        vaultID: project.vaultID,
+        publicKey: project.keys.public,
+        embedScript: project.embedScript,
+        decryptMessage: buildMessageDecryptor(unlockedProject)
+      })
+    }
+    this.projects = projects
+    this.#onUpdate()
   }
 
   // Projects --
@@ -367,12 +397,12 @@ export default class Client {
       const createVaultParams: CreateVaultParameters = {
         key: encryptedVaultKey
       }
-      const res = await this.api.post('/vaults', createVaultParams)
+      const res = await this.#api.post('/vaults', createVaultParams)
       const responseBody: CreateVaultResponse = res.data
       vaultID = responseBody.vaultID
     } else {
       // Use an existing vault
-      const res = await this.api.get(`/vaults/${vaultID}`)
+      const res = await this.#api.get(`/vaults/${vaultID}`)
       const responseBody: FindVaultResponse = res.data
       vaultKey = await decloakString(responseBody.key, keychainKey)
     }
@@ -385,7 +415,7 @@ export default class Client {
       publicKey: lockedProject.keys.public,
       secretKey: lockedProject.keys.secret
     }
-    const res = await this.api.post('/projects', createProjectParams)
+    const res = await this.#api.post('/projects', createProjectParams)
     const responseBody: CreateProjectResponse = res.data
     const project: Project = {
       id: responseBody.projectID,

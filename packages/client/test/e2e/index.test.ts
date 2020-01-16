@@ -26,12 +26,14 @@ test('Cookie names should not contain RegExp special characters', () => {
 })
 
 test('Identity should be null before logging in', () => {
+  expect(ctx.client.isLocked).toBeTrue()
   expect(ctx.client.identity).toBeNull()
 })
 
 test('Signup', async () => {
   const p = ctx.client.signup('test.user@example.com', 'password')
   await expect(p).resolves.toBeUndefined()
+  expect(ctx.client.isLocked).toBeFalse()
 })
 
 test('Login', async () => {
@@ -39,6 +41,7 @@ test('Login', async () => {
   await expect(p).resolves.toMatchObject({
     requireTwoFactorAuthentication: false
   })
+  expect(ctx.client.isLocked).toBeFalse()
 })
 
 test('Identity', () => {
@@ -106,6 +109,7 @@ test('Account activity', async () => {
 
 test('Lock', () => {
   expect(ctx.client.lock())
+  expect(ctx.client.isLocked).toBeTrue()
   expect(ctx.client.identity).toBeNil()
   expect(ctx.client.projects).toBeEmpty()
   expect(ctx.client.settings.twoFactor.status).toBeNil()

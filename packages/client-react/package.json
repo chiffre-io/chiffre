@@ -4,8 +4,13 @@
   "license": "MIT",
   "private": true,
   "main": "dist/index.js",
+  "module": "dist/index.mjs",
   "scripts": {
-    "build": "tsc"
+    "build": "run-s build:cjs build:mjs build:types build:cleanup",
+    "build:cjs": "tsc --project ./tsconfig.cjs.json && cp dist/cjs/index.js ./dist/index.js",
+    "build:mjs": "tsc --project ./tsconfig.mjs.json && cp dist/mjs/index.js ./dist/index.mjs",
+    "build:types": "cp -f ./dist/cjs/index.d.ts ./dist",
+    "build:cleanup": "rm -rf dist/cjs dist/mjs"
   },
   "dependencies": {
     "@chiffre/client": "^0.0.1"
