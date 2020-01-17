@@ -16,17 +16,12 @@ import Label, { LabelWithAside } from '../../components/form/Label'
 import EmailField from '../../components/form/EmailField'
 import FieldHelpText from '../../components/form/FieldHelpText'
 import { ControlledPasswordField } from '../../components/form/PasswordField'
-import PasswordStrengthSkeleton from './signup/PasswordStrengthSkeleton'
+import PasswordStrengthIndicator from './signup/PasswordStrengthIndicator'
 import { RouteLink } from '../../components/Links'
 import AboutPasswords from './signup/AboutPasswords'
 import { PasswordStrength } from './signup/passwordSettings'
 import ErrorText from '../../components/form/ErrorText'
 import useQueryString from '../../hooks/useQueryString'
-
-const PasswordStrengthIndicator = dynamic(
-  () => import('./signup/PasswordStrengthIndicator'),
-  { loading: () => <PasswordStrengthSkeleton /> }
-)
 
 export interface Values {
   email: string

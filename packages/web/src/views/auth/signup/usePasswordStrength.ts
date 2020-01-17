@@ -1,8 +1,20 @@
 import React from 'react'
 import { pwnedPassword } from 'hibp'
 import { useDebounce } from 'react-use'
-import zxcvbn from 'zxcvbn'
 import { PasswordStrength, PASSWORD_MIN_LENGTH } from './passwordSettings'
+import { ZXCVBNResult } from 'zxcvbn'
+
+let zxcvbn = (_password: string) =>
+  ({
+    score: 0
+  } as ZXCVBNResult)
+
+if (typeof window !== 'undefined') {
+  // Code-split and load only in the browser
+  import(/* webpackChunkName: "zxcvbn" */ 'zxcvbn').then(
+    m => (zxcvbn = m.default)
+  )
+}
 
 // --
 
