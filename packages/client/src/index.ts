@@ -220,7 +220,7 @@ export default class Client {
       try {
         this._hydrateKeychain()
           .then(() => this.#onUpdate())
-          .catch((e) => {
+          .catch(() => {
             this.lock()
             options.onLocked()
           })
