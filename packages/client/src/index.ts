@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios'
 import SessionKeystore from 'session-keystore'
-import { b64, utf8 } from '@47ng/codec'
+import mitt from 'mitt'
 import {
   generateKey,
   encryptString,
@@ -83,6 +83,8 @@ export interface ClientOptions {
    * Callback function when the keychain self-locks after some amount of time.
    */
   onLocked?: () => void
+
+  emitter?: mitt.Emitter
 }
 
 // --
@@ -215,18 +217,21 @@ export default class Client {
 
     // Hydrate keychain after a page reload
     if (this.#keystore.get('keychainKey')) {
-      ;(async () => {
-        const keychainKey = this.#keystore.get('keychainKey')
-        if (!keychainKey) {
-          throw new Error('No keychain key, locking client')
-        }
-        const res = await this.#api.get('/keychain')
-        const responseBody: KeychainResponse = res.data
-        this.#keychain = await unlockKeychain(responseBody, keychainKey)
-        this.#onUpdate()
-      })().catch(() => {
+      try {
+        this._hydrateKeychain()
+          .then(() => this.#onUpdate())
+          .catch((e) => {
+            this.lock()
+            options.onLocked()
+          })
+      } catch (e){
         this.lock()
         options.onLocked()
+      }
+    }
+    if (options.emitter) {
+      options.emitter.on('unload', () => {
+        this.#keystore.persist.bind(this.#keystore)()
       })
     }
   }
@@ -334,7 +339,7 @@ export default class Client {
   }
 
   public get identity(): Identity | null {
-    if (this.isLocked) {
+    if (!this.#authClaims) {
       return null
     }
     return {
@@ -342,8 +347,8 @@ export default class Client {
       userID: this.#authClaims.userID,
       plan: this.#authClaims.plan,
       publicKeys: {
-        signature: this.#keychain.signature.publicKey,
-        sharing: this.#keychain.sharing.publicKey
+        signature: this.#keychain?.signature.publicKey,
+        sharing: this.#keychain?.sharing.publicKey
       }
     }
   }
@@ -378,13 +383,23 @@ export default class Client {
       keychainKey,
       getExpirationDate(maxAgeInSeconds.session)
     )
+  }
+
+  private async _hydrateKeychain() {
+    const keychainKey = this.#keystore.get('keychainKey')
+    if (!keychainKey) {
+      throw new Error('Session expired, please log in again')
+    }
+    const res = await this.#api.get('/keychain')
+    const responseBody: KeychainResponse = res.data
     this.#keychain = await unlockKeychain(responseBody, keychainKey)
+    this.#onUpdate()
   }
 
   private async _refresh() {
     const keychainKey = this.#keystore.get('keychainKey')
     if (!keychainKey) {
-      throw new Error('Session expired, please login again')
+      throw new Error('Session expired, please log in again')
     }
     // Refresh projects
     const res = await this.#api.get('/projects')

@@ -18,7 +18,8 @@
     "@chiffre/crypto-base": "^0.0.1",
     "@chiffre/crypto-client": "^0.0.1",
     "axios": "^0.19.1",
-    "session-keystore": "^0.5.0"
+    "mitt": "^1.2.0",
+    "session-keystore": "^0.6.0"
   },
   "devDependencies": {
     "@chiffre/api": "^0.0.1"

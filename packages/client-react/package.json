@@ -13,7 +13,8 @@
     "build:cleanup": "rm -rf dist/cjs dist/mjs"
   },
   "dependencies": {
-    "@chiffre/client": "^0.0.1"
+    "@chiffre/client": "^0.0.1",
+    "mitt": "^1.2.0"
   },
   "peerDependencies": {
     "react": "^16.12.0"

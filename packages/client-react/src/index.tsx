@@ -1,6 +1,7 @@
 import React from 'react'
 import type Client from '@chiffre/client'
 import type { ClientOptions, TwoFactorSettings } from '@chiffre/client'
+import mitt from 'mitt'
 
 interface ContextState {
   client: Client
@@ -45,17 +46,22 @@ export const ChiffreClientProvider: React.FC<ClientOptions> = ({
   }, [])
 
   React.useEffect(() => {
+    let emitter = mitt()
+
     import(/* webpackChunkName: "chiffre-client" */ '@chiffre/client')
       .then(module => {
         const Class = (module.default as any).default
-        setClient(
-          new Class({
-            ...options,
-            onLocked,
-            onUpdate,
-          })
-        )
+        setClient(new Class({
+          ...options,
+          emitter,
+          onLocked,
+          onUpdate,
+        }))
       })
+
+    return () => {
+      emitter.emit('unload')
+    }
   }, [])
 
   const state = React.useMemo<ContextState>(() => ({ client }), [
