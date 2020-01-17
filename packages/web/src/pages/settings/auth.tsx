@@ -1,18 +1,8 @@
-import { NextPage, NextPageContext } from 'next'
-// import { authenticatePage } from '~/src/shared/auth'
-// import { AuthClaims } from '@chiffre/api'
-// import TwoFactorSetup from '../../src/views/auth/2fa/TwoFactorSetup'
+import { NextPage } from 'next'
+import TwoFactorSetup from '../../views/auth/2fa/TwoFactorSetup'
 
-export interface Props {} // extends AuthClaims {}
-
-const AuthSettingsPage: NextPage<Props> = ({ ...props }) => {
-  // return <TwoFactorSetup />
-  return null
+const AuthSettingsPage: NextPage = ({ ...props }) => {
+  return <TwoFactorSetup />
 }
-
-// AuthSettingsPage.getInitialProps = async (ctx: NextPageContext) => {
-//   const auth = await authenticatePage(ctx)
-//   return auth
-// }
 
 export default AuthSettingsPage

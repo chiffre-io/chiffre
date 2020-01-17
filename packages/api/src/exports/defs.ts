@@ -1,3 +1,5 @@
+import { utf8, b64 } from '@47ng/codec'
+
 export enum Plans {
   free = 'free',
   recurring = 'recurring', // Recurring billing per month or per year
@@ -49,7 +51,7 @@ export enum CookieNames {
 }
 
 export const maxAgeInSeconds = {
-  session: 7 // * 24 * 60 * 60 // 7 days
+  session: 7 * 24 * 60 * 60 // 7 days
 }
 
 export function getExpirationDate(
@@ -57,4 +59,14 @@ export function getExpirationDate(
   now: Date = new Date()
 ): Date {
   return new Date(now.getTime() + maxAgeSeconds * 1000)
+}
+
+export function parseJwtPayload(jwtPayload: string): AuthClaims {
+  const payload = JSON.parse(utf8.decode(b64.decode(jwtPayload)))
+  return {
+    plan: payload.plan,
+    userID: payload.sub,
+    tokenID: payload.jti,
+    twoFactorStatus: payload['2fa']
+  }
 }

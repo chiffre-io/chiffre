@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosResponse } from 'axios'
+import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios'
 import SessionKeystore from 'session-keystore'
 import { b64, utf8 } from '@47ng/codec'
 import {
@@ -39,10 +39,13 @@ import {
   Plans,
   ActivityResponse,
   getExpirationDate,
-  maxAgeInSeconds
+  maxAgeInSeconds,
+  parseJwtPayload
 } from '@chiffre/api-types'
 import type { Settings } from './settings'
 import TwoFactorSettings from './settings/2fa'
+
+export { TwoFactorSettings }
 
 // --
 
@@ -91,7 +94,7 @@ const buildMessageDecryptor = (project: UnlockedProject) =>
 
 // --
 
-const cookieClaimsRegex = new RegExp(`${CookieNames.jwt}=([\w-]+).([\w-]+)`)
+const cookieClaimsRegex = new RegExp(`${CookieNames.jwt}=([\\w-]+).([\\w-]+)`)
 
 export default class Client {
   public projects: Project[]
@@ -99,7 +102,9 @@ export default class Client {
 
   #api: AxiosInstance
   #keystore: SessionKeystore<'keychainKey' | 'credentials'>
-  #handleAuth: (res: AxiosResponse) => void
+  #handleAuth: (res?: AxiosResponse) => void
+  #handleBrowserAuth: () => void
+  #handleNodeAuth: (res: AxiosResponse) => void
   #token?: string
   #authClaims?: AuthClaims
   #username?: string
@@ -113,6 +118,12 @@ export default class Client {
       withCredentials: typeof document !== 'undefined',
     })
     this.#api.defaults.headers.common['Content-Type'] = 'application/json'
+    this.#api.interceptors.response.use(res => res, (err: AxiosError) => {
+      if (err.response?.data?.message) {
+        return Promise.reject(err.response?.data?.message)
+      }
+      return err
+    })
     if (typeof document === 'undefined') {
       // Manually inject bearer token in Node.js
       this.#api.interceptors.request.use((config) => {
@@ -144,30 +155,24 @@ export default class Client {
       }
     })
     this.#onUpdate = options.onUpdate || (() => {})
-    this.#handleAuth = (res: AxiosResponse) => {
-      const parsePayload = (payload: string): AuthClaims => {
-        const p = JSON.parse(utf8.decode(b64.decode(payload)))
-        return {
-          plan: p.plan,
-          userID: p.sub,
-          tokenID: p.jti,
-          twoFactorStatus: p['2fa']
-        }
-      }
-
-      if (typeof document !== 'undefined') {
-        // We're in the browser, just parse the claims cookie
-        try {
-          const matches = document.cookie.match(cookieClaimsRegex)
-          if (matches.length !== 3) {
-            throw new Error('Invalid JWT')
-          }
-          this.#authClaims = parsePayload(matches[2])
-        } catch {
-          this.#authClaims = undefined
-        }
+    this.#handleBrowserAuth = () => {
+      if (typeof document !== 'object') {
         return
       }
+      // We're in the browser, just parse the claims cookie
+      try {
+        const matches = document.cookie.match(cookieClaimsRegex)
+        if (matches.length !== 3) {
+          throw new Error('Invalid JWT')
+        }
+        this.#authClaims = parseJwtPayload(matches[2])
+      } catch {
+        this.#authClaims = undefined
+      } finally {
+        this.#onUpdate()
+      }
+    }
+    this.#handleNodeAuth = (res: AxiosResponse) => {
       const cookies: string[] = res.headers['set-cookie']
       this.#token = cookies
         .map(cookie => cookie.split(';')[0]) // Remove scope definitions
@@ -185,11 +190,18 @@ export default class Client {
       // Parse auth claims
       const [_header, payload, _signature] = this.#token.split('.')
       try {
-        this.#authClaims = parsePayload(payload)
+        this.#authClaims = parseJwtPayload(payload)
       } catch {
         this.#authClaims = undefined
       } finally {
         this.#onUpdate()
+      }
+    }
+    this.#handleAuth = (res?: AxiosResponse) => {
+      if (typeof document === 'object') {
+        return this.#handleBrowserAuth()
+      } else if (res) {
+        return this.#handleNodeAuth(res)
       }
     }
     this.settings = {
@@ -199,6 +211,10 @@ export default class Client {
         () => this.#authClaims
       )
     }
+
+    // Load cookies in the browser
+    this.#handleBrowserAuth()
+
     // Hydrate keychain after a page reload
     if (this.#keystore.get('keychainKey')) {
       this._refresh()

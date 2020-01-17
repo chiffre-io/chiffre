@@ -1,6 +1,6 @@
 import React from 'react'
 import type Client from '@chiffre/client'
-import type { ClientOptions } from '@chiffre/client'
+import type { ClientOptions, TwoFactorSettings } from '@chiffre/client'
 
 interface ContextState {
   client: Client
@@ -8,6 +8,15 @@ interface ContextState {
 
 const stubClient = {
   identity: null,
+  settings: {
+    twoFactor: {
+      enable: () => Promise.reject('The Chiffre client is not ready'),
+      disable: () => Promise.reject('The Chiffre client is not ready'),
+      cancel: () => Promise.reject('The Chiffre client is not ready'),
+      verify: () => Promise.reject('The Chiffre client is not ready'),
+      status: null
+    } as unknown as TwoFactorSettings
+  },
   projects: []
 }
 
