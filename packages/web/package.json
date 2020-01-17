@@ -5,10 +5,9 @@
   "license": "UNLICENSED",
   "scripts": {
     "dev": "next",
+    "ci": "run-s build",
     "build": "next build",
     "build:emitter": "parcel build -d ./public -o emitter.js ./src/emitter/index.ts",
-    "test": "jest --verbose",
-    "test:watch": "jest --watch",
     "start": "NODE_ENV=production yarn tsnode ./src/server/server.ts",
     "clean": "rm -rf ./out ./.next",
     "export": "next export",

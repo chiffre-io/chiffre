@@ -19,11 +19,12 @@
     "build:client": "yarn workspace @chiffre/client run build",
     "build:client-react": "yarn workspace @chiffre/client-react run build",
     "build:web": "yarn workspace @chiffre/web run build",
-    "ci": "run-s ci:crypto-base ci:crypto-client ci:api ci:client",
+    "ci": "run-s ci:crypto-base ci:crypto-client ci:api ci:client ci:web",
     "ci:crypto-base": "yarn workspace @chiffre/crypto-base run ci",
     "ci:crypto-client": "yarn workspace @chiffre/crypto-client run ci",
     "ci:api": "yarn workspace @chiffre/api run ci",
-    "ci:client": "yarn workspace @chiffre/client run ci"
+    "ci:client": "yarn workspace @chiffre/client run ci",
+    "ci:web": "yarn workspace @chiffre/web run ci"
   },
   "devDependencies": {
     "jest": "^24.9.0",
