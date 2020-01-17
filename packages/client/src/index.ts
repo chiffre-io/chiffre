@@ -215,7 +215,7 @@ export default class Client {
 
     // Hydrate keychain after a page reload
     if (this.#keystore.get('keychainKey')) {
-      (async () => {
+      ;(async () => {
         const keychainKey = this.#keystore.get('keychainKey')
         if (!keychainKey) {
           throw new Error('No keychain key, locking client')
@@ -223,7 +223,11 @@ export default class Client {
         const res = await this.#api.get('/keychain')
         const responseBody: KeychainResponse = res.data
         this.#keychain = await unlockKeychain(responseBody, keychainKey)
-      })().catch(() => this.lock())
+        this.#onUpdate()
+      })().catch(() => {
+        this.lock()
+        options.onLocked()
+      })
     }
   }
 
