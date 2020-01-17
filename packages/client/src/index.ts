@@ -101,13 +101,12 @@ export default class Client {
   public settings: Settings
 
   #api: AxiosInstance
-  #keystore: SessionKeystore<'keychainKey' | 'credentials'>
+  #keystore: SessionKeystore<'keychainKey' | 'username' | 'credentials'>
   #handleAuth: (res?: AxiosResponse) => void
   #handleBrowserAuth: () => void
   #handleNodeAuth: (res: AxiosResponse) => void
   #token?: string
   #authClaims?: AuthClaims
-  #username?: string
   #keychain?: UnlockedKeychain
   #onUpdate: () => void
 
@@ -141,7 +140,6 @@ export default class Client {
     this.projects = []
     this.#token = undefined
     this.#authClaims = undefined
-    this.#username = undefined
     this.#keychain = undefined
     this.#keystore = new SessionKeystore({
       name: 'chiffre-client',
@@ -217,7 +215,15 @@ export default class Client {
 
     // Hydrate keychain after a page reload
     if (this.#keystore.get('keychainKey')) {
-      this._refresh()
+      (async () => {
+        const keychainKey = this.#keystore.get('keychainKey')
+        if (!keychainKey) {
+          throw new Error('No keychain key, locking client')
+        }
+        const res = await this.#api.get('/keychain')
+        const responseBody: KeychainResponse = res.data
+        this.#keychain = await unlockKeychain(responseBody, keychainKey)
+      })().catch(() => this.lock())
     }
   }
 
@@ -234,9 +240,9 @@ export default class Client {
       signupParams.masterSalt
     )
     const res = await this.#api.post('/auth/signup', signupParams)
-    this.#username = username
     const keychainKey = await decloakString(signupParams.keychainKey, masterKey)
     this.#keychain = await unlockKeychain(signupParams.keychain, keychainKey)
+    this.#keystore.set('username', username)
     this.#keystore.set(
       'keychainKey',
       keychainKey,
@@ -268,7 +274,7 @@ export default class Client {
       response.session
     )
     this.#handleAuth(res2)
-    this.#username = username
+    this.#keystore.set('username', username)
 
     if (responseBody.masterSalt) {
       const masterKey = await deriveMasterKey(
@@ -317,8 +323,8 @@ export default class Client {
   public get isLocked(): boolean {
     return !(
       this.#keychain &&
-      this.#username &&
       this.#authClaims &&
+      this.#keystore.get('username') &&
       this.#keystore.get('keychainKey')
     )
   }
@@ -328,7 +334,7 @@ export default class Client {
       return null
     }
     return {
-      username: this.#username,
+      username: this.#keystore.get('username'),
       userID: this.#authClaims.userID,
       plan: this.#authClaims.plan,
       publicKeys: {
@@ -354,7 +360,6 @@ export default class Client {
     this.#keychain = undefined
     this.#keystore.clear()
     this.#authClaims = undefined
-    this.#username = undefined
     this.#token = undefined
   }
 
