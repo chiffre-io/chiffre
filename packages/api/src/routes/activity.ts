@@ -30,7 +30,7 @@ function messageForEvent(event: Event): string {
       }
       return `Two factor authentication status changed from ${from} to ${to}`
     case EventTypes.projectCreated:
-      return `Project created (${event.meta.projectID})`
+      return `Project created`
     default:
       return event.type
   }

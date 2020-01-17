@@ -5,6 +5,7 @@ import { ThemeProvider, CSSReset } from '@chakra-ui/core'
 import theme from '../ui/theme'
 import { Global, css } from '@emotion/core'
 import { ChiffreClientProvider } from '@chiffre/client-react'
+import useRedirectToLogin from '../hooks/useRedirectToLogin'
 
 const globalCss = css`
   html {
@@ -27,6 +28,18 @@ const globalConfig = (theme: any) => ({
   }
 })
 
+const ChiffreContext: React.FC = ({ children }) => {
+  const redirectToLogin = useRedirectToLogin()
+  return (
+    <ChiffreClientProvider
+      apiURL={process.env.API_URL}
+      onLocked={redirectToLogin}
+    >
+      {children}
+    </ChiffreClientProvider>
+  )
+}
+
 class MyApp extends App {
   render() {
     const { Component, pageProps } = this.props
@@ -45,9 +58,9 @@ class MyApp extends App {
         </Head>
         <CSSReset config={globalConfig} />
         <Global styles={[globalCss]} />
-        <ChiffreClientProvider apiURL={process.env.API_URL}>
+        <ChiffreContext>
           <Component {...pageProps} />
-        </ChiffreClientProvider>
+        </ChiffreContext>
       </ThemeProvider>
     )
   }

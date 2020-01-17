@@ -3,6 +3,8 @@ import { NextPage } from 'next'
 import { Box, Button } from '@chakra-ui/core'
 import { Project } from '@chiffre/client'
 import { useChiffreClient } from '@chiffre/client-react'
+import Header from '../components/Header'
+import MainPage from '../layouts/MainPage'
 
 const ProjectView: React.FC<{ project: Project }> = ({ project }) => {
   return (
@@ -17,7 +19,8 @@ const ProjectView: React.FC<{ project: Project }> = ({ project }) => {
 const Dashboard: NextPage = () => {
   const client = useChiffreClient()
   return (
-    <>
+    <MainPage>
+      <Header />
       <Button
         onClick={() => {
           client.getAccountActivity()
@@ -30,7 +33,7 @@ const Dashboard: NextPage = () => {
           <ProjectView key={project.id} project={project} />
         ))}
       </Box>
-    </>
+    </MainPage>
   )
 }
 
