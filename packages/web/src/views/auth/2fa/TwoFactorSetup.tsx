@@ -100,8 +100,13 @@ const VerifyPhase: React.FC<VerifyPhaseProps> = ({
   cancel,
   verify
 }) => {
-  const { loading, error, load } = useLoader()
-  if (!visible) {
+  const {
+    loading: cancelLoading,
+    error: cancelError,
+    load: cancelLoad
+  } = useLoader()
+  const { loading: nextLoading, error: nextError, load: nextLoad } = useLoader()
+  if (!visible && !(nextLoading || cancelLoading)) {
     return null
   }
   return (
@@ -109,21 +114,22 @@ const VerifyPhase: React.FC<VerifyPhaseProps> = ({
       {text}
       <TwoFactorForm
         onSubmit={values => {
-          load(() => verify(values.twoFactorToken))
+          nextLoad(() => verify(values.twoFactorToken))
         }}
         label={null}
       >
-        {error && (
+        {(cancelError || nextError) && (
           <ErrorText bold textAlign="center" mt={-2}>
-            {error}
+            {cancelError} {nextError}
           </ErrorText>
         )}
         <Flex justify="flex-end" mt={4}>
           <Button
             mr={2}
             variant="ghost"
-            onClick={() => load(cancel)}
+            onClick={() => cancelLoad(cancel)}
             type="button"
+            isLoading={cancelLoading}
           >
             Cancel
           </Button>
@@ -131,7 +137,7 @@ const VerifyPhase: React.FC<VerifyPhaseProps> = ({
             variantColor="blue"
             rightIcon="chevron-right"
             type="submit"
-            isLoading={loading}
+            isLoading={nextLoading}
           >
             Next
           </Button>
