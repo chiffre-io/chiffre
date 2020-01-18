@@ -10,13 +10,13 @@ interface ContextState {
 const stubClient = {
   identity: null,
   settings: {
-    twoFactor: {
+    twoFactor: ({
       enable: () => Promise.reject('The Chiffre client is not ready'),
       disable: () => Promise.reject('The Chiffre client is not ready'),
       cancel: () => Promise.reject('The Chiffre client is not ready'),
       verify: () => Promise.reject('The Chiffre client is not ready'),
       status: null
-    } as unknown as TwoFactorSettings
+    } as unknown) as TwoFactorSettings
   },
   projects: []
 }
@@ -48,16 +48,19 @@ export const ChiffreClientProvider: React.FC<ClientOptions> = ({
   React.useEffect(() => {
     let emitter = mitt()
 
-    import(/* webpackChunkName: "chiffre-client" */ '@chiffre/client')
-      .then(module => {
+    import(/* webpackChunkName: "chiffre-client" */ '@chiffre/client').then(
+      module => {
         const Class = (module.default as any).default
-        setClient(new Class({
-          ...options,
-          emitter,
-          onLocked,
-          onUpdate,
-        }))
-      })
+        setClient(
+          new Class({
+            ...options,
+            emitter,
+            onLocked,
+            onUpdate
+          })
+        )
+      }
+    )
 
     return () => {
       emitter.emit('unload')
