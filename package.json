@@ -5,25 +5,9 @@
     "packages/*"
   ],
   "scripts": {
-    "clean": "run-s clean:crypto-base clean:crypto-client clean:api clean:api-types clean:client clean:self",
-    "clean:self": "rm -rf ./node_modules",
-    "clean:crypto-base": "yarn workspace @chiffre/crypto-base run clean",
-    "clean:crypto-client": "yarn workspace @chiffre/crypto-client run clean",
-    "clean:api": "yarn workspace @chiffre/api run clean",
-    "clean:api-types": "yarn workspace @chiffre/api-types run clean",
-    "clean:client": "yarn workspace @chiffre/client run clean",
-    "build": "run-s build:crypto-base build:crypto-client build:api build:client build:web",
-    "build:crypto-base": "yarn workspace @chiffre/crypto-base run build",
-    "build:crypto-client": "yarn workspace @chiffre/crypto-client run build",
-    "build:api": "yarn workspace @chiffre/api run build",
-    "build:client": "yarn workspace @chiffre/client run build",
-    "build:web": "yarn workspace @chiffre/web run build",
-    "ci": "run-s ci:crypto-base ci:crypto-client ci:api ci:client ci:web",
-    "ci:crypto-base": "yarn workspace @chiffre/crypto-base run ci",
-    "ci:crypto-client": "yarn workspace @chiffre/crypto-client run ci",
-    "ci:api": "yarn workspace @chiffre/api run ci",
-    "ci:client": "yarn workspace @chiffre/client run ci",
-    "ci:web": "yarn workspace @chiffre/web run ci"
+    "clean": "yarn wsrun -m clean && rm -rf ./node_modules",
+    "build": "yarn wsrun -mt build",
+    "ci": "yarn wsrun -ms ci"
   },
   "devDependencies": {
     "jest": "^24.9.0",
@@ -32,6 +16,7 @@
     "ts-jest": "^24.2.0",
     "ts-node": "^8.6.2",
     "tsconfig-paths": "^3.9.0",
-    "typescript": "^3.8.0-beta"
+    "typescript": "^3.8.0-beta",
+    "wsrun": "^5.2.0"
   }
 }
