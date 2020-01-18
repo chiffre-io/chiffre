@@ -4,7 +4,7 @@ import Head from 'next/head'
 import { ThemeProvider, CSSReset } from '@chakra-ui/core'
 import theme from '../ui/theme'
 import { Global, css } from '@emotion/core'
-import { ChiffreClientProvider } from '@chiffre/client-react'
+import { ChiffreClientProvider } from '../hooks/useChiffreClient'
 import useRedirectToLogin from '../hooks/useRedirectToLogin'
 
 const globalCss = css`

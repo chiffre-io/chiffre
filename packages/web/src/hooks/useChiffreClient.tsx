@@ -1,64 +1,86 @@
-export * from '@chiffre/client-react'
+import React from 'react'
+import Client from '@chiffre/client'
+import { ClientOptions, TwoFactorSettings } from '@chiffre/client'
+import mitt from 'mitt'
 
-// import React from 'react'
-// import Client from '@chiffre/client'
-// import { ClientOptions } from '@chiffre/client'
+interface ContextState {
+  client: Client
+}
 
-// interface ContextState {
-//   client: Client
-//   lockCounter: number
-// }
+const stubClient = {
+  identity: null,
+  settings: {
+    twoFactor: ({
+      enable: () => Promise.reject('The Chiffre client is not ready'),
+      disable: () => Promise.reject('The Chiffre client is not ready'),
+      cancel: () => Promise.reject('The Chiffre client is not ready'),
+      verify: () => Promise.reject('The Chiffre client is not ready'),
+      status: null
+    } as unknown) as TwoFactorSettings
+  },
+  projects: []
+}
 
-// const stubClient = {
-//   identity: null,
-//   projects: []
-// }
+const ClientContext = React.createContext<ContextState>({
+  client: stubClient as Client
+})
 
-// const ClientContext = React.createContext<ContextState>({
-//   client: null,
-//   lockCounter: 0
-// })
+export const ChiffreClientProvider: React.FC<ClientOptions> = ({
+  children,
+  ...options
+}) => {
+  const [client, setClient] = React.useState<Client>(stubClient as Client)
+  const [counter, setCounter] = React.useState(0)
 
-// export const ChiffreClientProvider: React.FC<ClientOptions> = ({
-//   children,
-//   ...options
-// }) => {
-//   const [client, setClient] = React.useState<Client>(stubClient as Client)
-//   const [lockCounter, setLockCounter] = React.useState(0)
+  const onLocked = React.useCallback(() => {
+    if (options.onLocked) {
+      options.onLocked()
+    }
+    setCounter(c => c + 1)
+  }, [])
+  const onUpdate = React.useCallback(() => {
+    if (options.onUpdate) {
+      options.onUpdate()
+    }
+    setCounter(c => c + 1)
+  }, [])
 
-//   const onLocked = React.useCallback(() => {
-//     if (options.onLocked) {
-//       options.onLocked()
-//     }
-//     setLockCounter(lockCounter + 1)
-//   }, [])
+  React.useEffect(() => {
+    let emitter = mitt()
 
-//   React.useEffect(() => {
-//     import('@chiffre/client').then(module =>
-//       setClient(
-//         new module.default({
-//           ...options,
-//           onLocked
-//         })
-//       )
-//     )
-//   }, [])
+    import(/* webpackChunkName: "chiffre-client" */ '@chiffre/client').then(
+      module => {
+        const Class = (module.default as any).default
+        setClient(
+          new Class({
+            ...options,
+            emitter,
+            onLocked,
+            onUpdate
+          })
+        )
+      }
+    )
 
-//   const state = React.useMemo<ContextState>(() => ({ client, lockCounter }), [
-//     client,
-//     lockCounter
-//   ])
+    return () => {
+      emitter.emit('unload')
+    }
+  }, [])
 
-//   return (
-//     <ClientContext.Provider value={state}>{children}</ClientContext.Provider>
-//   )
-// }
+  const state = React.useMemo<ContextState>(() => ({ client }), [
+    client,
+    counter
+  ])
+  return (
+    <ClientContext.Provider value={state}>{children}</ClientContext.Provider>
+  )
+}
 
-// export function useChiffreClient() {
-//   return React.useContext(ClientContext).client
-// }
+export function useChiffreClient() {
+  return React.useContext(ClientContext).client
+}
 
-// export function useProject(projectID: string) {
-//   const client = useChiffreClient()
-//   return client.getProject(projectID)
-// }
+export function useProject(projectID: string) {
+  const client = useChiffreClient()
+  return client.getProject(projectID)
+}

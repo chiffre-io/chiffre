@@ -1,7 +1,7 @@
 import React from 'react'
 import { NextPage } from 'next'
 import { Box, Heading, Text, Divider } from '@chakra-ui/core'
-import { useChiffreClient } from '@chiffre/client-react'
+import { useChiffreClient } from '../hooks/useChiffreClient'
 import Body from '../components/primitives/Body'
 import NewProjectForm, { Values } from '../views/new/NewProjectForm'
 

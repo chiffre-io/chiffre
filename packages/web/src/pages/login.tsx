@@ -1,6 +1,6 @@
 import React from 'react'
 import { useRouter } from 'next/dist/client/router'
-import { useChiffreClient } from '@chiffre/client-react'
+import { useChiffreClient } from '../hooks/useChiffreClient'
 import AuthPage from '../views/auth/AuthPage'
 import LoginForm from '../views/auth/LoginForm'
 import TwoFactorForm from '../views/auth/TwoFactorForm'

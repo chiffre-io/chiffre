@@ -19,7 +19,7 @@
   "dependencies": {
     "@chakra-ui/core": "^0.5.2",
     "@chiffre/api-types": "^0.0.1",
-    "@chiffre/client-react": "^0.0.1",
+    "@chiffre/client": "^0.0.1",
     "@emotion/core": "^10.0.27",
     "@emotion/styled": "^10.0.27",
     "@zeit/next-source-maps": "^0.0.3",

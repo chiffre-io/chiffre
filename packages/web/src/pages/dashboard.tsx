@@ -2,7 +2,7 @@ import React from 'react'
 import { NextPage } from 'next'
 import { Box, Button } from '@chakra-ui/core'
 import { Project } from '@chiffre/client'
-import { useChiffreClient } from '@chiffre/client-react'
+import { useChiffreClient } from '../hooks/useChiffreClient'
 import Header from '../components/Header'
 import MainPage from '../layouts/MainPage'
 

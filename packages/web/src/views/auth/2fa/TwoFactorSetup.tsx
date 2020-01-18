@@ -16,7 +16,7 @@ import {
   TwoFactorEnableResponse,
   TwoFactorVerifyResponse
 } from '@chiffre/api-types'
-import { useChiffreClient } from '@chiffre/client-react'
+import { useChiffreClient } from '../../../hooks/useChiffreClient'
 import ErrorText from '../../../components/form/ErrorText'
 import TwoFactorForm from '../TwoFactorForm'
 import TwoFactorSecretDisplay from './TwoFactorSecretDisplay'

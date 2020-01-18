@@ -1,5 +1,5 @@
 import React from 'react'
-import { useChiffreClient } from '@chiffre/client-react'
+import { useChiffreClient } from '../hooks/useChiffreClient'
 import gravatarUrl from 'gravatar-url'
 import {
   Avatar,
