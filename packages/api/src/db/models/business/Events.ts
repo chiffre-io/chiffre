@@ -9,6 +9,7 @@ export enum EventTypes {
   // Auth
   signup = 'auth/signup',
   login = 'auth/login',
+  logout = 'auth/logout',
   twoFactorStatusChanged = 'auth/2fa/changed',
   twoFactorVerified = 'auth/2fa/verified',
 
@@ -64,6 +65,7 @@ export async function findEventsForUser(db: Knex, userID: string) {
     .and.whereIn('type', [
       EventTypes.signup,
       EventTypes.login,
+      EventTypes.logout,
       EventTypes.twoFactorStatusChanged,
       EventTypes.projectCreated
     ])
@@ -88,6 +90,7 @@ export async function createInitialEventsTable(db: Knex) {
       .enum('type', [
         EventTypes.signup,
         EventTypes.login,
+        EventTypes.logout,
         EventTypes.twoFactorStatusChanged,
         EventTypes.twoFactorVerified,
         EventTypes.changePlan,

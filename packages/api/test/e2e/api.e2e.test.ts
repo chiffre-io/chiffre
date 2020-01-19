@@ -15,9 +15,6 @@ beforeAll(async () => {
 })
 
 afterAll(async () => {
-  for (const cron of ctx.crons) {
-    cron.stop()
-  }
   await ctx.server.close()
 })
 

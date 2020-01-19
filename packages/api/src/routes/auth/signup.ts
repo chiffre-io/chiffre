@@ -2,7 +2,13 @@ import nanoid from 'nanoid'
 import { App } from '../../types'
 import { createUser } from '../../db/models/auth/Users'
 import { setJwtCookies } from '../../auth/cookies'
-import { AuthClaims, Plans, TwoFactorStatus } from '../../exports/defs'
+import {
+  AuthClaims,
+  Plans,
+  TwoFactorStatus,
+  maxAgeInSeconds,
+  getExpirationDate
+} from '../../exports/defs'
 import { createKeychainRecord } from '../../db/models/entities/Keychains'
 import { logEvent, EventTypes } from '../../db/models/business/Events'
 import { signupParametersSchema, SignupParameters } from './signup.schema'
@@ -66,14 +72,15 @@ local entities that will be needed later for authenticating on other devices:
           sharingSecretKey: keychain.sharing.secret
         })
 
+        const now = new Date()
         const claims: AuthClaims = {
           tokenID: nanoid(),
           userID,
           plan: Plans.free, // Default plan
-          twoFactorStatus: TwoFactorStatus.disabled
+          twoFactorStatus: TwoFactorStatus.disabled,
+          sessionExpiresAt: getExpirationDate(maxAgeInSeconds.session, now)
         }
-
-        setJwtCookies(claims, res)
+        setJwtCookies(claims, res, now)
         await logEvent(app.db, EventTypes.signup, { ...req, auth: claims })
         return res.status(201).send() // Created
       } catch (error) {

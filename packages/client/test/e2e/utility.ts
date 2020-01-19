@@ -1,4 +1,3 @@
-import { CronJob } from 'cron'
 import dotenv from 'dotenv'
 import checkEnv from '@47ng/check-env'
 import { createServer, startServer } from '@chiffre/api/src/server'
@@ -9,7 +8,6 @@ import Client from '../../src/index'
 export interface TestContext {
   server: App
   client: Client
-  crons: CronJob[]
 }
 
 export async function setup(): Promise<TestContext> {
@@ -20,7 +18,7 @@ export async function setup(): Promise<TestContext> {
 
   const port = parseInt(process.env.PORT || '4000')
   const server = createServer()
-  const crons = await startServer(server, port)
+  await startServer(server, port)
   const client = new Client({
     apiURL: process.env.API_URL!
   })
@@ -30,5 +28,5 @@ export async function setup(): Promise<TestContext> {
   } catch (e) {
     console.error(e)
   }
-  return { server, client, crons }
+  return { server, client }
 }

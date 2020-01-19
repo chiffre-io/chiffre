@@ -11,8 +11,9 @@ import {
 import fastifyCookie from 'fastify-cookie'
 import { IncomingMessage } from 'http'
 import { App } from '../types'
-import { verifyJwt, getTokenBlacklistKey } from '../auth/jwt'
+import { verifyJwt } from '../auth/jwt'
 import { AuthClaims, TwoFactorStatus, CookieNames } from '../exports/defs'
+import { isTokenBlacklisted } from '../redis/tokenBlacklist'
 
 export type AuthenticatedRequest<
   R = IncomingMessage,
@@ -64,23 +65,21 @@ export default fp((app: App, _, next) => {
           // Do not accept invalid or unverified 2FA sessions
           throw new Error('Invalid or unverified 2FA status')
         }
-        await new Promise((resolve, reject) => {
-          app.redis.get(
-            getTokenBlacklistKey(claims.tokenID),
-            (error, value) => {
-              if (error) {
-                req.log.error(error)
-                // todo: Pass the error to Sentry ?
-                return resolve() // Fail open
-              }
-              if (value === claims.userID) {
-                // Token is blacklisted
-                return reject('Session has expired')
-              }
-              resolve()
-            }
+        let blacklisted: boolean = false
+        try {
+          blacklisted = await isTokenBlacklisted(
+            app.redis,
+            claims.tokenID,
+            claims.userID
           )
-        })
+        } catch (error) {
+          // Fail open, log the error & report it to Sentry
+          req.log.error(error)
+          app.sentry.report(req, error)
+        }
+        if (blacklisted) {
+          throw new Error('Session has expired')
+        }
         req.auth = claims
       } catch (error) {
         req.log.error(error)

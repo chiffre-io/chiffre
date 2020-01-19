@@ -10,7 +10,12 @@ import {
 } from '../../../db/models/auth/Users'
 import { logEvent, EventTypes } from '../../../db/models/business/Events'
 import { AuthenticatedRequest } from '../../../plugins/auth'
-import { AuthClaims, TwoFactorStatus } from '../../../exports/defs'
+import {
+  AuthClaims,
+  TwoFactorStatus,
+  maxAgeInSeconds,
+  getExpirationDate
+} from '../../../exports/defs'
 import { setJwtCookies } from '../../../auth/cookies'
 import { TwoFactorEnableResponse } from './enable.schema'
 
@@ -45,11 +50,14 @@ export default async (app: App) => {
 
       // Update JWT claims to indicate 2FA pending
       // note: this will disallow other operations while 2FA is not verified.
+      const now = new Date()
       const claims: AuthClaims = {
         ...req.auth,
-        twoFactorStatus: TwoFactorStatus.enabled // Will need to be verified
+        twoFactorStatus: TwoFactorStatus.enabled, // Will need to be verified
+        // Refresh expiration time
+        sessionExpiresAt: getExpirationDate(maxAgeInSeconds.session, now)
       }
-      setJwtCookies(claims, res)
+      setJwtCookies(claims, res, now)
       await logEvent(app.db, EventTypes.twoFactorStatusChanged, req, {
         from: req.auth.twoFactorStatus,
         to: claims.twoFactorStatus
@@ -82,11 +90,15 @@ export default async (app: App) => {
         )
       }
       await cancelTwoFactor(app.db, req.auth.userID)
+
+      const now = new Date()
       const claims: AuthClaims = {
         ...req.auth,
-        twoFactorStatus: TwoFactorStatus.disabled
+        twoFactorStatus: TwoFactorStatus.disabled,
+        // Refresh expiration time
+        sessionExpiresAt: getExpirationDate(maxAgeInSeconds.session, now)
       }
-      setJwtCookies(claims, res)
+      setJwtCookies(claims, res, now)
       await logEvent(app.db, EventTypes.twoFactorStatusChanged, req, {
         from: req.auth.twoFactorStatus,
         to: claims.twoFactorStatus

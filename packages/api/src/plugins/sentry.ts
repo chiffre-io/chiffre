@@ -5,6 +5,12 @@ import { AuthenticatedRequest } from './auth'
 import { findUser, User } from '../db/models/auth/Users'
 import { App } from '../types'
 
+type Request = FastifyRequest & Partial<AuthenticatedRequest>
+
+export interface SentryReporter {
+  report: (req: Request, error: Error) => Promise<void>
+}
+
 export default fp((app: App, _, next) => {
   Sentry.init({
     dsn: process.env.SENTRY_DSN,
@@ -13,33 +19,14 @@ export default fp((app: App, _, next) => {
     enabled: !!process.env.SENTRY_DSN
   })
 
-  app.setErrorHandler(
-    async (error, req: FastifyRequest & Partial<AuthenticatedRequest>, res) => {
-      if (
-        (error.statusCode >= 400 && error.statusCode < 500) ||
-        error.validation
-      ) {
-        req.log.warn(error)
-      } else {
-        req.log.error(error)
-      }
-
-      if (error.validation) {
-        return res.status(400).send(error)
-      }
-      if (error.statusCode) {
-        // Error object already contains useful information
-        return res.send(error)
-      }
-
+  const reporter: SentryReporter = {
+    async report(req, error) {
       let user: User
       if (req.auth) {
         try {
           user = await findUser(app.db, req.auth.userID)
         } catch {}
       }
-
-      // Pass the unhandled error to Sentry
       Sentry.withScope(scope => {
         scope.setUser({
           id: req.auth?.userID || 'no auth provided',
@@ -57,9 +44,34 @@ export default fp((app: App, _, next) => {
         })
         Sentry.captureException(error)
       })
-      // Pass to the generic error handler (500)
+    }
+  }
+
+  app.decorate('sentry', reporter)
+
+  app.setErrorHandler(async (error, req: Request, res) => {
+    if (
+      (error.statusCode >= 400 && error.statusCode < 500) ||
+      error.validation
+    ) {
+      req.log.warn(error)
+    } else {
+      req.log.error(error)
+    }
+
+    if (error.validation) {
+      return res.status(400).send(error)
+    }
+    if (error.statusCode) {
+      // Error object already contains useful information
       return res.send(error)
     }
-  )
+
+    // Report the error to Sentry
+    await app.sentry.report(req, error)
+
+    // Pass to the generic error handler (500)
+    return res.send(error)
+  })
   next()
 })

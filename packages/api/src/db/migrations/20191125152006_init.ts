@@ -1,10 +1,6 @@
 import Knex from 'knex'
 import { createInitialUsersTable, USERS_TABLE } from '../models/auth/Users'
 import {
-  createInitialLoginChallengesSrpTable,
-  LOGIN_CHALLENGES_SRP_TABLE
-} from '../models/auth/LoginChallengesSRP'
-import {
   createInitialKeychainsTable,
   KEYCHAINS_TABLE
 } from '../models/entities/Keychains'
@@ -44,7 +40,6 @@ export async function up(knex: Knex): Promise<any> {
 
   // Auth
   await createInitialUsersTable(knex)
-  await createInitialLoginChallengesSrpTable(knex)
 
   // Encrypted business logic
   await createInitialKeychainsTable(knex)
@@ -67,6 +62,5 @@ export async function down(knex: Knex): Promise<any> {
   await knex.schema.dropTableIfExists(USER_VAULT_EDGES_TABLE)
   await knex.schema.dropTableIfExists(VAULTS_TABLE)
   await knex.schema.dropTableIfExists(KEYCHAINS_TABLE)
-  await knex.schema.dropTableIfExists(LOGIN_CHALLENGES_SRP_TABLE)
   await knex.schema.dropTableIfExists(USERS_TABLE)
 }

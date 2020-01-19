@@ -1,6 +1,8 @@
 import { App } from '../../types'
 import { AuthenticatedRequest } from '../../plugins/auth'
-import { getTokenBlacklistKey } from '../../auth/jwt'
+import { blacklistToken } from '../../redis/tokenBlacklist'
+import { clearJwtCookies } from '../../auth/cookies'
+import { logEvent, EventTypes } from '../../db/models/business/Events'
 
 // --
 
@@ -11,8 +13,10 @@ export default async (app: App) => {
       preValidation: [app.authenticate()]
     },
     async function logout(req: AuthenticatedRequest, res) {
-      app.redis.set(getTokenBlacklistKey(req.auth.tokenID), req.auth.userID)
-      // todo: Return clear cookies
+      const ttl = (Date.now() - req.auth.sessionExpiresAt.getTime()) / 1000
+      await blacklistToken(app.redis, req.auth.tokenID, req.auth.userID, ttl)
+      await logEvent(app.db, EventTypes.logout, req)
+      clearJwtCookies(res)
       res.status(202).send()
     }
   )

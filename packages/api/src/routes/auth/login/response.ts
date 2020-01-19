@@ -1,16 +1,18 @@
 import nanoid from 'nanoid'
-import {
-  findLoginChallenge,
-  isChallengeExpired
-} from '../../../db/models/auth/LoginChallengesSRP'
 import { serverLoginResponse } from '../../../auth/srp'
-import { deleteLoginChallenge } from '../../../db/models/auth/LoginChallengesSRP'
 import { logEvent, EventTypes } from '../../../db/models/business/Events'
 import { findUser } from '../../../db/models/auth/Users'
+import { findSrpChallenge, cleanupSrpChallenge } from '../../../redis/srp'
 import { Session as SrpSession } from 'secure-remote-password/server'
 import { setJwtCookies } from '../../../auth/cookies'
 import { App } from '../../../types'
-import { AuthClaims, Plans, TwoFactorStatus } from '../../../exports/defs'
+import {
+  AuthClaims,
+  Plans,
+  TwoFactorStatus,
+  maxAgeInSeconds,
+  getExpirationDate
+} from '../../../exports/defs'
 import {
   loginResponseParametersSchema,
   LoginResponseParameters,
@@ -35,23 +37,14 @@ export default async (app: App) => {
         proof: clientProof
       } = req.body
 
-      const challenge = await findLoginChallenge(app.db, challengeID)
-      if (!challenge) {
-        throw app.httpErrors.notFound('Invalid challenge ID')
+      const serverEphemeral = await findSrpChallenge(
+        app.redis,
+        userID,
+        challengeID
+      )
+      if (!serverEphemeral) {
+        throw app.httpErrors.notFound('Invalid challenge ID or timeout')
       }
-      if (challenge.userID !== userID) {
-        throw app.httpErrors.forbidden('Invalid user for this challenge')
-      }
-
-      if (isChallengeExpired(challenge)) {
-        try {
-          await deleteLoginChallenge(app.db, challenge.id)
-        } catch (error) {
-          req.log.error({ msg: 'Failed to cleanup expired challenge', error })
-        }
-        throw app.httpErrors.requestTimeout('Challenge response timeout')
-      }
-
       const user = await findUser(app.db, userID)
       if (!user) {
         throw app.httpErrors.notFound('User not found')
@@ -60,33 +53,33 @@ export default async (app: App) => {
       let srpSession: SrpSession = null
       try {
         srpSession = serverLoginResponse(
-          challenge.ephemeralSecret,
+          serverEphemeral,
           clientEphemeral,
           user.srpSalt,
           user.username,
           user.srpVerifier,
           clientProof
         )
+        await cleanupSrpChallenge(app.redis, userID, challengeID)
       } catch (error) {
         req.log.error({ msg: 'SRP login response failure', error })
         throw app.httpErrors.unauthorized('Incorrect username or password')
-      } finally {
-        // Cleanup
-        await deleteLoginChallenge(app.db, challenge.id)
       }
 
       const twoFactorRequired =
         user.twoFactorStatus === TwoFactorStatus.verified
 
+      const now = new Date()
       const claims: AuthClaims = {
         tokenID: nanoid(),
         userID,
         plan: Plans.free, // todo: Pull from user entry in database
         twoFactorStatus: twoFactorRequired
           ? TwoFactorStatus.enabled // Will need to be verified
-          : TwoFactorStatus.disabled
+          : TwoFactorStatus.disabled,
+        sessionExpiresAt: getExpirationDate(maxAgeInSeconds.session, now)
       }
-      setJwtCookies(claims, res)
+      setJwtCookies(claims, res, now)
 
       const masterSalt = twoFactorRequired ? undefined : user.masterSalt
 

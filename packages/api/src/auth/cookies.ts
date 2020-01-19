@@ -6,8 +6,12 @@ import { createJwt } from './jwt'
 
 // --
 
-export function setJwtCookies(claims: AuthClaims, res: FastifyReply<any>) {
-  const token = createJwt(claims, { expiresIn: '7d' })
+export function setJwtCookies(
+  claims: AuthClaims,
+  res: FastifyReply<any>,
+  now: Date
+) {
+  const token = createJwt(claims, now)
   const [header, payload, signature] = token.split('.')
 
   // Allow overriding for local non-https testing of production builds
@@ -17,12 +21,32 @@ export function setJwtCookies(claims: AuthClaims, res: FastifyReply<any>) {
 
   res.setCookie(CookieNames.jwt, [header, payload].join('.'), {
     path: '/',
-    maxAge: maxAgeInSeconds.session,
+    expires: claims.sessionExpiresAt,
     sameSite: 'strict',
     secure,
     httpOnly: false // Accessible in the front-end via JS
   })
   res.setCookie(CookieNames.sig, signature, {
+    path: '/',
+    sameSite: 'strict',
+    secure,
+    httpOnly: true // Hidden to the front-end
+  })
+}
+
+export function clearJwtCookies(res: FastifyReply<any>) {
+  // Allow overriding for local non-https testing of production builds
+  const secure =
+    process.env.NODE_ENV !== 'development' &&
+    process.env.CHIFFRE_API_INSECURE_COOKIES !== 'true'
+
+  res.clearCookie(CookieNames.jwt, {
+    path: '/',
+    sameSite: 'strict',
+    secure,
+    httpOnly: false // Accessible in the front-end via JS
+  })
+  res.clearCookie(CookieNames.sig, {
     path: '/',
     sameSite: 'strict',
     secure,

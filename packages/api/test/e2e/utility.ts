@@ -1,4 +1,3 @@
-import { CronJob } from 'cron'
 import dotenv from 'dotenv'
 import axios, { AxiosInstance } from 'axios'
 import { createServer, startServer } from '../../src/server'
@@ -8,7 +7,6 @@ import path from 'path'
 export interface TestContext {
   server: App
   api: AxiosInstance
-  crons: CronJob[]
 }
 
 export async function setup(): Promise<TestContext> {
@@ -18,7 +16,7 @@ export async function setup(): Promise<TestContext> {
 
   const port = parseInt(process.env.PORT) || 4000
   const server = createServer()
-  const crons = await startServer(server, port)
+  await startServer(server, port)
   const api = axios.create({
     baseURL: process.env.API_URL,
     validateStatus: () => true
@@ -29,5 +27,5 @@ export async function setup(): Promise<TestContext> {
   } catch (e) {
     console.error(e)
   }
-  return { server, api, crons }
+  return { server, api }
 }

@@ -36,7 +36,6 @@
     "@sentry/node": "^5.11.1",
     "base32-decode": "^1.0.0",
     "base32-encode": "^1.1.1",
-    "cron": "^1.7.2",
     "dotenv": "^8.2.0",
     "env-alias": "^1.0.0",
     "fastify": "^2.11.0",
@@ -58,7 +57,7 @@
     "under-pressure": "^3.2.1"
   },
   "devDependencies": {
-    "@types/cron": "^1.7.1",
+    "@types/jsonwebtoken": "^8.3.6",
     "@types/nanoid": "^2.1.0",
     "@types/pino": "^5.15.1",
     "@types/pino-http": "^4.3.2",

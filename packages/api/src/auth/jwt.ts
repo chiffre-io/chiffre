@@ -3,24 +3,19 @@ import { AuthClaims, Plans, TwoFactorStatus } from '../exports/defs'
 
 interface Payload {
   sub: string
-  plan: Plans
   jti: string
+  exp: number
+  plan: Plans
   '2fa': TwoFactorStatus
 }
 
-interface CreateJwtOptions {
-  expiresIn?: string
-}
-
-export function createJwt(claims: AuthClaims, options: CreateJwtOptions = {}) {
+export function createJwt(claims: AuthClaims, now: Date) {
   const signOptions: jwt.SignOptions = {
     algorithm: 'HS512',
     issuer: process.env.JWT_ISSUER,
     jwtid: claims.tokenID,
-    subject: claims.userID
-  }
-  if (options.expiresIn) {
-    signOptions.expiresIn = options.expiresIn
+    subject: claims.userID,
+    expiresIn: (claims.sessionExpiresAt.getTime() - now.getTime()) / 1000
   }
 
   const token = jwt.sign(
@@ -40,13 +35,10 @@ export function verifyJwt(token: string): AuthClaims {
     issuer: process.env.JWT_ISSUER
   }) as Payload
   return {
+    plan: payload.plan,
     userID: payload.sub,
     tokenID: payload.jti,
-    plan: payload.plan,
-    twoFactorStatus: payload['2fa']
+    twoFactorStatus: payload['2fa'],
+    sessionExpiresAt: new Date(payload.exp)
   }
-}
-
-export function getTokenBlacklistKey(tokenID: string) {
-  return `token:blacklist:${tokenID}`
 }

@@ -1,6 +1,5 @@
 import checkEnv from '@47ng/check-env'
 import Fastify from 'fastify'
-import setupCronTasks from './cron'
 import { getLoggerOptions, genReqId } from './logger'
 import sensible from 'fastify-sensible'
 import gracefulShutdown from 'fastify-graceful-shutdown'
@@ -187,6 +186,5 @@ export async function startServer(app: App, port: number) {
       }
     })
   })
-  await app.ready()
-  return setupCronTasks(app)
+  return await app.ready()
 }

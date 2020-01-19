@@ -1,6 +1,6 @@
 import { serverLoginChallenge } from '../../../auth/srp'
 import { findUserByUsername } from '../../../db/models/auth/Users'
-import { saveLoginChallenge } from '../../../db/models/auth/LoginChallengesSRP'
+import { saveSrpChallenge } from '../../../redis/srp'
 import { App } from '../../../types'
 import {
   loginChallengeParametersSchema,
@@ -29,12 +29,11 @@ export default async (app: App) => {
       }
 
       const serverEphemeral = serverLoginChallenge(user.srpVerifier)
-      const challengeID = await saveLoginChallenge(
-        app.db,
+      const { challengeID } = await saveSrpChallenge(
+        app.redis,
         user.id,
         serverEphemeral.secret
       )
-
       const body: LoginChallengeResponseBody = {
         userID: user.id,
         challengeID,

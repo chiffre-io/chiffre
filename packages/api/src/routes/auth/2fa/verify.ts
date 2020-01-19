@@ -3,7 +3,12 @@ import { AuthenticatedRequest } from '../../../plugins/auth'
 import { logEvent, EventTypes } from '../../../db/models/business/Events'
 import { findUser, markTwoFactorVerified } from '../../../db/models/auth/Users'
 import { verifyTwoFactorToken, generateBackupCodes } from '../../../auth/2fa'
-import { AuthClaims, TwoFactorStatus } from '../../../exports/defs'
+import {
+  AuthClaims,
+  TwoFactorStatus,
+  maxAgeInSeconds,
+  getExpirationDate
+} from '../../../exports/defs'
 import { setJwtCookies } from '../../../auth/cookies'
 import {
   TwoFactorVerifyParameters,
@@ -58,11 +63,14 @@ export default async (app: App) => {
         backupCodes
       }
 
+      const now = new Date()
       const claims: AuthClaims = {
         ...req.auth,
-        twoFactorStatus: TwoFactorStatus.verified
+        twoFactorStatus: TwoFactorStatus.verified,
+        // Refresh expiration time
+        sessionExpiresAt: getExpirationDate(maxAgeInSeconds.session, now)
       }
-      setJwtCookies(claims, res)
+      setJwtCookies(claims, res, now)
       await logEvent(app.db, EventTypes.twoFactorStatusChanged, req, {
         from: req.auth.twoFactorStatus,
         to: claims.twoFactorStatus

@@ -43,6 +43,7 @@ export interface AuthClaims {
   tokenID: string
   plan: Plans
   twoFactorStatus: TwoFactorStatus
+  sessionExpiresAt: Date
 }
 
 export enum CookieNames {
@@ -67,6 +68,7 @@ export function parseJwtPayload(jwtPayload: string): AuthClaims {
     plan: payload.plan,
     userID: payload.sub,
     tokenID: payload.jti,
-    twoFactorStatus: payload['2fa']
+    twoFactorStatus: payload['2fa'],
+    sessionExpiresAt: new Date(payload.exp)
   }
 }
