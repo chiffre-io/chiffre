@@ -15,7 +15,7 @@ export async function blacklistToken(
 ) {
   const key = getTokenBlacklistKey(tokenID)
   return new Promise((resolve, reject) => {
-    redis.setex(key, expiresInSeconds, userID, (err, result) => {
+    redis.setex(key, Math.ceil(expiresInSeconds), userID, (err, result) => {
       if (err) return reject(err)
       resolve(result)
     })

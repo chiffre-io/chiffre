@@ -6,8 +6,8 @@
   ],
   "scripts": {
     "dev": "yarn wsrun -m dev",
-    "dev:setup": "./scripts/dev-start.sh",
-    "dev:teardown": "./scripts/dev-stop.sh",
+    "dev:start": "./scripts/dev-start.sh",
+    "dev:stop": "./scripts/dev-stop.sh",
     "clean": "yarn wsrun -m clean && rm -rf ./node_modules",
     "build": "yarn wsrun -mt build",
     "ci": "yarn wsrun -ms ci"
