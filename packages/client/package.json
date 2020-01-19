@@ -7,10 +7,10 @@
   "scripts": {
     "clean": "rm -rf ./coverage ./dist ./node_modules",
     "build": "tsc",
-    "e2e:db:start": "../api/scripts/start-e2e-db.sh",
-    "e2e:db:stop": "../api/scripts/stop-e2e-db.sh",
+    "e2e:setup": "../../scripts/e2e-start.sh",
+    "e2e:teardown": "../../scripts/e2e-stop.sh",
     "e2e:test": "jest e2e --runInBand --verbose --coverage",
-    "ci": "run-s e2e:db:start e2e:test e2e:db:stop build"
+    "ci": "run-s e2e:setup e2e:test e2e:teardown build"
   },
   "dependencies": {
     "@47ng/cloak": "^0.15.0",
@@ -18,7 +18,6 @@
     "@chiffre/crypto-base": "^0.0.1",
     "@chiffre/crypto-client": "^0.0.1",
     "axios": "^0.19.1",
-    "mitt": "^1.2.0",
     "session-keystore": "^0.6.0"
   },
   "devDependencies": {

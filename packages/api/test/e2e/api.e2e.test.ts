@@ -19,7 +19,6 @@ afterAll(async () => {
     cron.stop()
   }
   await ctx.server.close()
-  await ctx.server.db.destroy()
 })
 
 // -----------------------------------------------------------------------------

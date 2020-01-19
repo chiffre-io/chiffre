@@ -18,7 +18,6 @@ afterAll(async () => {
   }
   ctx.client.lock()
   await ctx.server.close()
-  await ctx.server.db.destroy()
 })
 
 // -----------------------------------------------------------------------------

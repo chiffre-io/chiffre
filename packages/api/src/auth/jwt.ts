@@ -46,3 +46,7 @@ export function verifyJwt(token: string): AuthClaims {
     twoFactorStatus: payload['2fa']
   }
 }
+
+export function getTokenBlacklistKey(tokenID: string) {
+  return `token:blacklist:${tokenID}`
+}

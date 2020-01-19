@@ -10,7 +10,8 @@ import {
 } from 'fastify'
 import fastifyCookie from 'fastify-cookie'
 import { IncomingMessage } from 'http'
-import { verifyJwt } from '../auth/jwt'
+import { App } from '../types'
+import { verifyJwt, getTokenBlacklistKey } from '../auth/jwt'
 import { AuthClaims, TwoFactorStatus, CookieNames } from '../exports/defs'
 
 export type AuthenticatedRequest<
@@ -38,7 +39,7 @@ function recomposeTokenFromCookies(app: FastifyInstance, req: FastifyRequest) {
   return [claims, signature].join('.')
 }
 
-export default fp((app, _, next) => {
+export default fp((app: App, _, next) => {
   app.register(fastifyCookie)
   app.decorate(
     'authenticate',
@@ -63,6 +64,23 @@ export default fp((app, _, next) => {
           // Do not accept invalid or unverified 2FA sessions
           throw new Error('Invalid or unverified 2FA status')
         }
+        await new Promise((resolve, reject) => {
+          app.redis.get(
+            getTokenBlacklistKey(claims.tokenID),
+            (error, value) => {
+              if (error) {
+                req.log.error(error)
+                // todo: Pass the error to Sentry ?
+                return resolve() // Fail open
+              }
+              if (value === claims.userID) {
+                // Token is blacklisted
+                return reject('Session has expired')
+              }
+              resolve()
+            }
+          )
+        })
         req.auth = claims
       } catch (error) {
         req.log.error(error)

@@ -19,6 +19,7 @@ export default async function loadRoutes(app: App) {
   loadRoute(app, './auth/2fa/enable')
   loadRoute(app, './auth/2fa/verify')
   loadRoute(app, './auth/2fa/disable')
+  loadRoute(app, './auth/logout')
   loadRoute(app, './keychain')
   loadRoute(app, './vaults')
   loadRoute(app, './projects')

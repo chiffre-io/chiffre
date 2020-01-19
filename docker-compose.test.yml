@@ -1,0 +1,24 @@
+# Compose file for E2E testing, used by the API and the client.
+
+version: '3'
+
+services:
+  db:
+    image: postgres:11.1
+    ports:
+      - '15432:5432'
+    environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=chiffre-test
+
+  redis:
+    image: redis:5.0-alpine
+    ports:
+      - '16379:6379'
+
+  wait:
+    image: jwilder/dockerize
+    command: dockerize -wait tcp://db:5432 -wait tcp://redis:6379
+    links:
+      - db
+      - redis

@@ -7,8 +7,8 @@
   "scripts": {
     "clean": "rm -rf ./coverage ./dist ./node_modules",
     "dev": "nodemon -e ts,.env -w .env -w ./src ./src/main.ts",
-    "build": "run-s build:tsc build:types build:exports build:index",
-    "build:tsc": "tsc",
+    "build": "run-s build:self build:types build:exports build:index",
+    "build:self": "tsc",
     "build:types": "cp -rf ../api-types/dist/* ./dist/",
     "build:exports": "cp -rf ./dist/exports/* ../api-types/dist/exports/",
     "build:index": "cp -rf ./dist/index.js ../api-types/dist/",
@@ -23,10 +23,10 @@
     "db:rotate-keys": "ts-node ./src/db/operations/rotateCloak.ts",
     "db:new-key": "cloak generate",
     "decloak": "echo $(pbpaste) | cloak decrypt",
-    "e2e:db:start": "./scripts/start-e2e-db.sh",
-    "e2e:db:stop": "./scripts/stop-e2e-db.sh",
+    "e2e:setup": "../../scripts/e2e-start.sh",
+    "e2e:teardown": "../../scripts/e2e-stop.sh",
     "e2e:test": "jest e2e --runInBand --verbose --coverage",
-    "ci": "run-s e2e:db:start e2e:test e2e:db:stop build"
+    "ci": "run-s e2e:setup e2e:test e2e:teardown build"
   },
   "dependencies": {
     "@47ng/check-env": "^2.0.0",
@@ -53,6 +53,7 @@
     "otplib": "^12.0.0-1",
     "pg": "^7.17.0",
     "redact-env": "^0.2.0",
+    "redis": "^2.8.0",
     "sonic-boom": "^0.7.6",
     "under-pressure": "^3.2.1"
   },
@@ -61,6 +62,7 @@
     "@types/nanoid": "^2.1.0",
     "@types/pino": "^5.15.1",
     "@types/pino-http": "^4.3.2",
+    "@types/redis": "^2.8.14",
     "autocannon": "^4.4.2",
     "nodemon": "^2.0.2"
   },

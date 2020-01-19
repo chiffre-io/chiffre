@@ -16,6 +16,7 @@ export function createServer(): App {
       'API_URL',
       'DATABASE_URI',
       'DATABASE_MAX_CONNECTIONS',
+      'REDIS_URI',
       'LOG_INSTANCE_ID',
       'LOG_COMMIT',
       'CLOAK_MASTER_KEY',
@@ -112,6 +113,7 @@ export function createServer(): App {
   // Local plugins
   app.register(require('./plugins/auth').default)
   app.register(require('./plugins/database').default)
+  app.register(require('./plugins/redis').default)
   app.register(require('./plugins/sentry').default)
   app.register(
     fp((ctx: App, _, next) => {
@@ -153,6 +155,22 @@ export function createServer(): App {
     app.swagger()
   })
 
+  app.addHook('onClose', async (app: App, done) => {
+    app.log.info('Closing connections to the datastores')
+    await Promise.all([
+      await new Promise(resolve =>
+        app.redis.quit((err, ok) => {
+          if (err) {
+            app.log.error(err)
+          }
+          return resolve(ok)
+        })
+      ),
+      app.db.destroy()
+    ])
+    app.log.info('Closed all connections to the datastores')
+    done()
+  })
   return app as App
 }
 
