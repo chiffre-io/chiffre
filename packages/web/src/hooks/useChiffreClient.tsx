@@ -1,7 +1,6 @@
 import React from 'react'
 import Client from '@chiffre/client'
 import { ClientOptions, TwoFactorSettings } from '@chiffre/client'
-import mitt from 'mitt'
 
 interface ContextState {
   client: Client
@@ -21,6 +20,8 @@ const stubClient = {
   projects: []
 }
 
+let client: Client = null
+
 const ClientContext = React.createContext<ContextState>({
   client: stubClient as Client
 })
@@ -29,7 +30,6 @@ export const ChiffreClientProvider: React.FC<ClientOptions> = ({
   children,
   ...options
 }) => {
-  const [client, setClient] = React.useState<Client>(stubClient as Client)
   const [counter, setCounter] = React.useState(0)
 
   const onLocked = React.useCallback(() => {
@@ -46,31 +46,28 @@ export const ChiffreClientProvider: React.FC<ClientOptions> = ({
   }, [])
 
   React.useEffect(() => {
-    let emitter = mitt()
-
+    if (client !== null) {
+      return
+    }
     import(/* webpackChunkName: "chiffre-client" */ '@chiffre/client').then(
       module => {
-        const Class = (module.default as any).default
-        setClient(
-          new Class({
-            ...options,
-            emitter,
-            onLocked,
-            onUpdate
-          })
-        )
+        console.info('Building the Chiffre client')
+        client = new module.default({
+          ...options,
+          onLocked,
+          onUpdate
+        })
+        onUpdate()
       }
     )
-
-    return () => {
-      emitter.emit('unload')
-    }
   }, [])
 
-  const state = React.useMemo<ContextState>(() => ({ client }), [
-    client,
-    counter
-  ])
+  const state = React.useMemo<ContextState>(
+    () => ({
+      client: client === null ? (stubClient as Client) : client
+    }),
+    [client, counter]
+  )
   return (
     <ClientContext.Provider value={state}>{children}</ClientContext.Provider>
   )

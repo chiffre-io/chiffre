@@ -1,6 +1,5 @@
 import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios'
 import SessionKeystore from 'session-keystore'
-import mitt from 'mitt'
 import {
   generateKey,
   encryptString,
@@ -83,8 +82,6 @@ export interface ClientOptions {
    * Callback function when the keychain self-locks after some amount of time.
    */
   onLocked?: () => void
-
-  emitter?: mitt.Emitter
 }
 
 // --
@@ -228,11 +225,6 @@ export default class Client {
         this.lock()
         options.onLocked()
       }
-    }
-    if (options.emitter) {
-      options.emitter.on('unload', () => {
-        this.#keystore.persist.bind(this.#keystore)()
-      })
     }
   }
 
