@@ -7,7 +7,8 @@ import gracefulShutdown from 'fastify-graceful-shutdown'
 import cors from 'fastify-cors'
 import swagger from 'fastify-swagger'
 import underPressure from 'under-pressure'
-import { App } from './types'
+import { App, Route } from './types'
+import fp from 'fastify-plugin'
 
 export function createServer(): App {
   checkEnv({
@@ -112,6 +113,20 @@ export function createServer(): App {
   app.register(require('./plugins/auth').default)
   app.register(require('./plugins/database').default)
   app.register(require('./plugins/sentry').default)
+  app.register(
+    fp((ctx: App, _, next) => {
+      const routes: Route[] = []
+      ctx.decorate('routes', routes)
+      ctx.addHook('onRoute', route => {
+        ctx.routes.push({
+          path: route.path,
+          method: route.method.toString(),
+          auth: !!route.preValidation
+        })
+      })
+      next()
+    })
+  )
 
   app.get('/', { logLevel: 'silent' }, (_req, res) => {
     // Handle Clever Cloud health checks (no logging)
@@ -125,6 +140,13 @@ export function createServer(): App {
 
   if (process.env.NODE_ENV === 'development') {
     app.ready(() => console.info(app.printRoutes()))
+  } else {
+    app.ready(() =>
+      app.log.info({
+        msg: 'Routes loaded',
+        routes: (app as App).routes
+      })
+    )
   }
 
   app.ready(() => {
