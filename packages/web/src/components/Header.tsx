@@ -26,7 +26,9 @@ const UserAvatar = ({ ...props }) => {
           {client.identity?.username}
         </Text>
         <Box fontSize="sm" color="gray.400" ml="auto">
-          <Link href="#">Log out</Link>
+          <Link href="#" onClick={() => client.logout()}>
+            Log out
+          </Link>
           <Text color="gray.600" as="span">
             {' '}
             -{' '}

@@ -29,7 +29,7 @@ const globalConfig = (theme: any) => ({
 })
 
 const ChiffreContext: React.FC = ({ children }) => {
-  const redirectToLogin = useRedirectToLogin()
+  const redirectToLogin = useRedirectToLogin('/dashboard')
   return (
     <ChiffreClientProvider
       apiURL={process.env.API_URL}
