@@ -16,6 +16,7 @@ export function createServer(): App {
   checkEnv({
     required: [
       'API_URL',
+      process.env.NODE_ENV === 'production' ? 'APP_URL' : null,
       'DATABASE_URI',
       'DATABASE_MAX_CONNECTIONS',
       'REDIS_URI',
@@ -26,7 +27,7 @@ export function createServer(): App {
       'CLOAK_CURRENT_KEY',
       'JWT_SECRET',
       'JWT_ISSUER'
-    ],
+    ].filter(x => !!x),
     unsafe: [
       'DEBUG',
       'CHIFFRE_API_DISABLE_CLOAK',
