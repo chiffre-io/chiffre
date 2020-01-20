@@ -5,7 +5,7 @@
     "packages/**"
   ],
   "scripts": {
-    "dev": "yarn wsrun -m dev",
+    "dev": "yarn wsrun -m --no-prefix dev",
     "dev:start": "./scripts/dev-start.sh",
     "dev:stop": "./scripts/dev-stop.sh",
     "clean": "yarn wsrun -m clean && rm -rf ./node_modules",
