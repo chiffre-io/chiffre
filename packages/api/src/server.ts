@@ -5,9 +5,12 @@ import sensible from 'fastify-sensible'
 import gracefulShutdown from 'fastify-graceful-shutdown'
 import cors from 'fastify-cors'
 import swagger from 'fastify-swagger'
+import rateLimit from 'fastify-rate-limit'
 import underPressure from 'under-pressure'
 import { App, Route } from './types'
 import fp from 'fastify-plugin'
+import { AuthenticatedRequest } from './plugins/auth'
+import { Plans } from './exports/defs'
 
 export function createServer(): App {
   checkEnv({
@@ -68,29 +71,14 @@ export function createServer(): App {
       info: {
         title: 'Chiffre API',
         description: 'API for the Chiffre.io service',
-        version: '0.0.1'
+        version: process.env.LOG_COMMIT
       },
-      // externalDocs: {
-      //   url: 'https://swagger.io',
-      //   description: 'Find more info here'
-      // },
       host: (process.env.API_URL || '')
         .replace('https://', '')
         .replace('http://', ''),
       schemes: [process.env.NODE_ENV === 'production' ? 'https' : 'http'],
       consumes: ['application/json'],
-      produces: ['application/json'],
-      // tags: [
-      //   { name: 'user', description: 'User related end-points' },
-      //   { name: 'code', description: 'Code related end-points' }
-      // ],
-      securityDefinitions: {
-        apiKey: {
-          type: 'apiKey',
-          name: 'apiKey',
-          in: 'header'
-        }
-      }
+      produces: ['application/json']
     },
     exposeRoute: true
   })
@@ -115,6 +103,23 @@ export function createServer(): App {
     })
   )
 
+  app.register(
+    fp((app: App, _, next) => {
+      app.register(rateLimit, {
+        global: false,
+        redis: app.redis.rateLimiting,
+        whitelist: function rateLimitWhitelist(req: AuthenticatedRequest) {
+          if (req.auth) {
+            // Example of authorization-based limiting
+            return req.auth.plan === Plans.unlimited
+          }
+          return false
+        }
+      })
+      next()
+    })
+  )
+
   app.register(underPressure, {
     maxEventLoopDelay: 1000, // 1s
     // maxHeapUsedBytes: 100 * (1 << 20), // 100 MiB
@@ -129,10 +134,25 @@ export function createServer(): App {
     healthCheck: async () => {
       try {
         await app.db.raw('select 1')
-        // todo: Test Redis connection
+        if (app.redis.srpChallenges.status !== 'ready') {
+          throw new Error(
+            `Redis status (SRP): ${app.redis.srpChallenges.status}`
+          )
+        }
+        if (app.redis.tokenBlacklist.status !== 'ready') {
+          throw new Error(
+            `Redis status (Token Blacklist): ${app.redis.tokenBlacklist.status}`
+          )
+        }
+        if (app.redis.rateLimiting.status !== 'ready') {
+          throw new Error(
+            `Redis status (Rate Limit): ${app.redis.rateLimiting.status}`
+          )
+        }
         return true
       } catch (error) {
-        console.error(error)
+        app.log.error(error)
+        app.sentry.report(error)
         return false
       }
     }
@@ -169,14 +189,9 @@ export function createServer(): App {
   app.addHook('onClose', async (app: App, done) => {
     app.log.info('Closing connections to the datastores')
     await Promise.all([
-      await new Promise(resolve =>
-        app.redis.quit((err, ok) => {
-          if (err) {
-            app.log.error(err)
-          }
-          return resolve(ok)
-        })
-      ),
+      app.redis.rateLimiting.quit(),
+      app.redis.srpChallenges.quit(),
+      app.redis.tokenBlacklist.quit(),
       app.db.destroy()
     ])
     app.log.info('Closed all connections to the datastores')

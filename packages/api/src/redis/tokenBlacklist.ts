@@ -1,11 +1,5 @@
-import redis from 'redis'
+import { Redis } from 'ioredis'
 import { maxAgeInSeconds } from '../exports/defs'
-
-type Redis = redis.RedisClient
-
-function getTokenBlacklistKey(tokenID: string) {
-  return `token:blacklist:${tokenID}`
-}
 
 export async function blacklistToken(
   redis: Redis,
@@ -13,13 +7,7 @@ export async function blacklistToken(
   userID: string,
   expiresInSeconds: number = maxAgeInSeconds.session
 ) {
-  const key = getTokenBlacklistKey(tokenID)
-  return new Promise((resolve, reject) => {
-    redis.setex(key, Math.ceil(expiresInSeconds), userID, (err, result) => {
-      if (err) return reject(err)
-      resolve(result)
-    })
-  })
+  return await redis.setex(tokenID, Math.ceil(expiresInSeconds), userID)
 }
 
 export async function isTokenBlacklisted(
@@ -27,11 +15,6 @@ export async function isTokenBlacklisted(
   tokenID: string,
   userID: string
 ): Promise<boolean> {
-  const key = getTokenBlacklistKey(tokenID)
-  return new Promise((resolve, reject) => {
-    redis.get(key, (err, result) => {
-      if (err) return reject(err)
-      resolve(result === userID)
-    })
-  })
+  const res = await redis.get(tokenID)
+  return res === userID
 }

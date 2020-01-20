@@ -68,14 +68,14 @@ export default fp((app: App, _, next) => {
         let blacklisted: boolean = false
         try {
           blacklisted = await isTokenBlacklisted(
-            app.redis,
+            app.redis.tokenBlacklist,
             claims.tokenID,
             claims.userID
           )
         } catch (error) {
           // Fail open, log the error & report it to Sentry
           req.log.error(error)
-          app.sentry.report(req, error)
+          app.sentry.report(error, req)
         }
         if (blacklisted) {
           throw new Error('Session has expired')

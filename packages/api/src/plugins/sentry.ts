@@ -8,7 +8,7 @@ import { App } from '../types'
 type Request = FastifyRequest & Partial<AuthenticatedRequest>
 
 export interface SentryReporter {
-  report: (req: Request, error: Error) => Promise<void>
+  report: (error: Error, req?: Request) => Promise<void>
 }
 
 export default fp((app: App, _, next) => {
@@ -20,27 +20,27 @@ export default fp((app: App, _, next) => {
   })
 
   const reporter: SentryReporter = {
-    async report(req, error) {
+    async report(error, req) {
       let user: User
-      if (req.auth) {
+      if (req?.auth) {
         try {
           user = await findUser(app.db, req.auth.userID)
         } catch {}
       }
       Sentry.withScope(scope => {
         scope.setUser({
-          id: req.auth?.userID || 'no auth provided',
+          id: req?.auth?.userID || 'no auth provided',
           username: user?.username || 'no auth provided'
         })
         scope.setTags({
-          path: req.raw.url,
+          path: req?.raw.url,
           instance: process.env.LOG_INSTANCE_ID
         })
         scope.setExtras({
-          'token ID': req.auth?.tokenID || 'no auth provided',
-          '2FA': req.auth?.twoFactorStatus || 'no auth provided',
-          plan: req.auth?.plan || 'no auth provided',
-          'request ID': req.id
+          'token ID': req?.auth?.tokenID || 'no auth provided',
+          '2FA': req?.auth?.twoFactorStatus || 'no auth provided',
+          plan: req?.auth?.plan || 'no auth provided',
+          'request ID': req?.id
         })
         Sentry.captureException(error)
       })
@@ -68,7 +68,7 @@ export default fp((app: App, _, next) => {
     }
 
     // Report the error to Sentry
-    await app.sentry.report(req, error)
+    await app.sentry.report(error, req)
 
     // Pass to the generic error handler (500)
     return res.send(error)

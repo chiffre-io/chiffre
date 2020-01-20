@@ -2,8 +2,8 @@ import { Server, IncomingMessage, ServerResponse } from 'http'
 import { FastifyInstance } from 'fastify'
 import Knex from 'knex'
 import { Authenticate } from './plugins/auth'
-import redis from 'redis'
 import type { SentryReporter } from './plugins/sentry'
+import type { RedisInstances } from './plugins/redis'
 
 export interface Route {
   path: string
@@ -14,7 +14,7 @@ export interface Route {
 export type App = FastifyInstance<Server, IncomingMessage, ServerResponse> & {
   routes: Route[]
   db: Knex
-  redis: redis.RedisClient
+  redis: RedisInstances
   authenticate: Authenticate
   sentry: SentryReporter
 }

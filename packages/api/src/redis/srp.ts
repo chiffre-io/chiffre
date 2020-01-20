@@ -1,10 +1,8 @@
-import redis from 'redis'
+import { Redis } from 'ioredis'
 import nanoid from 'nanoid'
 
-type Redis = redis.RedisClient
-
 function getSrpChallengeKey(userID: string, challengeID: string) {
-  return `srp:challenge:${userID}.${challengeID}`
+  return `${userID}.${challengeID}`
 }
 
 export interface SaveSrpChallengeReturn {
@@ -17,19 +15,12 @@ export async function saveSrpChallenge(
   srpEphemeral: string
 ) {
   const challengeID = nanoid()
-  return new Promise<SaveSrpChallengeReturn>((resolve, reject) => {
-    redis.setex(
-      getSrpChallengeKey(userID, challengeID),
-      5 * 60, // SRP challenges auto-expire after 5 minutes
-      srpEphemeral,
-      err => {
-        if (err) return reject(err)
-        resolve({
-          challengeID
-        })
-      }
-    )
-  })
+  await redis.setex(
+    getSrpChallengeKey(userID, challengeID),
+    5 * 60, // SRP challenges auto-expire after 5 minutes
+    srpEphemeral
+  )
+  return challengeID
 }
 
 // --
@@ -40,12 +31,7 @@ export async function findSrpChallenge(
   challengeID: string
 ): Promise<string | null> {
   const key = getSrpChallengeKey(userID, challengeID)
-  return new Promise((resolve, reject) => {
-    redis.get(key, (err, value) => {
-      if (err) return reject(err)
-      resolve(value)
-    })
-  })
+  return await redis.get(key)
 }
 
 // --
@@ -56,10 +42,6 @@ export async function cleanupSrpChallenge(
   challengeID: string
 ) {
   const key = getSrpChallengeKey(userID, challengeID)
-  return new Promise<boolean>((resolve, reject) => {
-    redis.del(key, (err, value) => {
-      if (err) return reject(err)
-      resolve(value === 1)
-    })
-  })
+  const res = await redis.del(key)
+  return res === 1
 }

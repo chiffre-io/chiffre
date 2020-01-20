@@ -33,7 +33,7 @@ export default async (app: App) => {
       } = req.body
 
       const serverEphemeral = await findSrpChallenge(
-        app.redis,
+        app.redis.srpChallenges,
         userID,
         challengeID
       )
@@ -55,7 +55,7 @@ export default async (app: App) => {
           user.srpVerifier,
           clientProof
         )
-        await cleanupSrpChallenge(app.redis, userID, challengeID)
+        await cleanupSrpChallenge(app.redis.srpChallenges, userID, challengeID)
       } catch (error) {
         req.log.error({ msg: 'SRP login response failure', error })
         throw app.httpErrors.unauthorized('Incorrect username or password')

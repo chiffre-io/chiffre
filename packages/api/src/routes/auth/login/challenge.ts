@@ -29,8 +29,8 @@ export default async (app: App) => {
       }
 
       const serverEphemeral = serverLoginChallenge(user.srpVerifier)
-      const { challengeID } = await saveSrpChallenge(
-        app.redis,
+      const challengeID = await saveSrpChallenge(
+        app.redis.srpChallenges,
         user.id,
         serverEphemeral.secret
       )
