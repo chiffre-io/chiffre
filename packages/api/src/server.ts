@@ -34,30 +34,16 @@ export function createServer(): App {
 
   const app = Fastify({
     logger: getLoggerOptions(),
-    // todo: Fix type when swithcing to Fastify 3.x
+    // todo: Fix type when switching to Fastify 3.x
     genReqId: genReqId as any,
     trustProxy: process.env.TRUSTED_PROXY_IPS || false
-  })
+  }) as App
 
   // Plugins
   app.register(sensible)
   if (process.env.CHIFFRE_API_DISABLE_GRACEFUL_SHUTDOWN !== 'true') {
     app.register(gracefulShutdown)
   }
-  app.register(underPressure, {
-    maxEventLoopDelay: 1000, // 1s
-    // maxHeapUsedBytes: 100 * (1 << 20), // 100 MiB
-    // maxRssBytes: 100 * (1 << 20), // 100 MiB
-    exposeStatusRoute: {
-      url: '/_health',
-      routeOpts: {
-        logLevel: 'warn'
-      }
-    },
-    healthCheck: async () => {
-      return true
-    }
-  })
   app.register(cors, {
     origin:
       process.env.NODE_ENV === 'production'
@@ -110,16 +96,16 @@ export function createServer(): App {
   })
 
   // Local plugins
-  app.register(require('./plugins/auth').default)
   app.register(require('./plugins/database').default)
   app.register(require('./plugins/redis').default)
+  app.register(require('./plugins/auth').default)
   app.register(require('./plugins/sentry').default)
   app.register(
-    fp((ctx: App, _, next) => {
+    fp((app: App, _, next) => {
       const routes: Route[] = []
-      ctx.decorate('routes', routes)
-      ctx.addHook('onRoute', route => {
-        ctx.routes.push({
+      app.decorate('routes', routes)
+      app.addHook('onRoute', route => {
+        app.routes.push({
           path: route.path,
           method: route.method.toString(),
           auth: !!route.preValidation
@@ -129,12 +115,38 @@ export function createServer(): App {
     })
   )
 
-  app.get('/', { logLevel: 'silent' }, (_req, res) => {
+  app.register(underPressure, {
+    maxEventLoopDelay: 1000, // 1s
+    // maxHeapUsedBytes: 100 * (1 << 20), // 100 MiB
+    // maxRssBytes: 100 * (1 << 20), // 100 MiB
+    healthCheckInterval: 1000,
+    exposeStatusRoute: {
+      url: '/_health',
+      routeOpts: {
+        logLevel: 'warn'
+      }
+    },
+    healthCheck: async () => {
+      try {
+        await app.db.raw('select 1')
+        // todo: Test Redis connection
+        return true
+      } catch (error) {
+        console.error(error)
+        return false
+      }
+    }
+  })
+
+  app.get('/', { logLevel: 'silent' }, (req, res) => {
     // Handle Clever Cloud health checks (no logging)
     // https://github.com/influxdata/telegraf/tree/master/plugins/outputs/health
-    // if (req.headers['X-CleverCloud-Monitoring'] === 'telegraf') {
-    // }
-    res.send()
+    if (req.headers['X-CleverCloud-Monitoring'] === 'telegraf') {
+      res.send()
+      return
+    }
+    // For all other calls to /, redirect to Swagger docs
+    res.redirect('/documentation')
   })
 
   app.register(require('./routes').default)
@@ -145,7 +157,7 @@ export function createServer(): App {
     app.ready(() =>
       app.log.info({
         msg: 'Routes loaded',
-        routes: (app as App).routes
+        routes: app.routes
       })
     )
   }
@@ -170,7 +182,7 @@ export function createServer(): App {
     app.log.info('Closed all connections to the datastores')
     done()
   })
-  return app as App
+  return app
 }
 
 // --
