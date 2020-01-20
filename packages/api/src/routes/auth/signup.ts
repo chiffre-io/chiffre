@@ -50,20 +50,22 @@ local entities that will be needed later for authenticating on other devices:
       }
 
       try {
-        // todo: Pack all operations into a transaction
-        const { id: userID } = await createUser(app.db, {
-          username,
-          srpSalt,
-          srpVerifier,
-          masterSalt
-        })
-        await createKeychainRecord(app.db, {
-          userID,
-          key: keychainKey,
-          signaturePublicKey: keychain.signature.public,
-          signatureSecretKey: keychain.signature.secret,
-          sharingPublicKey: keychain.sharing.public,
-          sharingSecretKey: keychain.sharing.secret
+        const userID = await app.db.transaction(async transaction => {
+          const { id: userID } = await createUser(transaction, {
+            username,
+            srpSalt,
+            srpVerifier,
+            masterSalt
+          })
+          await createKeychainRecord(transaction, {
+            userID,
+            key: keychainKey,
+            signaturePublicKey: keychain.signature.public,
+            signatureSecretKey: keychain.signature.secret,
+            sharingPublicKey: keychain.sharing.public,
+            sharingSecretKey: keychain.sharing.secret
+          })
+          return userID
         })
 
         const claims = makeClaims({
