@@ -319,6 +319,16 @@ export default class Client {
     await this._refresh()
   }
 
+  public async logout() {
+    try {
+      await this.#api.post('/auth/logout')
+    } finally {
+      // Lock even if API call fails (eg: no internet connection).
+      // We can't lock first as we might need the token to make the API call.
+      this.lock()
+    }
+  }
+
   // --
 
   public get isLocked(): boolean {
