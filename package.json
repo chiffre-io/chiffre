@@ -2,7 +2,7 @@
   "private": true,
   "license": "UNLICENSED",
   "workspaces": [
-    "packages/*"
+    "packages/**"
   ],
   "scripts": {
     "dev": "yarn wsrun -m dev",

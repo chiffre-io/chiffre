@@ -5,7 +5,7 @@
     "module": "commonjs",
     "lib": ["DOM"],
     "declaration": true,
-    "declarationDir": "../api-types/dist",
+    "declarationDir": "../../lib/api-types/dist",
     "outDir": "./dist",
     "rootDir": "./src",
     "preserveSymlinks": true,

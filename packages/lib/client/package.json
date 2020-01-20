@@ -7,8 +7,8 @@
   "scripts": {
     "clean": "rm -rf ./coverage ./dist ./node_modules",
     "build": "tsc",
-    "e2e:setup": "../../scripts/e2e-start.sh",
-    "e2e:teardown": "../../scripts/e2e-stop.sh",
+    "e2e:setup": "../../../scripts/e2e-start.sh",
+    "e2e:teardown": "../../../scripts/e2e-stop.sh",
     "e2e:test": "jest e2e --runInBand --verbose --coverage",
     "ci": "run-s e2e:setup e2e:test e2e:teardown build"
   },
