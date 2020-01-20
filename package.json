@@ -10,7 +10,8 @@
     "dev:stop": "./scripts/dev-stop.sh",
     "clean": "yarn wsrun -m clean && rm -rf ./node_modules",
     "build": "yarn wsrun -mt build",
-    "ci": "yarn wsrun -ms ci"
+    "ci": "yarn wsrun -ms ci",
+    "install": "./scripts/build.sh"
   },
   "devDependencies": {
     "jest": "^24.9.0",
