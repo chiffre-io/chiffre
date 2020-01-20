@@ -15,9 +15,10 @@ export function createJwt(claims: AuthClaims) {
     issuer: process.env.JWT_ISSUER,
     jwtid: claims.tokenID,
     subject: claims.userID,
-    expiresIn: (claims.sessionExpiresAt.getTime() - Date.now()) / 1000
+    expiresIn: Math.ceil(
+      (claims.sessionExpiresAt.getTime() - Date.now()) / 1000
+    )
   }
-
   const token = jwt.sign(
     {
       plan: claims.plan,
