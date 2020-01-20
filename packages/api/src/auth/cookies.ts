@@ -6,12 +6,8 @@ import { createJwt } from './jwt'
 
 // --
 
-export function setJwtCookies(
-  claims: AuthClaims,
-  res: FastifyReply<any>,
-  now: Date
-) {
-  const token = createJwt(claims, now)
+export function setJwtCookies(claims: AuthClaims, res: FastifyReply<any>) {
+  const token = createJwt(claims)
   const [header, payload, signature] = token.split('.')
 
   // Allow overriding for local non-https testing of production builds

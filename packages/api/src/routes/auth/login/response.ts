@@ -6,13 +6,8 @@ import { findSrpChallenge, cleanupSrpChallenge } from '../../../redis/srp'
 import { Session as SrpSession } from 'secure-remote-password/server'
 import { setJwtCookies } from '../../../auth/cookies'
 import { App } from '../../../types'
-import {
-  AuthClaims,
-  Plans,
-  TwoFactorStatus,
-  maxAgeInSeconds,
-  getExpirationDate
-} from '../../../exports/defs'
+import { Plans, TwoFactorStatus } from '../../../exports/defs'
+import { makeClaims } from '../../../auth/claims'
 import {
   loginResponseParametersSchema,
   LoginResponseParameters,
@@ -69,17 +64,14 @@ export default async (app: App) => {
       const twoFactorRequired =
         user.twoFactorStatus === TwoFactorStatus.verified
 
-      const now = new Date()
-      const claims: AuthClaims = {
-        tokenID: nanoid(),
+      const claims = makeClaims({
         userID,
         plan: Plans.free, // todo: Pull from user entry in database
         twoFactorStatus: twoFactorRequired
           ? TwoFactorStatus.enabled // Will need to be verified
-          : TwoFactorStatus.disabled,
-        sessionExpiresAt: getExpirationDate(maxAgeInSeconds.session, now)
-      }
-      setJwtCookies(claims, res, now)
+          : TwoFactorStatus.disabled
+      })
+      setJwtCookies(claims, res)
 
       const masterSalt = twoFactorRequired ? undefined : user.masterSalt
 

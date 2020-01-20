@@ -9,13 +9,13 @@ interface Payload {
   '2fa': TwoFactorStatus
 }
 
-export function createJwt(claims: AuthClaims, now: Date) {
+export function createJwt(claims: AuthClaims) {
   const signOptions: jwt.SignOptions = {
     algorithm: 'HS512',
     issuer: process.env.JWT_ISSUER,
     jwtid: claims.tokenID,
     subject: claims.userID,
-    expiresIn: (claims.sessionExpiresAt.getTime() - now.getTime()) / 1000
+    expiresIn: (claims.sessionExpiresAt.getTime() - Date.now()) / 1000
   }
 
   const token = jwt.sign(

@@ -2,13 +2,9 @@ import { App } from '../../../types'
 import { findUser, disableTwoFactor } from '../../../db/models/auth/Users'
 import { logEvent, EventTypes } from '../../../db/models/business/Events'
 import { AuthenticatedRequest } from '../../../plugins/auth'
-import {
-  AuthClaims,
-  TwoFactorStatus,
-  maxAgeInSeconds,
-  getExpirationDate
-} from '../../../exports/defs'
+import { TwoFactorStatus } from '../../../exports/defs'
 import { setJwtCookies } from '../../../auth/cookies'
+import { updateClaims } from '../../../auth/claims'
 import { verifyTwoFactorToken } from '../../../auth/2fa'
 import {
   TwoFactorDisableParameters,
@@ -56,15 +52,10 @@ export default async (app: App) => {
 
       await disableTwoFactor(app.db, req.auth.userID)
 
-      // Update JWT claims
-      const now = new Date()
-      const claims: AuthClaims = {
-        ...req.auth,
-        twoFactorStatus: TwoFactorStatus.disabled,
-        // Refresh expiration time
-        sessionExpiresAt: getExpirationDate(maxAgeInSeconds.session, now)
-      }
-      setJwtCookies(claims, res, now)
+      const claims = updateClaims(req.auth, {
+        twoFactorStatus: TwoFactorStatus.disabled
+      })
+      setJwtCookies(claims, res)
       await logEvent(app.db, EventTypes.twoFactorStatusChanged, req, {
         from: req.auth.twoFactorStatus,
         to: claims.twoFactorStatus

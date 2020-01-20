@@ -3,18 +3,14 @@ import { verifyTwoFactorToken } from '../../../auth/2fa'
 import { findUser } from '../../../db/models/auth/Users'
 import { logEvent, EventTypes } from '../../../db/models/business/Events'
 import { AuthenticatedRequest } from '../../../plugins/auth'
-import {
-  TwoFactorStatus,
-  AuthClaims,
-  maxAgeInSeconds,
-  getExpirationDate
-} from '../../../exports/defs'
+import { TwoFactorStatus } from '../../../exports/defs'
+import { updateClaims } from '../../../auth/claims'
+import { setJwtCookies } from '../../../auth/cookies'
 import {
   Login2FAParameters,
   login2FAParametersSchema,
   Login2FAResponseBody
 } from './2fa.schema'
-import { setJwtCookies } from '../../../auth/cookies'
 
 export default async (app: App) => {
   app.post<unknown, unknown, unknown, Login2FAParameters>(
@@ -61,14 +57,10 @@ export default async (app: App) => {
         throw app.httpErrors.unauthorized('Invalid two-factor code')
       }
 
-      const now = new Date()
-      const claims: AuthClaims = {
-        ...req.auth,
-        twoFactorStatus: TwoFactorStatus.verified,
-        // Refresh expiration time
-        sessionExpiresAt: getExpirationDate(maxAgeInSeconds.session, now)
-      }
-      setJwtCookies(claims, res, now)
+      const claims = updateClaims(req.auth, {
+        twoFactorStatus: TwoFactorStatus.verified
+      })
+      setJwtCookies(claims, res)
       await logEvent(app.db, EventTypes.twoFactorVerified, req)
       return res.send(body)
     }

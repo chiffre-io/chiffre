@@ -1,18 +1,12 @@
-import nanoid from 'nanoid'
+import { base64ToHex } from '@47ng/codec'
 import { App } from '../../types'
-import { createUser } from '../../db/models/auth/Users'
+import { makeClaims } from '../../auth/claims'
 import { setJwtCookies } from '../../auth/cookies'
-import {
-  AuthClaims,
-  Plans,
-  TwoFactorStatus,
-  maxAgeInSeconds,
-  getExpirationDate
-} from '../../exports/defs'
+import { Plans, TwoFactorStatus } from '../../exports/defs'
+import { createUser } from '../../db/models/auth/Users'
 import { createKeychainRecord } from '../../db/models/entities/Keychains'
 import { logEvent, EventTypes } from '../../db/models/business/Events'
 import { signupParametersSchema, SignupParameters } from './signup.schema'
-import { base64ToHex } from '@47ng/codec'
 
 // --
 
@@ -72,15 +66,12 @@ local entities that will be needed later for authenticating on other devices:
           sharingSecretKey: keychain.sharing.secret
         })
 
-        const now = new Date()
-        const claims: AuthClaims = {
-          tokenID: nanoid(),
+        const claims = makeClaims({
           userID,
           plan: Plans.free, // Default plan
-          twoFactorStatus: TwoFactorStatus.disabled,
-          sessionExpiresAt: getExpirationDate(maxAgeInSeconds.session, now)
-        }
-        setJwtCookies(claims, res, now)
+          twoFactorStatus: TwoFactorStatus.disabled
+        })
+        setJwtCookies(claims, res)
         await logEvent(app.db, EventTypes.signup, { ...req, auth: claims })
         return res.status(201).send() // Created
       } catch (error) {
@@ -88,7 +79,6 @@ local entities that will be needed later for authenticating on other devices:
           // duplicate key value violates unique constraint
           throw app.httpErrors.conflict('This username is not available')
         }
-        req.log.error(error)
         throw error
       }
     }
