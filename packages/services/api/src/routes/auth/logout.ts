@@ -13,7 +13,7 @@ export default async (app: App) => {
       preValidation: [app.authenticate()]
     },
     async function logout(req: AuthenticatedRequest, res) {
-      const ttl = (Date.now() - req.auth.sessionExpiresAt.getTime()) / 1000
+      const ttl = (req.auth.sessionExpiresAt.getTime() - Date.now()) / 1000
       await blacklistToken(
         app.redis.tokenBlacklist,
         req.auth.tokenID,

@@ -40,6 +40,6 @@ export function verifyJwt(token: string): AuthClaims {
     userID: payload.sub,
     tokenID: payload.jti,
     twoFactorStatus: payload['2fa'],
-    sessionExpiresAt: new Date(payload.exp)
+    sessionExpiresAt: new Date(payload.exp * 1000)
   }
 }
