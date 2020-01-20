@@ -3,6 +3,7 @@ import envAlias from 'env-alias'
 import { rotateUsersCloak } from '../models/auth/Users'
 import { RotationResults } from '../encryption'
 import connectToDatabase from '../database'
+import pino from 'pino'
 
 const printResults = (name: string, results: RotationResults) => {
   if (results.processed.length) {
@@ -14,7 +15,8 @@ const printResults = (name: string, results: RotationResults) => {
 }
 
 const run = async () => {
-  const database = connectToDatabase()
+  const logger = pino()
+  const database = connectToDatabase(logger)
   printResults('users', await rotateUsersCloak(database))
   process.exit(0)
 }

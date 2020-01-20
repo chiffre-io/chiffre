@@ -119,7 +119,7 @@ export function createServer(): App {
     maxEventLoopDelay: 1000, // 1s
     // maxHeapUsedBytes: 100 * (1 << 20), // 100 MiB
     // maxRssBytes: 100 * (1 << 20), // 100 MiB
-    healthCheckInterval: 1000,
+    healthCheckInterval: 5000, // 5 seconds
     exposeStatusRoute: {
       url: '/_health',
       routeOpts: {
