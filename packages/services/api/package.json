@@ -69,5 +69,15 @@
   "jest": {
     "preset": "ts-jest/presets/js-with-ts",
     "testEnvironment": "node"
+  },
+  "nodemonConfig": {
+    "verbose": false,
+    "execMap": {
+      "ts": "ts-node"
+    },
+    "ignore": [
+      "dist",
+      ".db"
+    ]
   }
 }
