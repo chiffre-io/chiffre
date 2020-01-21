@@ -12,7 +12,7 @@
     "build:types": "cp -rf ../../lib/api-types/dist/* ./dist/",
     "build:exports": "cp -rf ./dist/exports/* ../../lib/api-types/dist/exports/",
     "build:index": "cp -rf ./dist/index.js ../../lib/api-types/dist/",
-    "knex": "ts-node ./node_modules/.bin/knex",
+    "knex": "ts-node -r dotenv/config ./node_modules/.bin/knex",
     "migrate:make": "yarn knex migrate:make",
     "migrate:up": "yarn knex migrate:up",
     "migrate:down": "yarn knex migrate:down",
