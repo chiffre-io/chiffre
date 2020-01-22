@@ -1,8 +1,8 @@
 import { NextPage } from 'next'
-import LandingPage from '../views/landing/LandingPage'
+import Redirect from '../components/Redirect'
 
 const Home: NextPage = () => {
-  return <LandingPage />
+  return <Redirect to="/signup" />
 }
 
 export default Home
