@@ -16,9 +16,10 @@ export function setJwtCookies(claims: AuthClaims, res: FastifyReply<any>) {
     process.env.CHIFFRE_API_INSECURE_COOKIES !== 'true'
 
   res.setCookie(CookieNames.jwt, [header, payload].join('.'), {
+    domain: process.env.NODE_ENV === 'production' ? '.chiffre.io' : undefined,
     path: '/',
     expires: claims.sessionExpiresAt,
-    sameSite: 'strict',
+    sameSite: 'lax',
     secure,
     httpOnly: false // Accessible in the front-end via JS
   })
@@ -37,8 +38,9 @@ export function clearJwtCookies(res: FastifyReply<any>) {
     process.env.CHIFFRE_API_INSECURE_COOKIES !== 'true'
 
   res.clearCookie(CookieNames.jwt, {
+    domain: process.env.NODE_ENV === 'production' ? '.chiffre.io' : undefined,
     path: '/',
-    sameSite: 'strict',
+    sameSite: 'lax',
     secure,
     httpOnly: false // Accessible in the front-end via JS
   })
