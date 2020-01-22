@@ -11,14 +11,33 @@ import {
 } from '@chakra-ui/core'
 import logs from '../../tableData'
 import { useTable, useExpanded } from 'react-table'
-import { useMap } from 'react-use'
+import { useMap, useKey, useKeyPress } from 'react-use'
 import { getStatusText } from 'http-status-codes'
 
 interface CellProps extends BoxProps {
   onClick?: () => void
+  onAltClick?: () => void
 }
 
-const Cell: React.FC<CellProps> = ({ onClick, children, ...props }) => {
+const Cell: React.FC<CellProps> = ({
+  onClick,
+  onAltClick,
+  children,
+  ...props
+}) => {
+  const [isAltPressed] = useKeyPress('Alt')
+  const _onClick = React.useCallback(() => {
+    if (isAltPressed && onAltClick) {
+      return onAltClick
+    }
+    return onClick
+  }, [isAltPressed])
+  const textDecoration = React.useMemo(() => {
+    if (isAltPressed && onAltClick) {
+      return 'line-through'
+    }
+    return 'underline'
+  }, [isAltPressed])
   return (
     <Code
       backgroundColor="transparent"
@@ -26,7 +45,18 @@ const Cell: React.FC<CellProps> = ({ onClick, children, ...props }) => {
       display="block"
       {...props}
     >
-      {onClick ? <Link onClick={onClick}>{children}</Link> : children}
+      {_onClick ? (
+        <Link
+          onClick={_onClick}
+          _hover={{
+            textDecoration
+          }}
+        >
+          {children}
+        </Link>
+      ) : (
+        children
+      )}
     </Code>
   )
 }
@@ -172,10 +202,10 @@ const StatusCodeBadge: React.FC<{ statusCode: number } & CellProps> = ({
   )
 }
 
-const MethodBadge: React.FC<{ method: string } & CellProps> = ({
-  method,
-  ...props
-}) => {
+const MethodBadge: React.FC<{
+  method: string
+  onAltClick: () => void
+} & CellProps> = ({ method, ...props }) => {
   // Follow Insomnia colors
   const color = React.useMemo(() => {
     switch (method.toUpperCase()) {
@@ -355,7 +385,12 @@ const Table = () => {
           cell.value ? (
             <MethodBadge
               method={cell.value}
-              onClick={() => console.log(cell.value)}
+              onClick={() => {
+                console.log(cell.value)
+              }}
+              onAltClick={() => {
+                console.log('!', cell.value)
+              }}
             />
           ) : null
       },

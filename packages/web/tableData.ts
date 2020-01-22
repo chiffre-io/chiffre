@@ -541,7 +541,7 @@ export default [
     v: 1
   },
   {
-    level: 30,
+    level: 60,
     time: 1577700730245,
     instance: '7e1e86e0-463a-4863-82b0-6554ee865f93',
     commit: '26fe528c4f3ffd2b4630b72dcc8bdaed3e8278d3',
@@ -784,7 +784,7 @@ export default [
     category: 'api',
     req: {
       id: '4mr_10WpUtky3Kq4.PYtrUimKy1Z7GTIN',
-      method: 'GET',
+      method: 'OPTIONS',
       url: '/api/embed/testProjectID123',
       headers: {
         host: '[Redacted]',
