@@ -23,49 +23,35 @@
     "@emotion/core": "^10.0.27",
     "@emotion/styled": "^10.0.27",
     "@zeit/next-source-maps": "^0.0.3",
-    "axios": "^0.19.1",
     "emotion-theming": "^10.0.27",
     "formik": "2.1.2",
     "gravatar-url": "^3.1.0",
     "hibp": "^8.0.0",
     "http-status-codes": "^1.4.0",
-    "nanoid": "^2.1.9",
-    "next": "^9.1.7",
+    "next": "^9.2.0",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-qr-svg": "^2.2.1",
     "react-table": "7.0.0-rc.15",
-    "react-use": "^13.17.0",
+    "react-use": "^13.21.0",
     "socket.io": "^2.3.0",
     "socket.io-client": "^2.3.0",
     "timeago.js": "^4.0.2",
     "zxcvbn": "^4.4.2"
   },
   "devDependencies": {
-    "@next/bundle-analyzer": "^9.1.7",
-    "@types/dotenv": "^8.2.0",
-    "@types/jest": "^24.9.0",
-    "@types/nanoid": "^2.1.0",
-    "@types/node": "^13.1.7",
-    "@types/pino": "^5.15.2",
+    "@next/bundle-analyzer": "^9.2.0",
+    "@types/node": "^13.1.8",
     "@types/react-table": "^7.0.3",
     "@types/socket.io": "^2.1.4",
     "@types/socket.io-client": "^1.4.32",
     "@types/zxcvbn": "^4.4.0",
     "dotenv": "^8.2.0",
-    "jest": "^24.9.0",
-    "null-loader": "^3.0.0",
     "parcel-bundler": "^1.12.4",
-    "serve": "^11.3.0",
-    "ts-jest": "^24.3.0",
-    "ts-node": "^8.6.2",
-    "tsconfig-paths": "^3.9.0"
+    "serve": "^11.3.0"
   },
   "jest": {
     "preset": "ts-jest/presets/js-with-ts",
-    "testEnvironment": "node",
-    "moduleNameMapper": {
-      "^~/(.*)$": "<rootDir>/$1"
-    }
+    "testEnvironment": "node"
   }
 }

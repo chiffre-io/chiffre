@@ -1,7 +1,6 @@
 require('dotenv').config()
 require('env-alias').default()
 
-const path = require('path')
 const webpack = require('webpack')
 const withSourceMaps = require('@zeit/next-source-maps')
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
@@ -31,7 +30,6 @@ module.exports = withBundleAnalyzer(
           'process.env.SENTRY_RELEASE': JSON.stringify(buildId)
         })
       )
-      config.resolve.alias['~'] = path.resolve(__dirname)
       return config
     }
   })

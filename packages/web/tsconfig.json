@@ -16,9 +16,6 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "baseUrl": ".",
-    "paths": {
-      "~/*": ["./*"]
-    },
     "module": "esnext"
   },
   "exclude": ["node_modules"],
