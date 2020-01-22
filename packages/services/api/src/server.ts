@@ -51,7 +51,7 @@ export function createServer(): App {
   app.register(cors, {
     origin:
       process.env.NODE_ENV === 'production'
-        ? /https:\/\/.*\.chiffre\.io$/
+        ? /https:\/\/(.+\.)?chiffre\.io$/
         : process.env.APP_URL,
     allowedHeaders: [
       'accept',
