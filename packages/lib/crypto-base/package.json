@@ -8,7 +8,7 @@
     "clean": "rm -rf ./dist ./node_modules",
     "ci": "run-s test build",
     "build": "tsc",
-    "test": "jest --verbose --logHeapUsage"
+    "test": "jest --verbose --logHeapUsage --colors"
   },
   "dependencies": {
     "@47ng/codec": "^0.3.0",
