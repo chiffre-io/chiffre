@@ -1,6 +1,6 @@
 import React from 'react'
 import { NextPage } from 'next'
-import { Box, Button } from '@chakra-ui/core'
+import { Box, Button, Link } from '@chakra-ui/core'
 import { Project } from '@chiffre/client'
 import { useChiffreClient } from '../hooks/useChiffreClient'
 import Header from '../components/Header'
@@ -21,13 +21,6 @@ const Dashboard: NextPage = () => {
   return (
     <MainPage>
       <Header />
-      <Button
-        onClick={() => {
-          client.getAccountActivity()
-        }}
-      >
-        Refresh activity
-      </Button>
       <Box>
         {client.projects.map(project => (
           <ProjectView key={project.id} project={project} />

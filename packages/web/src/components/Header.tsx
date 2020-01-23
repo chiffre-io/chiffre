@@ -33,7 +33,7 @@ const UserAvatar = ({ ...props }) => {
             {' '}
             -{' '}
           </Text>
-          <Link href="#">Settings</Link>
+          <Link href="/settings/auth">Settings</Link>
         </Box>
       </Stack>
       <Avatar size="sm" src={url} />
@@ -68,6 +68,18 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
             />
           </InputGroup>
         )}
+        <Stack
+          as="nav"
+          isInline
+          alignItems="center"
+          color="gray.400"
+          backgroundColor="red"
+          spacing={4}
+          ml={8}
+        >
+          <Link href="/dashboard">Dashboard</Link>
+          <Link href="/activity">Activity</Link>
+        </Stack>
         <UserAvatar ml="auto" />
       </Stack>
     </DarkMode>
