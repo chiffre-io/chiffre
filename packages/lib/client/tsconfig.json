@@ -8,6 +8,7 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "preserveSymlinks": true,
+    "allowJs": true,
 
     // Strict Type-Checking Options
     // "strict": false,
