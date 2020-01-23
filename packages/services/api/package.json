@@ -7,11 +7,12 @@
   "scripts": {
     "clean": "rm -rf ./coverage ./dist ./node_modules",
     "dev": "nodemon -e ts,.env -w .env -w ./src ./src/main.ts",
-    "build": "run-s build:self build:types build:exports build:index",
+    "build": "run-s build:self build:types build:exports build:index build:version",
     "build:self": "tsc",
     "build:types": "cp -rf ../../lib/api-types/dist/* ./dist/",
     "build:exports": "cp -rf ./dist/exports/* ../../lib/api-types/dist/exports/",
     "build:index": "cp -rf ./dist/index.js ../../lib/api-types/dist/",
+    "build:version": "ts-node -r dotenv/config ./scripts/buildVersion.ts",
     "knex": "ts-node -r dotenv/config ./node_modules/.bin/knex",
     "migrate:make": "yarn knex migrate:make",
     "migrate:up": "yarn knex migrate:up",

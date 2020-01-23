@@ -11,22 +11,25 @@ import { App, Route } from './types'
 import fp from 'fastify-plugin'
 import { AuthenticatedRequest } from './plugins/auth'
 import { Plans } from './exports/defs'
+import serviceVersion from './version'
 
 export function createServer(): App {
+  const runningInProduction = process.env.NODE_ENV === 'production'
+
   checkEnv({
     required: [
       'API_URL',
-      process.env.NODE_ENV === 'production' ? 'APP_URL' : null,
+      runningInProduction ? 'APP_URL' : null,
       'DATABASE_URI',
       'DATABASE_MAX_CONNECTIONS',
       'REDIS_URI',
-      'LOG_INSTANCE_ID',
-      'LOG_COMMIT',
+      'INSTANCE_ID',
       'CLOAK_MASTER_KEY',
       'CLOAK_KEYCHAIN',
       'CLOAK_CURRENT_KEY',
       'JWT_SECRET',
-      'JWT_ISSUER'
+      'JWT_ISSUER',
+      runningInProduction ? 'SENTRY_DSN' : null
     ].filter(x => !!x),
     unsafe: [
       'DEBUG',
@@ -49,10 +52,9 @@ export function createServer(): App {
     app.register(gracefulShutdown)
   }
   app.register(cors, {
-    origin:
-      process.env.NODE_ENV === 'production'
-        ? /https:\/\/(.+\.)?chiffre\.io$/
-        : process.env.APP_URL,
+    origin: runningInProduction
+      ? /https:\/\/(.+\.)?chiffre\.io$/
+      : process.env.APP_URL,
     allowedHeaders: [
       'accept',
       'authorization',
@@ -66,23 +68,26 @@ export function createServer(): App {
     credentials: true,
     maxAge: 600 // 10 minutes
   })
-  app.register(swagger, {
-    routePrefix: '/documentation',
-    swagger: {
-      info: {
-        title: 'Chiffre API',
-        description: 'API for the Chiffre.io service',
-        version: process.env.LOG_COMMIT
+
+  if (process.env.ENABLE_SWAGGER === 'true') {
+    app.register(swagger, {
+      routePrefix: '/documentation',
+      swagger: {
+        info: {
+          title: 'Chiffre API',
+          description: 'API for the Chiffre.io service',
+          version: serviceVersion
+        },
+        host: (process.env.API_URL || '')
+          .replace('https://', '')
+          .replace('http://', ''),
+        schemes: [runningInProduction ? 'https' : 'http'],
+        consumes: ['application/json'],
+        produces: ['application/json']
       },
-      host: (process.env.API_URL || '')
-        .replace('https://', '')
-        .replace('http://', ''),
-      schemes: [process.env.NODE_ENV === 'production' ? 'https' : 'http'],
-      consumes: ['application/json'],
-      produces: ['application/json']
-    },
-    exposeRoute: true
-  })
+      exposeRoute: true
+    })
+  }
 
   // Local plugins
   app.register(require('./plugins/database').default)
@@ -184,7 +189,9 @@ export function createServer(): App {
   }
 
   app.ready(() => {
-    app.swagger()
+    if (process.env.ENABLE_SWAGGER === 'true') {
+      app.swagger()
+    }
   })
 
   app.addHook('onClose', async (app: App, done) => {
