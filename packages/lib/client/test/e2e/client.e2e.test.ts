@@ -10,7 +10,7 @@ jest.useFakeTimers()
 
 beforeAll(async () => {
   ctx = await setup()
-})
+}, 10000)
 
 afterAll(async () => {
   ctx.client.lock()

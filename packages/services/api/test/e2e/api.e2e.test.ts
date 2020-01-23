@@ -12,7 +12,7 @@ let ctx: TestContext = null
 
 beforeAll(async () => {
   ctx = await setup()
-})
+}, 10000)
 
 afterAll(async () => {
   await ctx.server.close()
