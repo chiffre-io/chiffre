@@ -1,0 +1,25 @@
+name: "CI/CD"
+
+on: push
+
+jobs:
+  ci:
+    name: "Integration"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v1
+        with:
+          node-version: "12.x"
+      - run: yarn install --ignore-scripts
+      - run: yarn ci
+
+  cd:
+    name: "Deployment"
+    runs-on: ubuntu-latest
+    needs:
+      - ci
+    steps:
+      - name: "Deploy API"
+        run: "echo 'deploying API'"
+      - name: "Deploy Web UI"
+        run: "echo 'deploying web UI'"
