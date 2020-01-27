@@ -11,6 +11,7 @@
     "clean": "yarn wsrun -m clean && rm -rf ./node_modules",
     "build": "yarn wsrun -mt build",
     "build:services:api": "yarn wsrun -srp @chiffre/api -c build",
+    "build:services:push": "yarn wsrun -srp @chiffre/push -c build",
     "ci": "yarn wsrun -ms ci",
     "install": "./scripts/build.sh"
   },

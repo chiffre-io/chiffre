@@ -1,5 +1,32 @@
 import nacl from 'tweetnacl'
 import { utf8, b64 } from '@47ng/codec'
+import { sha256 } from './utility'
+export { sha256 }
+
+// --
+
+interface Keys {
+  public: string // base64 encoded
+  secret: string // base64 encoded
+  fingerprint: string // hex-encoded SHA-256(public key)
+  raw: nacl.BoxKeyPair
+}
+
+export async function generateKeys(
+  secretKey?: string
+): Promise<Readonly<Keys>> {
+  const keyPair = secretKey
+    ? nacl.box.keyPair.fromSecretKey(b64.decode(secretKey))
+    : nacl.box.keyPair()
+  return {
+    public: b64.encode(keyPair.publicKey),
+    secret: b64.encode(keyPair.secretKey),
+    fingerprint: await sha256(keyPair.publicKey),
+    raw: keyPair
+  }
+}
+
+// --
 
 export function encryptString(input: string, publicKey: Uint8Array) {
   const nonce = nacl.randomBytes(nacl.box.nonceLength)

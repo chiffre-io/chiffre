@@ -6,7 +6,7 @@ import {
   decryptString as decloakString,
   CloakKey
 } from '@47ng/cloak'
-import { decryptString as unboxString } from '@chiffre/crypto-base'
+import { decryptString as unboxString } from '@chiffre/crypto-box'
 import {
   createSignupEntities,
   clientAssembleLoginResponse,

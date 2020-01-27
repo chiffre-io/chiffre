@@ -1,9 +1,11 @@
 {
-  "name": "@chiffre/crypto-base",
+  "name": "@chiffre/crypto-box",
   "version": "0.0.1",
   "main": "dist/index.js",
-  "private": true,
   "license": "UNLICENSED",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "clean": "rm -rf ./dist ./node_modules",
     "ci": "run-s test build",

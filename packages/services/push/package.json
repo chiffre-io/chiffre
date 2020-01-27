@@ -1,0 +1,31 @@
+{
+  "name": "@chiffre/push",
+  "version": "0.0.1",
+  "private": true,
+  "license": "UNLICENSED",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "nodemon -e ts,.env -w .env -w ./src ./src/main.ts",
+    "build": "tsc",
+    "clean": "rm -rf ./dist"
+  },
+  "dependencies": {
+    "fastify-micro": "0.0.1",
+    "fastify-websocket": "^1.1.0",
+    "isomorphic-ws": "^4.0.1",
+    "nanoid": "^2.1.10"
+  },
+  "devDependencies": {
+    "@types/ws": "^7.2.0"
+  },
+  "nodemonConfig": {
+    "verbose": false,
+    "execMap": {
+      "ts": "ts-node"
+    },
+    "ignore": [
+      "dist",
+      ".db"
+    ]
+  }
+}
