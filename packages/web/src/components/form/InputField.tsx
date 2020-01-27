@@ -1,11 +1,11 @@
 import React from 'react'
-import { Input } from '@chakra-ui/core'
+import { Input, InputProps } from '@chakra-ui/core'
 import { ErrorMessage, useField } from 'formik'
 import ErrorText from './ErrorText'
 
 // --
 
-interface Props {
+interface Props extends InputProps {
   name: string
 }
 

@@ -2,7 +2,7 @@ import React from 'react'
 import { Stack } from '@chakra-ui/core'
 import Logo from '../../components/Logo'
 import Section from './Section'
-import { ButtonLink } from '../../components/Links'
+import { ButtonRouteLink } from '../../components/primitives/Links'
 
 const Header = () => {
   return (
@@ -18,32 +18,32 @@ const Header = () => {
     >
       <Logo dark flexShrink={0} />
       <Stack isInline as="nav" spacing={8} ml={12}>
-        <ButtonLink href="/analytics" variant="link" fontWeight="normal">
+        <ButtonRouteLink to="/analytics" variant="link" fontWeight="normal">
           Analytics
-        </ButtonLink>
-        <ButtonLink href="/pricing" variant="link" fontWeight="normal">
+        </ButtonRouteLink>
+        <ButtonRouteLink to="/pricing" variant="link" fontWeight="normal">
           Pricing
-        </ButtonLink>
+        </ButtonRouteLink>
       </Stack>
       <Stack isInline as="nav" ml="auto" spacing={4}>
-        <ButtonLink
-          href="/login?redirect=/dashboard"
+        <ButtonRouteLink
+          to="/login?redirect=/dashboard"
           fontWeight="normal"
           variant="ghost"
           variantColor="blue"
           display="flex"
         >
           Sign in
-        </ButtonLink>
-        <ButtonLink
+        </ButtonRouteLink>
+        <ButtonRouteLink
           prefetch
-          href="/signup"
+          to="/signup"
           // fontWeight="normal"
           variantColor="green"
           display="flex"
         >
           Sign up
-        </ButtonLink>
+        </ButtonRouteLink>
       </Stack>
     </Section>
   )

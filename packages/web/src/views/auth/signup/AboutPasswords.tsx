@@ -1,5 +1,5 @@
 import React from 'react'
-import { RouteLink } from '../../../components/Links'
+import { RouteLink } from '../../../components/primitives/Links'
 import { Text, Collapse, useColorMode } from '@chakra-ui/core'
 
 const Paragraph = ({ children, ...props }) => {
@@ -35,7 +35,10 @@ const AboutPasswords = ({ revealed }) => {
       </Paragraph>
       <Paragraph>
         Learn more about our{' '}
-        <RouteLink href="/legal/security-policy">Security Policy</RouteLink>.
+        <RouteLink to="/legal/security-policy" textDecoration="underline">
+          Security Policy
+        </RouteLink>
+        .
       </Paragraph>
       <Paragraph mb={4}>
         * <i>Recommended : 64+ characters of all sorts</i>

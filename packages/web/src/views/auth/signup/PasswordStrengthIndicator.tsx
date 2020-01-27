@@ -2,7 +2,7 @@ import React from 'react'
 import { Box, Grid, Text, Flex, useColorMode, Collapse } from '@chakra-ui/core'
 import { Bar } from './PasswordStrengthSkeleton'
 import usePasswordStrength from './usePasswordStrength'
-import { AnchorLink } from '../../../components/Links'
+import { OutgoingLink } from '../../../components/primitives/Links'
 import { PasswordStrength } from './passwordSettings'
 
 export interface Props {
@@ -125,9 +125,12 @@ const PasswordStrengthIndicator: React.FC<Props> = ({
           </Text>
           <Text color={dark ? 'gray.500' : 'gray.700'} fontSize="sm">
             Learn more :{' '}
-            <AnchorLink href="https://haveibeenpwned.com/" target="_blank">
+            <OutgoingLink
+              href="https://haveibeenpwned.com/"
+              textDecoration="underline"
+            >
               haveibeenpwned.com
-            </AnchorLink>
+            </OutgoingLink>
           </Text>
         </>
       </Collapse>

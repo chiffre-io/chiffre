@@ -3,7 +3,7 @@ import { Button, useColorMode, Text, Box, Stack } from '@chakra-ui/core'
 import { Formik, Form, FormikErrors } from 'formik'
 import PasswordField from '../../components/form/PasswordField'
 import Label from '../../components/form/Label'
-import { RouteLink } from '../../components/Links'
+import { RouteLink } from '../../components/primitives/Links'
 import EmailField from '../../components/form/EmailField'
 import useQueryString from '../../hooks/useQueryString'
 
@@ -74,8 +74,9 @@ const LoginForm: React.FC<Props> = ({ onSubmit }) => {
             >
               Don't have an account ?{' '}
               <RouteLink
-                href={signupUrl}
+                to={signupUrl}
                 color={dark ? 'gray.400' : 'gray.700'}
+                textDecoration="underline"
               >
                 Sign up
               </RouteLink>

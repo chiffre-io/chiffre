@@ -16,10 +16,3 @@ export const AnchorLink = ({ href, children, ...props }) => (
   </ChakraLink>
 )
 
-export const ButtonLink = ({ href, children, ...props }) => (
-  <NextLink href={href} passHref>
-    <Button as="a" {...props}>
-      {children}
-    </Button>
-  </NextLink>
-)

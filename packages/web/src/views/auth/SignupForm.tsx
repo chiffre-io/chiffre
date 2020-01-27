@@ -1,10 +1,8 @@
 import React from 'react'
-import dynamic from 'next/dynamic'
 import {
   Box,
   Button,
   Text,
-  Link,
   Checkbox,
   useColorMode,
   useToast,
@@ -14,16 +12,18 @@ import { Formik, Form, FormikErrors, Field, ErrorMessage } from 'formik'
 
 import Label, { LabelWithAside } from '../../components/form/Label'
 import EmailField from '../../components/form/EmailField'
+import InputField from '../../components/form/InputField'
 import FieldHelpText from '../../components/form/FieldHelpText'
 import { ControlledPasswordField } from '../../components/form/PasswordField'
 import PasswordStrengthIndicator from './signup/PasswordStrengthIndicator'
-import { RouteLink } from '../../components/Links'
+import { RouteLink } from '../../components/primitives/Links'
 import AboutPasswords from './signup/AboutPasswords'
 import { PasswordStrength } from './signup/passwordSettings'
 import ErrorText from '../../components/form/ErrorText'
 import useQueryString from '../../hooks/useQueryString'
 
 export interface Values {
+  name: string
   email: string
   password: string
   passwordConfirmation: string
@@ -75,13 +75,43 @@ const showToast = (
   }
 }
 
+const MasterPasswordLabel = () => {
+  const [aboutPasswordsVisible, setAboutPasswordsVisible] = React.useState(
+    false
+  )
+  const aboutPwdRef = React.useRef<HTMLElement>()
+  return (
+    <>
+      <LabelWithAside
+        ref={aboutPwdRef}
+        justifyContent="space-between"
+        alignItems="center"
+        htmlFor="password"
+        aside={() => (
+          <RouteLink
+            to={aboutPasswordsVisible ? '' : '#about-passwords'}
+            onClick={() => {
+              setAboutPasswordsVisible(!aboutPasswordsVisible)
+              aboutPwdRef.current.scrollIntoView({
+                behavior: 'smooth'
+              })
+            }}
+          >
+            About passwords
+          </RouteLink>
+        )}
+      >
+        Master Password
+      </LabelWithAside>
+      <AboutPasswords revealed={aboutPasswordsVisible} />
+    </>
+  )
+}
+
 // --
 
 const SignupForm: React.FC<Props> = ({ onSubmit }) => {
   const [revealPasswords, setRevealPasswords] = React.useState(false)
-  const [aboutPasswordsVisible, setAboutPasswordsVisible] = React.useState(
-    false
-  )
   const toast = useToast()
   const dark = useColorMode().colorMode === 'dark'
 
@@ -89,6 +119,7 @@ const SignupForm: React.FC<Props> = ({ onSubmit }) => {
   const loginUrl = `/login${redirectQuery ? '?redirect=' + redirectQuery : ''}`
 
   const initialValues: Values = {
+    name: '',
     email: '',
     password: '',
     passwordConfirmation: '',
@@ -134,32 +165,37 @@ const SignupForm: React.FC<Props> = ({ onSubmit }) => {
       {({ values, errors, isSubmitting }) => (
         <Form autoComplete="off">
           <Box mb="4">
-            <Label htmlFor="email">Account</Label>
-            <FieldHelpText id="email-help-text">
-              You'll use your email address to log in :
-            </FieldHelpText>
-            <EmailField aria-describedby="email-help-text" colorValidation />
-          </Box>
-          <Box mb={4}>
             <LabelWithAside
-              id="about-passwords"
-              justifyContent="space-between"
-              alignItems="center"
-              htmlFor="password"
+              htmlFor="email"
               aside={() => (
-                <Link
-                  href={aboutPasswordsVisible ? '#about-passwords' : '#'}
-                  onClick={() =>
-                    setAboutPasswordsVisible(!aboutPasswordsVisible)
-                  }
-                >
-                  About passwords
-                </Link>
+                <FieldHelpText id="email-help-text" fontSize="xs">
+                  You'll use your email address to log in
+                </FieldHelpText>
               )}
             >
-              Master Password
+              Account
             </LabelWithAside>
-            <AboutPasswords revealed={aboutPasswordsVisible} />
+            <EmailField aria-describedby="email-help-text" colorValidation />
+          </Box>
+          <Box mb="4">
+            <LabelWithAside
+              htmlFor="name"
+              aside={() => (
+                <FieldHelpText id="name-help-text" fontSize="xs">
+                  What shall we call you ?
+                </FieldHelpText>
+              )}
+            >
+              Display Name
+            </LabelWithAside>
+            <InputField
+              name="name"
+              aria-describedby="name-help-text"
+              placeholder="enter your name"
+            />
+          </Box>
+          <Box mb={4}>
+            <MasterPasswordLabel />
             <ControlledPasswordField
               lockColor={getMainLockColor(values)}
               name="password"
@@ -198,11 +234,17 @@ const SignupForm: React.FC<Props> = ({ onSubmit }) => {
               <Checkbox pt={4} variantColor="green" {...field}>
                 <Text fontSize="sm">
                   I accept the{' '}
-                  <RouteLink href="/legal/terms-of-service">
+                  <RouteLink
+                    to="/legal/terms-of-service"
+                    textDecoration="underline"
+                  >
                     Terms of Service
                   </RouteLink>{' '}
                   and the{' '}
-                  <RouteLink href="/legal/privacy-policy">
+                  <RouteLink
+                    to="/legal/privacy-policy"
+                    textDecoration="underline"
+                  >
                     Privacy Policy
                   </RouteLink>
                   .
@@ -228,7 +270,11 @@ const SignupForm: React.FC<Props> = ({ onSubmit }) => {
             color={dark ? 'gray.500' : 'gray.600'}
           >
             Already have an account ?{' '}
-            <RouteLink href={loginUrl} color={dark ? 'gray.400' : 'gray.700'}>
+            <RouteLink
+              to={loginUrl}
+              color={dark ? 'gray.400' : 'gray.700'}
+              textDecoration="underline"
+            >
               Sign in
             </RouteLink>
           </Text>

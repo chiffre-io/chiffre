@@ -6,7 +6,6 @@ import {
   Stack,
   Box,
   Text,
-  Link,
   Input,
   DarkMode,
   InputGroup,
@@ -14,6 +13,7 @@ import {
   Icon
 } from '@chakra-ui/core'
 import Logo from './Logo'
+import { RouteLink } from './primitives/Links'
 
 const UserAvatar = ({ ...props }) => {
   const client = useChiffreClient()
@@ -26,14 +26,14 @@ const UserAvatar = ({ ...props }) => {
           {client.identity?.username}
         </Text>
         <Box fontSize="sm" color="gray.400" ml="auto">
-          <Link href="#" onClick={() => client.logout()}>
+          <RouteLink to="#" onClick={() => client.logout()}>
             Log out
-          </Link>
+          </RouteLink>
           <Text color="gray.600" as="span">
             {' '}
             -{' '}
           </Text>
-          <Link href="/settings/auth">Settings</Link>
+          <RouteLink to="/settings/auth">Settings</RouteLink>
         </Box>
       </Stack>
       <Avatar size="sm" src={url} />
@@ -47,6 +47,7 @@ export interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ onSearch }) => {
   return (
+    // <Spaces.Top size={48} as="header">
     <DarkMode>
       <Stack isInline bg="gray.800" h="48px" p={2} align="center" as="header">
         <Logo dark flexShrink={0} />
@@ -77,12 +78,13 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
           spacing={4}
           ml={8}
         >
-          <Link href="/dashboard">Dashboard</Link>
-          <Link href="/activity">Activity</Link>
+          <RouteLink to="/dashboard">Dashboard</RouteLink>
+          <RouteLink to="/activity">Activity</RouteLink>
         </Stack>
         <UserAvatar ml="auto" />
       </Stack>
     </DarkMode>
+    // </Spaces.Top>
   )
 }
 
