@@ -13,6 +13,14 @@ export default function createApp() {
   const app = createServer<App>({
     name: 'push',
     routesDir: path.join(__dirname, 'routes'),
+    underPressure: {
+      exposeStatusRoute: {
+        url: '/',
+        routeOpts: {
+          logLevel: 'silent'
+        }
+      }
+    },
     configure: app => {
       app.decorate('subscribers', new Map())
 
