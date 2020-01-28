@@ -3,6 +3,7 @@ import {
   Input,
   InputGroup,
   InputLeftElement,
+  InputProps,
   Icon,
   useColorMode
 } from '@chakra-ui/core'
@@ -32,7 +33,7 @@ const getAtSignColor = (meta: FieldMetaProps<string>) => {
 
 // --
 
-interface Props {
+interface Props extends InputProps {
   colorValidation?: boolean
   name?: string
 }

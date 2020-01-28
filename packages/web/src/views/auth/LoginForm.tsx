@@ -52,11 +52,11 @@ const LoginForm: React.FC<Props> = ({ onSubmit }) => {
           <Stack spacing={4}>
             <Box>
               <Label htmlFor="email">Account</Label>
-              <EmailField />
+              <EmailField autoComplete="email" />
             </Box>
             <Box>
               <Label htmlFor="password">Master Password</Label>
-              <PasswordField name="password" />
+              <PasswordField name="password" autoComplete="current-password" />
             </Box>
             <Button
               type="submit"

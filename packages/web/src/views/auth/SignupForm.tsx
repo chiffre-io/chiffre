@@ -163,7 +163,7 @@ const SignupForm: React.FC<Props> = ({ onSubmit }) => {
       }}
     >
       {({ values, errors, isSubmitting }) => (
-        <Form autoComplete="off">
+        <Form>
           <Box mb="4">
             <LabelWithAside
               htmlFor="email"
@@ -175,7 +175,11 @@ const SignupForm: React.FC<Props> = ({ onSubmit }) => {
             >
               Account
             </LabelWithAside>
-            <EmailField aria-describedby="email-help-text" colorValidation />
+            <EmailField
+              aria-describedby="email-help-text"
+              colorValidation
+              autoComplete="email"
+            />
           </Box>
           <Box mb="4">
             <LabelWithAside
@@ -192,6 +196,7 @@ const SignupForm: React.FC<Props> = ({ onSubmit }) => {
               name="name"
               aria-describedby="name-help-text"
               placeholder="enter your name"
+              autoComplete="name"
             />
           </Box>
           <Box mb={4}>

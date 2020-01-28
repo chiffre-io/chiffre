@@ -16,6 +16,7 @@ const TwoFactorTokenField = ({ name, ...props }) => {
         mb={1}
         size="lg"
         inputMode="numeric" // Show numeric keyboard on mobile
+        autoComplete="one-time-code"
         pattern="[0-9]{6}"
         textAlign="center"
         fontSize="1.8rem"
