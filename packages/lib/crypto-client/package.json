@@ -13,6 +13,7 @@
   "dependencies": {
     "@47ng/cloak": "^0.15.0",
     "@47ng/codec": "^0.4.0",
+    "@chiffre/crypto-box": "^0.0.1",
     "@stablelib/base64": "^0.7.2",
     "@stablelib/hex": "^0.5.0",
     "@stablelib/tss": "^1.0.0",
