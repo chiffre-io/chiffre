@@ -31,6 +31,7 @@ export const seed = async (knex: Knex) => {
   const { projectID, publicKey, secretKey } = testProject
   const project: Project = {
     id: projectID,
+    name: 'Test Project',
     publicKey,
     secretKey: await encryptString(secretKey, vaultKey),
     vaultID

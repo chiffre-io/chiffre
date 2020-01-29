@@ -5,7 +5,6 @@ import { Stack, Heading, Box, Link } from '@chakra-ui/core'
 import Header from '../components/Header'
 import { useChiffreClient } from '../hooks/useChiffreClient'
 import MainPage from '../layouts/MainPage'
-import * as Spaces from 'react-spaces'
 
 const ActivityPage: NextPage = () => {
   const client = useChiffreClient()

@@ -1,12 +1,5 @@
 import React from 'react'
-import {
-  Input,
-  Button,
-  useColorMode,
-  Box,
-  Stack,
-  FormControl
-} from '@chakra-ui/core'
+import { Button, Box, Stack, FormControl } from '@chakra-ui/core'
 import { Formik, Form, FormikErrors } from 'formik'
 import Label, { LabelWithAside } from '../../components/form/Label'
 import InputField from '../../components/form/InputField'
@@ -20,14 +13,12 @@ export interface Values {
 
 export interface Props {
   onSubmit: (v: Values) => void
-  onCancel: () => void
 }
 
-const NewProjectForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
-  const dark = useColorMode().colorMode === 'dark'
-
+const NewProjectForm: React.FC<Props> = ({ onSubmit }) => {
   const initialValues: Values = {
     name: '',
+    description: '',
     deploymentURL: ''
   }
 
@@ -46,7 +37,10 @@ const NewProjectForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
           <Stack spacing={4}>
             <FormControl isRequired>
               <Label htmlFor="name">Name</Label>
-              <InputField name="name" />
+              <InputField
+                name="name"
+                placeholder="Name of your website or webapp"
+              />
             </FormControl>
             <Box>
               <LabelWithAside
@@ -59,11 +53,15 @@ const NewProjectForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
               <InputField name="description" />
             </Box>
             <FormControl isRequired>
-              <Label htmlFor="url">Production URL</Label>
-              <FieldHelpText id="production-url-help-text">
+              <Label htmlFor="url">Deployment URL</Label>
+              <FieldHelpText id="deployment-url-help-text">
                 The URL where your website or webapp can be accessed :
               </FieldHelpText>
-              <Input name="url" aria-describedby="production-url-help-text" />
+              <InputField
+                name="deploymentURL"
+                aria-describedby="deployment-url-help-text"
+                placeholder="eg: example.com, blog.my-domain.io"
+              />
             </FormControl>
             <Stack isInline spacing="2" mt={8}>
               <Button
@@ -72,9 +70,6 @@ const NewProjectForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
                 type="submit"
               >
                 Create project
-              </Button>
-              <Button variant="ghost" type="button" onClick={onCancel}>
-                Cancel
               </Button>
             </Stack>
           </Stack>

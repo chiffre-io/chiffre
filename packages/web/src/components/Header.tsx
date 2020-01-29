@@ -80,6 +80,7 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
         >
           <RouteLink to="/dashboard">Dashboard</RouteLink>
           <RouteLink to="/activity">Activity</RouteLink>
+          <RouteLink to="/new">New Project</RouteLink>
         </Stack>
         <UserAvatar ml="auto" />
       </Stack>

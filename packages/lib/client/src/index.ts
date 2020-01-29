@@ -50,10 +50,20 @@ export { TwoFactorSettings }
 
 export interface Project {
   id: string
+  name: string
+  url?: string
+  description?: string
   vaultID: string
   publicKey: string
   embedScript: string,
   decryptMessage: (message: string) => string
+}
+
+export interface CreateProjectArgs {
+  name: string
+  url?: string
+  description?: string
+  vaultID?: string
 }
 
 export interface Identity {
@@ -65,6 +75,7 @@ export interface Identity {
     sharing: Uint8Array
   }
 }
+
 
 export interface ClientOptions {
   /**
@@ -412,6 +423,9 @@ export default class Client {
       const unlockedProject = await unlockProject(project, vaultKey)
       projects.push({
         id: project.id,
+        url: project.url,
+        name: project.name,
+        description: project.description,
         vaultID: project.vaultID,
         publicKey: project.keys.public,
         embedScript: project.embedScript,
@@ -424,7 +438,7 @@ export default class Client {
 
   // Projects --
 
-  public async createProject(vaultID?: string): Promise<Project> {
+  public async createProject(args: CreateProjectArgs): Promise<Project> {
     // We will need this for unlocking the vault key
     // make sure it's available early before starting the process
     const keychainKey = this.#keystore.get('keychainKey')
@@ -434,6 +448,7 @@ export default class Client {
 
     // Retrieve the vault key, or create one if vaultID is not specified
     let vaultKey: CloakKey
+    let vaultID = args.vaultID
     if (!vaultID) {
       // Create a new vault
       vaultKey = generateKey()
@@ -455,6 +470,7 @@ export default class Client {
     const unlockedProject = await createProject()
     const lockedProject = await lockProject(unlockedProject, vaultKey)
     const createProjectParams: CreateProjectParameters = {
+      ...args,
       vaultID,
       publicKey: lockedProject.keys.public,
       secretKey: lockedProject.keys.secret
@@ -463,6 +479,7 @@ export default class Client {
     const responseBody: CreateProjectResponse = res.data
     const project: Project = {
       id: responseBody.projectID,
+      ...args,
       vaultID,
       publicKey: lockedProject.keys.public,
       embedScript: responseBody.embedScript,

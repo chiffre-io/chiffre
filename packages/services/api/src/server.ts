@@ -1,3 +1,4 @@
+import path from 'path'
 import checkEnv from '@47ng/check-env'
 import Fastify from 'fastify'
 import { getLoggerOptions, genReqId } from './logger'
@@ -176,6 +177,10 @@ export function createServer(): App {
   })
 
   app.register(require('./routes').default)
+
+  app.register(require('fastify-static').default, {
+    root: path.join(__dirname, '../public')
+  })
 
   if (process.env.NODE_ENV === 'development') {
     app.ready(() => console.info(app.printRoutes()))

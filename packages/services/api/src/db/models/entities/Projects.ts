@@ -4,7 +4,10 @@ import { VAULTS_TABLE } from './Vaults'
 
 export const PROJECTS_TABLE = 'projects'
 
-interface ProjectInput {
+export interface ProjectInput {
+  name: string
+  description?: string
+  url?: string
   vaultID: string
   publicKey: string // In clear-text
   secretKey: string // Encrypted with the vault key
@@ -18,15 +21,8 @@ export interface Project extends ProjectInput {
 
 export async function createProject(
   db: Knex,
-  vaultID: string,
-  publicKey: string,
-  secretKey: string
+  project: ProjectInput
 ): Promise<Project> {
-  const project: ProjectInput = {
-    vaultID,
-    publicKey,
-    secretKey
-  }
   const result = await db
     .insert(project)
     .into(PROJECTS_TABLE)
@@ -75,6 +71,9 @@ export async function createInitialProjectsTable(db: Knex) {
     table.foreign('vaultID').references(`${VAULTS_TABLE}.id`)
     table.string('publicKey').notNullable()
     table.string('secretKey').notNullable()
+
+    // Migration log:
+    // 20200129113026_addProjectNameUrlDescription.ts
   })
   await updatedAtFieldAutoUpdate(db, PROJECTS_TABLE)
 }

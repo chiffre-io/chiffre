@@ -9,7 +9,8 @@ import {
   createProject,
   findAllProjectsInVault,
   findProject,
-  deleteProject
+  deleteProject,
+  ProjectInput
 } from '../db/models/entities/Projects'
 import { formatEmitterEmbedScript } from '../emitterScript'
 import {
@@ -57,12 +58,13 @@ export default async (app: App) => {
     async (req: PostRequest, res) => {
       // todo: Make sure req.auth.userID has the right to create a project
       // ie: They have a link to the vaultID with their keychain.
-      const project = await createProject(
-        app.db,
-        req.body.vaultID,
-        req.body.publicKey,
-        req.body.secretKey
-      )
+      const input: ProjectInput = {
+        name: req.body.name,
+        vaultID: req.body.vaultID,
+        publicKey: req.body.publicKey,
+        secretKey: req.body.secretKey
+      }
+      const project = await createProject(app.db, input)
       const embedScript = await formatEmitterEmbedScript(project)
       const response: CreateProjectResponse = {
         projectID: project.id,
@@ -96,6 +98,9 @@ export default async (app: App) => {
         for (const project of vaultProjects) {
           userProjects.push({
             id: project.id,
+            url: project.url,
+            name: project.name,
+            description: project.description,
             keys: {
               public: project.publicKey,
               secret: project.secretKey
@@ -136,6 +141,9 @@ export default async (app: App) => {
       }
       const response: Project = {
         id: project.id,
+        url: project.url,
+        name: project.name,
+        description: project.description,
         keys: {
           public: project.publicKey,
           secret: project.secretKey

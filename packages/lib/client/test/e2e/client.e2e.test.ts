@@ -49,10 +49,15 @@ test('Identity', () => {
 })
 
 test('Create projects', async () => {
-  const project1 = await ctx.client.createProject()
-  const project2 = await ctx.client.createProject(project1.vaultID)
+  const project1 = await ctx.client.createProject({ name: 'foo' })
+  const project2 = await ctx.client.createProject({
+    name: 'bar',
+    vaultID: project1.vaultID
+  })
   expect(project2.vaultID).toEqual(project1.vaultID)
   expect(project1.id).not.toEqual(project2.id)
+  expect(project1.name).toEqual('foo')
+  expect(project2.name).toEqual('bar')
   expect(project1.embedScript).not.toEqual(project2.embedScript)
   expect(project1.publicKey).not.toEqual(project2.publicKey)
   // Access projects by ID
