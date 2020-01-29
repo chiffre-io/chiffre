@@ -178,7 +178,7 @@ export function createServer(): App {
 
   app.register(require('./routes').default)
 
-  app.register(require('fastify-static').default, {
+  app.register(require('fastify-static'), {
     root: path.join(__dirname, '../public')
   })
 
