@@ -1,6 +1,8 @@
 import WebSocket from 'isomorphic-ws'
 
-const client = new WebSocket(`ws://localhost:3000/subscribe/${process.argv[2]}`)
+const client = new WebSocket(
+  `ws://push.chiffre.io/subscribe/${process.argv[2]}`
+)
 
 client.on('open', () => {
   console.log('Subscriber connected')

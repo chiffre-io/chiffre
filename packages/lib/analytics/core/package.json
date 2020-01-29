@@ -1,0 +1,10 @@
+{
+  "name": "@chiffre/analytics-core",
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf ./dist ./node_modules"
+  }
+}

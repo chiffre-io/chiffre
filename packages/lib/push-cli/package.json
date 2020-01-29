@@ -10,7 +10,7 @@
     "access": "public"
   },
   "scripts": {
-    "dev": "nodemon -e ts,.env -w .env -w ./src ./src/main.ts -- -p JmMYLXoi4Ws9mJIGQ34ivt5NmqK6gzf-piy1wCannyA",
+    "dev:cli": "nodemon -e ts,.env -w .env -w ./src ./src/main.ts -- -p JmMYLXoi4Ws9mJIGQ34ivt5NmqK6gzf-piy1wCannyA",
     "link:cli": "chmod +x ./dist/main.js && ln -fs $(pwd)/dist/main.js ./node_modules/.bin/push",
     "build": "tsc",
     "clean": "rm -rf ./dist ./node_modules",

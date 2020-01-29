@@ -1,16 +1,14 @@
-import { Authenticator, KeyEncodings } from 'otplib/core'
+import crypto from 'crypto'
+import { hex } from '@47ng/codec'
+import { authenticator } from 'otplib'
 
-// Plugins
-import { keyDecoder, keyEncoder } from 'otplib/plugin-base32-enc-dec'
-import { createDigest, createRandomBytes } from 'otplib/plugin-crypto'
+// Allow 1 period before and after the current one
+authenticator.options = {
+  ...authenticator.allOptions(),
+  window: 1
+}
 
-const authenticator = new Authenticator({
-  createDigest,
-  createRandomBytes,
-  keyDecoder,
-  keyEncoder,
-  window: 1 // Allow 1 period before and after the current one
-})
+// --
 
 export function generateTwoFactorSecret() {
   // 20 bytes base32-encoded for compatibility with Google Authenticator
@@ -35,7 +33,7 @@ export function generateBackupCodes(
 ): string[] {
   return Array(number)
     .fill(undefined)
-    .map(() => createRandomBytes(numBytes, KeyEncodings.HEX))
+    .map(() => hex.encode(crypto.randomBytes(numBytes)))
 }
 
 export function formatTwoFactorSecret(secret: string, username: string) {

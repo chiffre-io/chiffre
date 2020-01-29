@@ -1,13 +1,12 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "target": "es2018",
-    "module": "commonjs",
+    "noEmit": true,
     "lib": ["DOM"],
-    "declaration": true,
-    "outDir": "./dist",
+    "declaration": false,
     "rootDir": "./src",
     "preserveSymlinks": true,
+    "esModuleInterop": true,
 
     // Strict Type-Checking Options
     // "strict": false,
@@ -22,14 +21,7 @@
     "noUnusedLocals": false,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-
-    "esModuleInterop": true,
-
-    // Experimental Options
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "noFallthroughCasesInSwitch": true
   },
-  "include": ["./src/**/*.ts"],
-  "exclude": ["./src/cli/**", "./dist/**"]
+  "include": ["./src/**/*.ts"]
 }

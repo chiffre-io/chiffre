@@ -1,5 +1,6 @@
 import { App } from '../types'
 import { pushMessage } from '../db/models/entities/ProjectMessageQueue'
+import { projectURLParamsSchema } from './projects.schema'
 
 // --
 
@@ -12,11 +13,7 @@ export default async (app: App) => {
     '/push/:projectID',
     {
       schema: {
-        params: {
-          projectID: {
-            type: 'string'
-          }
-        }
+        params: projectURLParamsSchema
       }
     },
     async (req, res) => {
@@ -35,7 +32,7 @@ export default async (app: App) => {
       try {
         const message = req.body
         const performance = getPerformance()
-        pushMessage(app.db, projectID, message, performance)
+        await pushMessage(app.db, projectID, message, performance)
         return res.status(204).send()
       } catch (error) {
         req.log.error(error)

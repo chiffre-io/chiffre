@@ -1,6 +1,6 @@
 import WebSocket from 'isomorphic-ws'
 
-const client = new WebSocket(`ws://localhost:3000/publish/${process.argv[2]}`)
+const client = new WebSocket(`ws://push.chiffre.io/publish/${process.argv[2]}`)
 
 let interval = null
 

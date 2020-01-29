@@ -1,6 +1,5 @@
-import nacl from 'tweetnacl'
 import { CloakKey, encryptString, decryptString } from '@47ng/cloak'
-import { b64 } from '@47ng/codec'
+import { CryptoBoxKeys, generateKeys } from '@chiffre/crypto-box'
 
 export interface Project {
   keys: {
@@ -9,14 +8,10 @@ export interface Project {
   }
 }
 
-export interface UnlockedProject {
-  keyPair: nacl.BoxKeyPair
-}
+export interface UnlockedProject extends Readonly<CryptoBoxKeys> {}
 
-export function createProject(): UnlockedProject {
-  return {
-    keyPair: nacl.box.keyPair()
-  }
+export async function createProject(): Promise<UnlockedProject> {
+  return generateKeys()
 }
 
 // --
@@ -27,11 +22,8 @@ export async function lockProject(
 ): Promise<Project> {
   return {
     keys: {
-      public: b64.encode(project.keyPair.publicKey),
-      secret: await encryptString(
-        b64.encode(project.keyPair.secretKey),
-        vaultKey
-      )
+      public: project.public,
+      secret: await encryptString(project.secret, vaultKey)
     }
   }
 }
@@ -40,9 +32,5 @@ export async function unlockProject(
   project: Project,
   vaultKey: CloakKey
 ): Promise<UnlockedProject> {
-  return {
-    keyPair: nacl.box.keyPair.fromSecretKey(
-      b64.decode(await decryptString(project.keys.secret, vaultKey))
-    )
-  }
+  return generateKeys(await decryptString(project.keys.secret, vaultKey))
 }

@@ -5,22 +5,47 @@ export { sha256 }
 
 // --
 
-interface Keys {
-  public: string // base64 encoded
-  secret: string // base64 encoded
+export interface CryptoBoxKeys {
+  public: string
+  secret: string
   fingerprint: string // hex-encoded SHA-256(public key)
   raw: nacl.BoxKeyPair
 }
 
+export function serializePublicKey(key: Uint8Array) {
+  return `pk.${b64.encode(key).replace(/\=/g, '')}`
+}
+
+export function serializeSecretKey(key: Uint8Array) {
+  return `sk.${b64.encode(key).replace(/\=/g, '')}`
+}
+
+export function parsePublicKey(key: string): Uint8Array {
+  if (!key.startsWith('pk.')) {
+    throw new Error('Invalid public key format')
+  }
+  return b64.decode(key.slice(3))
+}
+
+export function parseSecretKey(key: string): nacl.BoxKeyPair {
+  if (!key.startsWith('sk.')) {
+    throw new Error('Invalid secret key format')
+  }
+  return nacl.box.keyPair.fromSecretKey(b64.decode(key.slice(3)))
+}
+
+// --
+
 export async function generateKeys(
   secretKey?: string
-): Promise<Readonly<Keys>> {
-  const keyPair = secretKey
-    ? nacl.box.keyPair.fromSecretKey(b64.decode(secretKey))
-    : nacl.box.keyPair()
+): Promise<Readonly<CryptoBoxKeys>> {
+  const keyPair =
+    secretKey && secretKey.startsWith('sk.')
+      ? parseSecretKey(secretKey)
+      : nacl.box.keyPair()
   return {
-    public: b64.encode(keyPair.publicKey),
-    secret: b64.encode(keyPair.secretKey),
+    public: serializePublicKey(keyPair.publicKey),
+    secret: serializeSecretKey(keyPair.secretKey),
     fingerprint: await sha256(keyPair.publicKey),
     raw: keyPair
   }

@@ -13,7 +13,7 @@
     "testEnvironment": "node"
   },
   "dependencies": {
-    "@47ng/codec": "^0.3.0",
+    "@47ng/codec": "^0.4.0",
     "nanoid": "^2.1.9",
     "tweetnacl": "^1.0.1"
   }

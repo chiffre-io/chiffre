@@ -26,6 +26,7 @@ export default async function loadRoutes(app: App) {
   loadRoute(app, './embed')
   loadRoute(app, './users')
   loadRoute(app, './activity')
+  loadRoute(app, './push')
 }
 
 // Forward API Interface types

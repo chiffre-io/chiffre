@@ -12,9 +12,8 @@ import { findKeychain } from '../models/entities/Keychains'
 
 export const testProject = {
   projectID: 'testProjectID123',
-  key: 'QSBU_0eqn8fBlRuZYuSqcFJe7cxqLTZ5-E5CJYW4Pwk=',
-  publicKey: 'AAa5jWhVoFoxunJ_8RzvCT2DbaX1C6eRIo9YBhU7tUY=',
-  secretKey: 'mZRAvkB8hZkFU6u_1aQC3GNd6AosZYQjVt0uTNHtnAo='
+  publicKey: 'pk.AAa5jWhVoFoxunJ_8RzvCT2DbaX1C6eRIo9YBhU7tUY',
+  secretKey: 'sk.mZRAvkB8hZkFU6u_1aQC3GNd6AosZYQjVt0uTNHtnAo'
 }
 
 export const seed = async (knex: Knex) => {

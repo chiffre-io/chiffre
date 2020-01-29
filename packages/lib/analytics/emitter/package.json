@@ -1,0 +1,21 @@
+{
+  "name": "@chiffre/analytics-emitter",
+  "version": "0.0.1",
+  "main": "dist/emitter.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "parcel build ./src/index.ts --out-file analytics.js --detailed-report 20 --experimental-scope-hoisting",
+    "clean": "rm -rf dist .cache node_modules"
+  },
+  "dependencies": {
+    "@chiffre/analytics-core": "^0.0.1",
+    "@chiffre/crypto-box": "^0.0.1"
+  },
+  "devDependencies": {
+    "parcel-bundler": "^1.12.4"
+  },
+  "browser": {
+    "crypto": false,
+    "buffer": false
+  }
+}

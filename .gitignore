@@ -8,7 +8,8 @@
 /**/dist/
 /**/build/
 /**/coverage/
-/**/.clinic
+/**/.clinic/
+/**/.cache/
 .DS_Store
 .env*
 *.env

@@ -5,6 +5,12 @@
       "deploy_url": "https://push-par-clevercloud-customers.services.clever-cloud.com/app_dd7d3074-da13-46c6-8abf-d3f013992f50.git",
       "name": "chiffre-api",
       "alias": "chiffre-api"
+    },
+    {
+      "app_id": "app_70f03d1f-ee8e-4d10-8d1b-57455afc4e9c",
+      "deploy_url": "https://push-par-clevercloud-customers.services.clever-cloud.com/app_70f03d1f-ee8e-4d10-8d1b-57455afc4e9c.git",
+      "name": "chiffre-push",
+      "alias": "chiffre-push"
     }
   ]
 }

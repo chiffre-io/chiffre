@@ -88,7 +88,7 @@ export interface ClientOptions {
 
 const buildMessageDecryptor = (project: UnlockedProject) =>
   function decryptMessage(message: string) {
-    return unboxString(message, project.keyPair.secretKey)
+    return unboxString(message, project.raw.secretKey)
   }
 
 // --
@@ -452,7 +452,7 @@ export default class Client {
     }
 
     // Create the project and associate it with the vault
-    const unlockedProject = createProject()
+    const unlockedProject = await createProject()
     const lockedProject = await lockProject(unlockedProject, vaultKey)
     const createProjectParams: CreateProjectParameters = {
       vaultID,
