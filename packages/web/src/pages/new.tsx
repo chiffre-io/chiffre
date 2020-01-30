@@ -84,7 +84,7 @@ const NewPage: NextPage = () => {
   }
 </script>
 <script
-  src="${process.env.APP_URL}/embed/analytics.js"
+  src="${process.env.CDN_URL}/analytics.js"
   crossorigin="anonymous"
   async=""
 >
