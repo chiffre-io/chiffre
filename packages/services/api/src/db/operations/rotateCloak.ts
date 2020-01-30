@@ -1,3 +1,4 @@
+import path from 'path'
 import dotenv from 'dotenv'
 import envAlias from 'env-alias'
 import { rotateUsersCloak } from '../models/auth/Users'
@@ -23,7 +24,12 @@ const run = async () => {
 
 if (require.main === module) {
   // Setup environment
-  dotenv.config()
+  dotenv.config({
+    path: path.resolve(
+      process.cwd(),
+      process.env.ENV_PRODUCTION === 'true' ? '.env.production' : '.env'
+    )
+  })
   envAlias()
   run()
 }

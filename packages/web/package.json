@@ -17,6 +17,7 @@
     "analyze": "ANALYZE=true next build"
   },
   "dependencies": {
+    "@47ng/check-env": "^2.0.0",
     "@chakra-ui/core": "^0.5.2",
     "@chiffre/api-types": "^0.0.1",
     "@chiffre/client": "^0.0.1",
