@@ -40,7 +40,7 @@ const NewPage: NextPage = () => {
       <Header />
       <Body shade={100} />
       <Box
-        maxW="lg"
+        maxW="xl"
         mt={8}
         mx="auto"
         backgroundColor="white"
@@ -84,7 +84,7 @@ const NewPage: NextPage = () => {
   }
 </script>
 <script
-  src="${process.env.API_URL}/embed/analytics.js"
+  src="${process.env.APP_URL}/embed/analytics.js"
   crossorigin="anonymous"
   async=""
 >
