@@ -10,8 +10,9 @@
     "dev:stop": "./scripts/dev-stop.sh",
     "clean": "yarn wsrun -m clean && rm -rf ./node_modules",
     "build": "yarn wsrun -mt build",
-    "build:services:api": "yarn wsrun -srp @chiffre/analytics-emitter @chiffre/api -c build",
+    "build:services:api": "yarn wsrun -srp @chiffre/api -c build",
     "build:services:push": "yarn wsrun -srp @chiffre/push -c build",
+    "build:web": "yarn wsrun -srp @chiffre/analytics-emitter @chiffre/web -c build",
     "ci": "yarn wsrun -ms ci",
     "install": "./scripts/build.sh"
   },

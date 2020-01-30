@@ -1,3 +1,4 @@
+import cors from 'fastify-cors'
 import { App } from '../types'
 import { pushMessage } from '../db/models/entities/ProjectMessageQueue'
 import { projectURLParamsSchema } from './projects.schema'
@@ -9,6 +10,19 @@ interface UrlParams {
 }
 
 export default async (app: App) => {
+  app.register(cors, {
+    origin: '*',
+    allowedHeaders: [
+      'accept',
+      'content-type',
+      'origin',
+      'user-agent',
+      'x-forwarded-for'
+    ],
+    methods: ['POST'],
+    credentials: false,
+    maxAge: 3600 // 1h
+  })
   app.post<unknown, UrlParams>(
     '/push/:projectID',
     {

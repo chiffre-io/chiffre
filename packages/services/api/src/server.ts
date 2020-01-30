@@ -178,10 +178,6 @@ export function createServer(): App {
 
   app.register(require('./routes').default)
 
-  app.register(require('fastify-static'), {
-    root: path.join(__dirname, '../public')
-  })
-
   if (process.env.NODE_ENV === 'development') {
     app.ready(() => console.info(app.printRoutes()))
   } else {
