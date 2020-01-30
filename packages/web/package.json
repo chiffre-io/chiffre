@@ -7,13 +7,11 @@
     "dev": "next",
     "ci": "run-s build",
     "build": "next build",
-    "build:emitter": "parcel build -d ./public -o emitter.js ./src/emitter/index.ts",
-    "start": "NODE_ENV=production yarn tsnode ./src/server/server.ts",
-    "clean": "rm -rf ./out ./.next",
+    "start": "next start",
+    "clean": "rm -rf out .next node_modules",
     "export": "next export",
     "deploy": "surge -p ./out -d https://chiffre.io",
-    "release": "yarn clean && yarn build && yarn export && yarn deploy",
-    "demo:serve": "serve ./demo",
+    "release": "run-s clean build export deploy",
     "analyze": "ANALYZE=true next build"
   },
   "dependencies": {

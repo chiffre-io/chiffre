@@ -4,10 +4,11 @@
   "main": "dist/emitter.js",
   "license": "MIT",
   "scripts": {
-    "build": "run-s build:bundle build:copy",
+    "build": "run-s build:bundle build:cors",
     "build:bundle": "parcel build ./src/index.ts --out-file analytics.js --detailed-report 20 --experimental-scope-hoisting",
-    "build:copy": "cp -f ./dist/analytics.js ../../../web/public/embed/",
-    "clean": "rm -rf dist .cache node_modules"
+    "build:cors": "echo '*' > ./dist/CORS",
+    "clean": "rm -rf dist .cache node_modules",
+    "deploy": "surge -p ./dist -d https://embed.chiffre.io"
   },
   "dependencies": {
     "@chiffre/analytics-core": "^0.0.1",
