@@ -8,6 +8,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CI: true
+      APP_URL: https://chiffre.io
+      API_URL: https://api.chiffre.io
+      CDN_URL: https://embed.chiffre.io
     steps:
       - id: yarn-cache
         name: Get Yarn cache path

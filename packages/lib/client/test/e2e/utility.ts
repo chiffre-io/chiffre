@@ -1,3 +1,4 @@
+import fs from 'fs'
 import dotenv from 'dotenv'
 import checkEnv from '@47ng/check-env'
 import { createServer, startServer } from '@chiffre/api/dist/server'
@@ -11,10 +12,22 @@ export interface TestContext {
 }
 
 export async function setup(): Promise<TestContext> {
+  const envFilePath = path.resolve(__dirname, 'e2e.env')
   dotenv.config({
-    path: path.join(path.dirname(__filename), 'e2e.env')
+    path: envFilePath
   })
+  const envConfig = dotenv.parse(fs.readFileSync(envFilePath))
+  for (const k in envConfig) {
+    process.env[k] = envConfig[k]
+  }
+
   checkEnv({ required: ['API_URL'] })
+  console.dir({
+    NODE_ENV: process.env.NODE_ENV,
+    APP_URL: process.env.APP_URL,
+    API_URL: process.env.API_URL,
+    CDN_URL: process.env.CDN_URL
+  })
 
   const port = parseInt(process.env.PORT || '4000')
   const server = createServer()

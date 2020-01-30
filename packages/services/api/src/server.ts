@@ -29,8 +29,7 @@ export function createServer(): App {
       'CLOAK_KEYCHAIN',
       'CLOAK_CURRENT_KEY',
       'JWT_SECRET',
-      'JWT_ISSUER',
-      runningInProduction ? 'SENTRY_DSN' : null
+      'JWT_ISSUER'
     ].filter(x => !!x),
     unsafe: [
       'DEBUG',
