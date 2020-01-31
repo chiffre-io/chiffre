@@ -1,5 +1,5 @@
 import nanoid from 'nanoid'
-import { createEvent, EventSender } from './events'
+import { createBrowserEvent, EventSender } from './events'
 
 export const sessionID = nanoid()
 
@@ -18,7 +18,7 @@ export interface SessionData {
 }
 
 export const sessionStart = () => {
-  const event = createEvent('session:start', {
+  const event = createBrowserEvent('session:start', {
     ua: navigator.userAgent,
     os: navigator.platform,
     ref: document.referrer,
@@ -28,7 +28,9 @@ export const sessionStart = () => {
       w: window.innerWidth,
       h: window.innerHeight
     },
-    lvd: window.localStorage.getItem('chiffre:last-visit-date') || undefined
+    lvd: window.localStorage.getItem('chiffre:last-visit-date') || undefined,
+    sid: sessionID,
+    path: window.location.pathname
   })
   window.localStorage.setItem(
     'chiffre:last-visit-date',
@@ -38,7 +40,10 @@ export const sessionStart = () => {
 }
 
 export const sessionEnd = () => {
-  return createEvent('session:end')
+  return createBrowserEvent('session:end', {
+    sid: sessionID,
+    path: window.location.pathname
+  })
 }
 
 export const setupSessionListeners = (send: EventSender) => {

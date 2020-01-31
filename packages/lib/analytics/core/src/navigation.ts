@@ -1,4 +1,5 @@
-import { createEvent, EventSender } from './events'
+import { createBrowserEvent, EventSender } from './events'
+import { sessionID } from './session'
 
 export interface PageVisitData {
   from: string
@@ -12,9 +13,10 @@ export const setupPageVisitListeners = (send: EventSender) => {
     if (oldPath === newPath) {
       return
     }
-    // the `to` part is sent in the event body as `path`
-    const event = createEvent(`page:visit`, {
-      from: oldPath
+    const event = createBrowserEvent(`page:visit`, {
+      sid: sessionID,
+      from: oldPath,
+      path: newPath
     })
     oldPath = newPath
     send(event)

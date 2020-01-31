@@ -4,7 +4,8 @@
   "main": "dist/emitter.js",
   "license": "MIT",
   "scripts": {
-    "build": "run-s build:bundle build:cors",
+    "build": "run-s build:tsc build:bundle build:cors",
+    "build:tsc": "tsc",
     "build:bundle": "parcel build ./src/index.ts --out-file analytics.js --detailed-report 20 --experimental-scope-hoisting",
     "build:cors": "echo '*' > ./dist/CORS",
     "clean": "rm -rf dist .cache node_modules",

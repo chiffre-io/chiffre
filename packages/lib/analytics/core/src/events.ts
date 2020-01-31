@@ -1,36 +1,54 @@
-import { sessionID, SessionData } from './session'
+import { SessionData } from './session'
 import { PageVisitData } from './navigation'
 
-export interface EventPayloadTypes {
-  'session:start': SessionData
-  'session:end': never
-  'page:visit': PageVisitData
+export interface Event<T, K extends keyof T> {
+  type: K
+  time: number
+  data?: T[K]
 }
 
-export type EventTypes = keyof EventPayloadTypes
-export type EventDataType<T extends EventTypes> = EventPayloadTypes[T]
+// ---
 
-export interface Event<T extends EventTypes> {
-  v: number
-  type: T
-  time: number
+export interface GenericDataPoint<T, Meta = any> {
+  name: string
+  value: T
+  meta?: Meta
+}
+
+export type GenericEvents = {
+  'generic:number': GenericDataPoint<number>
+  'generic:numbers': GenericDataPoint<number>[]
+  'generic:string': GenericDataPoint<string>
+  'generic:strings': GenericDataPoint<string>[]
+}
+
+export interface BrowserEventData {
   sid: string
   path: string
-  data?: EventDataType<T>
 }
 
-export function createEvent<T extends EventTypes>(
-  type: T,
-  data?: EventDataType<T>
-): Event<T> {
-  return {
-    v: 1,
-    type,
-    sid: sessionID,
-    time: Date.now(),
-    path: window.location.pathname,
-    data
+export type BrowserDataPoint<T = {}> = BrowserEventData & T
+
+export type BrowserEvents = {
+  'session:start': BrowserDataPoint<SessionData>
+  'session:end': BrowserDataPoint
+  'page:visit': BrowserDataPoint<PageVisitData>
+}
+
+function eventFactory<Events>() {
+  return function createEvent<K extends keyof Events>(
+    type: K,
+    data?: Events[K]
+  ): Event<Events, K> {
+    return {
+      type,
+      time: Date.now(),
+      data
+    }
   }
 }
 
-export type EventSender = <T extends EventTypes>(event: Event<T>) => void
+export const createGenericEvent = eventFactory<GenericEvents>()
+export const createBrowserEvent = eventFactory<BrowserEvents>()
+
+export type EventSender = <T>(event: Event<T, keyof T>) => void
