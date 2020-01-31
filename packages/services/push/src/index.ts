@@ -1,29 +1,37 @@
 import path from 'path'
+import checkEnv from '@47ng/check-env'
 import WebSocket from 'ws'
 import fastifyWs, { SocketStream } from 'fastify-websocket'
 import { createServer, Server } from 'fastify-micro'
+import Redis from 'ioredis'
 
 export interface App extends Server {
   websocketServer: WebSocket.Server // this should be exposed by fastify-websocket
   gracefulShutdown: (f: (signal: string, next: () => void) => void) => void
   subscribers: Map<string, Map<string, WebSocket>>
+  redis: Redis.Redis
 }
 
 export default function createApp() {
+  checkEnv({
+    required: ['REDIS_URI']
+  })
+
   const app = createServer<App>({
     name: 'push',
     routesDir: path.join(__dirname, 'routes'),
+    redactEnv: ['REDIS_URI'],
     underPressure: {
       exposeStatusRoute: {
         url: '/',
         routeOpts: {
           logLevel: 'silent'
         }
-      }
+      },
+      healthCheck: () => Promise.resolve(true)
     },
     configure: app => {
       app.decorate('subscribers', new Map())
-
       app.register(fastifyWs, {
         handle: function handleGlobalWebSocketConnection(socket: SocketStream) {
           // We're not using the global websocket connection for now
@@ -39,6 +47,7 @@ export default function createApp() {
           }
         }
       })
+      app.decorate('redis', new Redis(process.env.REDIS_URI, { db: 3 }))
     }
   })
 

@@ -10,8 +10,11 @@
     "clean": "rm -rf ./dist"
   },
   "dependencies": {
-    "fastify-micro": "0.0.1",
+    "@47ng/check-env": "^2.0.0",
+    "fastify-cors": "^3.0.1",
+    "fastify-micro": "^0.1.0",
     "fastify-websocket": "^1.1.0",
+    "ioredis": "^4.14.1",
     "isomorphic-ws": "^4.0.1",
     "nanoid": "^2.1.10"
   },
