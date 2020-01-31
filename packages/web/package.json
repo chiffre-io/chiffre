@@ -11,7 +11,7 @@
     "clean": "rm -rf out .next node_modules",
     "export": "next export",
     "deploy": "surge -p ./out -d https://chiffre.io",
-    "release": "run-s clean build export deploy",
+    "release": "ENV_PRODUCTION=true run-s clean build export deploy",
     "analyze": "ANALYZE=true next build"
   },
   "dependencies": {
