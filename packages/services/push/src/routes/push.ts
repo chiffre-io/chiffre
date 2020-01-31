@@ -13,7 +13,8 @@ export default async (app: App) => {
       'content-type',
       'origin',
       'user-agent',
-      'x-forwarded-for'
+      'x-forwarded-for',
+      'cf-ipcountry'
     ],
     methods: ['POST'],
     maxAge: 3600 // 1h
