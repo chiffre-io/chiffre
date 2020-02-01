@@ -19,7 +19,7 @@ export default function createApp() {
 
   const app = createServer<App>({
     name: 'push',
-    routesDir: path.join(__dirname, 'routes'),
+    routesDir: path.resolve(__dirname, 'routes'),
     redactEnv: ['REDIS_URI'],
     underPressure: {
       exposeStatusRoute: {
@@ -28,7 +28,18 @@ export default function createApp() {
           logLevel: 'silent'
         }
       },
-      healthCheck: () => Promise.resolve(true)
+      healthCheck: async (app: App) => {
+        try {
+          if (!['ready', 'connecting'].includes(app.redis.status)) {
+            throw new Error(`Redis status: ${app.redis.status}`)
+          }
+          return true
+        } catch (error) {
+          app.log.error(error)
+          app.sentry.report(error)
+          return false
+        }
+      }
     },
     configure: app => {
       app.decorate('subscribers', new Map())
@@ -66,6 +77,7 @@ export default function createApp() {
 
   app.addHook('onClose', async (app: App, done) => {
     app.log.info({ msg: 'onClose' })
+    await app.redis.quit()
     done()
   })
 
