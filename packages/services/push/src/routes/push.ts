@@ -34,7 +34,7 @@ export default async (app: App) => {
       }
       const blob = JSON.stringify({
         msg: message,
-        perf: req.query.perf ?? -1,
+        perf: req.query.perf || -1,
         rat: Date.now(), // Received at
         country: req.headers['cf-ipcountry']
       })
