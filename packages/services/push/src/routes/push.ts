@@ -1,13 +1,17 @@
 import cors from 'fastify-cors'
 import { App } from '../index'
 
+interface QueryParams {
+  perf?: number
+}
+
 interface UrlParams {
   projectID: string
 }
 
 export default async (app: App) => {
   app.register(cors, {
-    origin: '*',
+    origin: true,
     allowedHeaders: [
       'accept',
       'content-type',
@@ -17,28 +21,22 @@ export default async (app: App) => {
       'cf-ipcountry'
     ],
     methods: ['POST'],
+    credentials: true, // sendBeacon always sends credentials
     maxAge: 3600 // 1h
   })
-  app.post<unknown, UrlParams>('/:projectID', async (req, res) => {
-    const getPerformance = () => {
-      try {
-        const match = req.headers['content-type'].match(/perf=(?<perf>\d+)$/)
-        const { perf } = match.groups
-        return parseInt(perf, 10)
-      } catch (error) {
-        req.log.error(error)
-        return -1
-      }
-    }
-
+  app.post<QueryParams, UrlParams>('/:projectID', async (req, res) => {
     const { projectID } = req.params
     try {
-      const message = req.body
-      const performance = getPerformance()
+      const message: string = req.body
+      if (!message.startsWith('v1.naclbox.')) {
+        // Don't store garbage
+        return res.status(204).send()
+      }
       const blob = JSON.stringify({
-        m: message,
-        p: performance,
-        c: '' // Country, todo
+        msg: message,
+        perf: req.query.perf ?? -1,
+        rat: Date.now(), // Received at
+        country: req.headers['cf-ipcountry']
       })
       await app.redis.lpush(projectID, blob)
       return res.status(204).send()

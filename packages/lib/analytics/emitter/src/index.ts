@@ -42,10 +42,8 @@ function sendEvent(event: Event<any, any>, config: Config) {
   const payload = JSON.stringify(event)
   const message = encryptString(payload, config.publicKey)
   const tock = performance.now()
-  let blob = new Blob([message], {
-    type: `text/plain;charset=UTF-8;perf=${tock - tick}`
-  })
-  const sent = navigator.sendBeacon(config.pushURL, blob)
+  const url = `${config.pushURL}?perf=${tock - tick}`
+  const sent = navigator.sendBeacon(url, message)
   if (!sent) {
     console.warn('Analytics message failed to send')
   }
