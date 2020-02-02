@@ -1,4 +1,3 @@
-import cors from 'fastify-cors'
 import { App } from '../index'
 
 interface QueryParams {
@@ -10,20 +9,6 @@ interface UrlParams {
 }
 
 export default async (app: App) => {
-  app.register(cors, {
-    origin: true,
-    allowedHeaders: [
-      'accept',
-      'content-type',
-      'origin',
-      'user-agent',
-      'x-forwarded-for',
-      'cf-ipcountry'
-    ],
-    methods: ['POST'],
-    credentials: true, // sendBeacon always sends credentials
-    maxAge: 3600 // 1h
-  })
   app.post<QueryParams, UrlParams>('/:projectID', async (req, res) => {
     const { projectID } = req.params
     try {
