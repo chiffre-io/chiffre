@@ -12,6 +12,7 @@ jobs:
       API_URL: https://api.chiffre.io
       CDN_URL: https://embed.chiffre.io
     steps:
+      # Continuous Integration
       - id: yarn-cache
         name: Get Yarn cache path
         run: echo "::set-output name=dir::$(yarn cache dir)"
@@ -28,3 +29,14 @@ jobs:
             ${{ runner.os }}-yarn-
       - run: yarn install --ignore-scripts
       - run: yarn ci
+
+      # Continuous Deployment
+      - uses: tclindner/sentry-releases-action@v1.0.0
+        name: Publish the release to Sentry
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: 47ng
+          SENTRY_PROJECT: chiffre
+        with:
+          tagName: ${{ github.ref }}
+          environment: production

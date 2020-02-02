@@ -4,7 +4,6 @@ import { FastifyRequest } from 'fastify'
 import { AuthenticatedRequest } from './auth'
 import { findUser, User } from '../db/models/auth/Users'
 import { App } from '../types'
-import version from '../version'
 
 type Request = FastifyRequest & Partial<AuthenticatedRequest>
 
@@ -15,7 +14,7 @@ export interface SentryReporter {
 export default fp((app: App, _, next) => {
   Sentry.init({
     dsn: process.env.SENTRY_DSN,
-    release: version,
+    release: process.env.COMMIT_ID,
     environment: process.env.NODE_ENV,
     enabled: !!process.env.SENTRY_DSN
   })
@@ -35,9 +34,10 @@ export default fp((app: App, _, next) => {
         })
         scope.setTags({
           path: req?.raw.url,
-          instance: process.env.INSTANCE_ID.slice(0, 8)
+          service: 'api'
         })
         scope.setExtras({
+          instance: process.env.INSTANCE_ID.slice(0, 8),
           'token ID': req?.auth?.tokenID || 'no auth provided',
           '2FA': req?.auth?.twoFactorStatus || 'no auth provided',
           plan: req?.auth?.plan || 'no auth provided',

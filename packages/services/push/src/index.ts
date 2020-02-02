@@ -21,6 +21,9 @@ export default function createApp() {
     name: 'push',
     routesDir: path.resolve(__dirname, 'routes'),
     redactEnv: ['REDIS_URI'],
+    sentry: {
+      release: process.env.COMMIT_ID
+    },
     underPressure: {
       exposeStatusRoute: {
         url: '/',
