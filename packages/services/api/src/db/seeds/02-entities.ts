@@ -1,14 +1,16 @@
 import Knex from 'knex'
 import dotenv from 'dotenv'
 import { deriveMasterKey } from '@chiffre/crypto-client'
+import { encryptString as boxString, parsePublicKey } from '@chiffre/crypto-box'
 import { generateKey, encryptString, decryptString } from '@47ng/cloak'
 import { testUserCredentials } from './01-users'
-import { formatEmitterEmbedScript } from '../../emitterScript'
 import { createVault } from '../models/entities/Vaults'
 import { Project, PROJECTS_TABLE } from '../models/entities/Projects'
 import { createUserVaultEdge } from '../models/entities/UserVaultEdges'
 import { findUser } from '../models/auth/Users'
 import { findKeychain } from '../models/entities/Keychains'
+import { pushMessage } from '../models/entities/ProjectMessageQueue'
+import { createGenericEvent } from '@chiffre/analytics-core'
 
 export const testProject = {
   projectID: 'testProjectID123',
@@ -52,6 +54,14 @@ export const seed = async (knex: Knex) => {
   const encryptedVaultKey = await encryptString(vaultKey, keychainKey)
   await createUserVaultEdge(knex, userID, vaultID, encryptedVaultKey)
 
-  const emitter = await formatEmitterEmbedScript(project)
-  console.log(emitter)
+  // Step 4: generate some fake data
+  const pk = parsePublicKey(publicKey)
+  for (let i = 0; i < 100; ++i) {
+    const event = createGenericEvent('generic:number', {
+      name: 'foo',
+      value: Math.random() * 100
+    })
+    const message = boxString(JSON.stringify(event), pk)
+    await pushMessage(knex, projectID, message, Math.random() * 30 + 12)
+  }
 }
