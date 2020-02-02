@@ -10,9 +10,11 @@
     "dev:stop": "./scripts/dev-stop.sh",
     "clean": "yarn wsrun -m clean && rm -rf ./node_modules",
     "build": "yarn wsrun -mt build",
+    "test:unit": "yarn wsrun -mt test",
+    "test:e2e": "yarn wsrun -mt e2e:test",
     "build:services:api": "yarn wsrun -srp @chiffre/api -c build",
     "build:services:push": "yarn wsrun -srp @chiffre/push -c build",
-    "ci": "yarn wsrun -ms ci",
+    "ci": "run-s build test:unit test:e2e",
     "install": "./scripts/build.sh"
   },
   "devDependencies": {

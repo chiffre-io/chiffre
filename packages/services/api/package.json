@@ -26,8 +26,8 @@
     "decloak": "echo $(pbpaste) | cloak decrypt",
     "e2e:setup": "../../../scripts/e2e-start.sh",
     "e2e:teardown": "../../../scripts/e2e-stop.sh",
-    "e2e:test": "jest e2e --runInBand --verbose --coverage --colors",
-    "ci": "run-s e2e:setup e2e:test e2e:teardown build"
+    "e2e:run": "jest e2e --runInBand --verbose --coverage --colors",
+    "e2e:test": "run-s e2e:setup e2e:run e2e:teardown"
   },
   "dependencies": {
     "@47ng/check-env": "^2.0.0",

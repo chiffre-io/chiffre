@@ -5,7 +5,6 @@
   "license": "UNLICENSED",
   "scripts": {
     "dev": "next",
-    "ci": "run-s build",
     "build": "next build",
     "start": "next start",
     "clean": "rm -rf out .next node_modules",

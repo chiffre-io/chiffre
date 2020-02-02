@@ -6,7 +6,6 @@
   "license": "UNLICENSED",
   "scripts": {
     "clean": "rm -rf ./dist ./node_modules",
-    "ci": "run-s test build",
     "build": "tsc",
     "test": "jest --verbose --logHeapUsage --colors"
   },
