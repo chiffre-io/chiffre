@@ -30,7 +30,9 @@ export default function createApp() {
       },
       healthCheck: async (app: App) => {
         try {
-          if (!['ready', 'connecting'].includes(app.redis.status)) {
+          if (
+            !['ready', 'connecting', 'reconnecting'].includes(app.redis.status)
+          ) {
             throw new Error(`Redis status: ${app.redis.status}`)
           }
           return true
@@ -58,7 +60,19 @@ export default function createApp() {
           }
         }
       })
-      app.decorate('redis', new Redis(process.env.REDIS_URI, { db: 3 }))
+      // Redis
+      {
+        const redis = new Redis(process.env.REDIS_URI, { db: 3 })
+        redis.on('error', error => {
+          app.log.error({
+            msg: `Redis error`,
+            plugin: 'redis',
+            error
+          })
+          app.sentry.report(error)
+        })
+        app.decorate('redis', redis)
+      }
     }
   })
 
