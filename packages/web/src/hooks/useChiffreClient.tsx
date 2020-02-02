@@ -7,17 +7,18 @@ interface ContextState {
 }
 
 const stubClient = {
-  identity: null,
+  identity: undefined,
   settings: {
     twoFactor: ({
       enable: () => Promise.reject('The Chiffre client is not ready'),
       disable: () => Promise.reject('The Chiffre client is not ready'),
       cancel: () => Promise.reject('The Chiffre client is not ready'),
       verify: () => Promise.reject('The Chiffre client is not ready'),
-      status: null
+      status: undefined
     } as unknown) as TwoFactorSettings
   },
-  projects: []
+  projects: [],
+  getProject: (id: string) => undefined
 }
 
 let client: Client = null

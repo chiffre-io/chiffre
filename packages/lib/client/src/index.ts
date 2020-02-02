@@ -39,7 +39,8 @@ import {
   ActivityResponse,
   getExpirationDate,
   maxAgeInSeconds,
-  parseJwtPayload
+  parseJwtPayload,
+  MessageQueueResponse
 } from '@chiffre/api-types'
 import type { Settings } from './settings'
 import TwoFactorSettings from './settings/2fa'
@@ -491,5 +492,19 @@ export default class Client {
 
   public getProject(id: string) {
     return this.projects.find((p => p.id === id))
+  }
+
+  public async getProjectMessages(
+    projectID: string,
+    before?: number,
+    after?: number
+  ): Promise<MessageQueueResponse[]> {
+    const qsParams = [['before', before], ['after', after]]
+      .filter(([_, val]) => !!val)
+      .map(kv => kv.join('='))
+      .join('&')
+    const qs = qsParams.length === 0 ? '' : `?${qsParams}`
+    const res = await this.#api.get(`/queues/${projectID}${qs}`)
+    return res.data
   }
 }
