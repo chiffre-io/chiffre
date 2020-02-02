@@ -5,7 +5,6 @@ import SonicBoom from 'sonic-boom'
 import redactEnv from 'redact-env'
 import nanoid from 'nanoid'
 import { FastifyRequest } from 'fastify'
-import serviceVersion from './version'
 
 function createRedactedStream(
   pipeTo: SonicBoom,
@@ -42,7 +41,7 @@ export function getLoggerOptions() {
     ],
     stream: createRedactedStream(pino.destination(1), redactedEnv),
     base: {
-      from: serviceVersion,
+      from: 'api',
       instance: process.env.INSTANCE_ID.slice(0, 8)
       // commit: process.env.LOG_COMMIT.slice(0, 8)
     },

@@ -12,7 +12,6 @@ import { App, Route } from './types'
 import fp from 'fastify-plugin'
 import { AuthenticatedRequest } from './plugins/auth'
 import { Plans } from './exports/defs'
-import serviceVersion from './version'
 
 export function createServer(): App {
   const runningInProduction = process.env.NODE_ENV === 'production'
@@ -76,7 +75,7 @@ export function createServer(): App {
         info: {
           title: 'Chiffre API',
           description: 'API for the Chiffre.io service',
-          version: serviceVersion
+          version: '0.0.1' // todo: Read from package.json
         },
         host: (process.env.API_URL || '')
           .replace('https://', '')
