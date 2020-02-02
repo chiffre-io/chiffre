@@ -4,6 +4,7 @@ import WebSocket from 'ws'
 import fastifyWs, { SocketStream } from 'fastify-websocket'
 import { createServer, Server } from 'fastify-micro'
 import Redis from 'ioredis'
+import readPkg from 'read-pkg'
 
 export interface App extends Server {
   websocketServer: WebSocket.Server // this should be exposed by fastify-websocket
@@ -16,9 +17,10 @@ export default function createApp() {
   checkEnv({
     required: ['REDIS_URI']
   })
+  const pkg = readPkg.sync()
 
   const app = createServer<App>({
-    name: 'push',
+    name: `push@${pkg.version}`,
     routesDir: path.resolve(__dirname, 'routes'),
     redactEnv: ['REDIS_URI'],
     sentry: {
