@@ -17,7 +17,9 @@ export default function createApp() {
   checkEnv({
     required: ['REDIS_URI']
   })
-  const pkg = readPkg.sync()
+  const pkg = readPkg.sync({
+    cwd: path.resolve(__dirname, '..')
+  })
 
   const app = createServer<App>({
     name: `push@${pkg.version}`,
