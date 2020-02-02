@@ -9,13 +9,14 @@ import {
 
 export interface RouteLinkProps
   extends Omit<NextLinkProps, 'as' | 'href'>,
-    Omit<ChakraLinkProps, 'href'> {
+    Omit<ChakraLinkProps, 'as' | 'href'> {
+  as?: string
   to: string
 }
 
 export const RouteLink: React.FC<RouteLinkProps> = ({
   to,
-  as,
+  as = to,
   children,
   ...props
 }) => {

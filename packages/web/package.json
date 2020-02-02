@@ -21,6 +21,7 @@
     "@chiffre/client": "^0.0.1",
     "@emotion/core": "^10.0.27",
     "@emotion/styled": "^10.0.27",
+    "@nivo/line": "^0.61.1",
     "@zeit/next-source-maps": "^0.0.3",
     "emotion-theming": "^10.0.27",
     "formik": "2.1.2",
