@@ -44,5 +44,5 @@ jobs:
           SENTRY_ORG: 47ng
           SENTRY_PROJECT: chiffre
         with:
-          tagName: ${{ github.ref }}
+          tagName: ${{ github.sha }}
           environment: production
