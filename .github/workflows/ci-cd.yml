@@ -41,6 +41,7 @@ jobs:
     needs: ci
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - uses: tclindner/sentry-releases-action@v1.0.0
         name: Publish the release to Sentry
         env:
@@ -55,6 +56,7 @@ jobs:
     needs: [ci, deploy-sentry-release]
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - uses: 47ng/actions-clever-cloud@0.1.0-alpha.1
         name: Deploy to Clever Cloud (services/push)
         with:
@@ -67,6 +69,7 @@ jobs:
     needs: [ci, deploy-sentry-release]
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - uses: 47ng/actions-clever-cloud@0.1.0-alpha.1
         name: Deploy to Clever Cloud (services/api)
         with:
