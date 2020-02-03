@@ -32,11 +32,15 @@ jobs:
         with:
           path: ${{ github.workspace }}/packages/web/.next/cache
           key: ${{ runner.os }}-nextjs-${{ hashFiles('**/yarn.lock') }}
-
       - run: yarn install --ignore-scripts
       - run: yarn ci
 
-      # Continuous Deployment
+  # Continuous Deployment --
+
+  deploy-sentry-release:
+    needs: ci
+    runs-on: ubuntu-latest
+    steps:
       - uses: tclindner/sentry-releases-action@v1.0.0
         name: Publish the release to Sentry
         env:
@@ -46,3 +50,27 @@ jobs:
         with:
           tagName: ${{ github.sha }}
           environment: production
+
+  deploy-api:
+    needs: [ci, deploy-sentry-release]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: 47ng/actions-clever-cloud
+        name: Deploy to Clever Cloud (services/push)
+        with:
+          alias: chiffre-push # if you have a .clever.json in your repository
+        env:
+          CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
+          CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
+
+  deploy-push:
+    needs: [ci, deploy-sentry-release]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: 47ng/actions-clever-cloud
+        name: Deploy to Clever Cloud (services/api)
+        with:
+          alias: chiffre-api
+        env:
+          CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
+          CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
