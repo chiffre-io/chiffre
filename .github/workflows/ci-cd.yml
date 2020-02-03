@@ -57,7 +57,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: 47ng/actions-clever-cloud@0.1.0-alpha.1
+      - uses: 47ng/actions-clever-cloud@v0.1.0-alpha.1
         name: Deploy to Clever Cloud (services/push)
         with:
           alias: chiffre-push
@@ -70,7 +70,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: 47ng/actions-clever-cloud@0.1.0-alpha.1
+      - uses: 47ng/actions-clever-cloud@v0.1.0-alpha.1
         name: Deploy to Clever Cloud (services/api)
         with:
           alias: chiffre-api
