@@ -32,8 +32,8 @@ jobs:
         with:
           path: ${{ github.workspace }}/packages/web/.next/cache
           key: ${{ runner.os }}-nextjs-${{ hashFiles('**/yarn.lock') }}
-      - run: yarn install --ignore-scripts
-      - run: yarn ci
+      # - run: yarn install --ignore-scripts
+      # - run: yarn ci
 
   # Continuous Deployment --
 
