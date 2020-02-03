@@ -55,10 +55,10 @@ jobs:
     needs: [ci, deploy-sentry-release]
     runs-on: ubuntu-latest
     steps:
-      - uses: 47ng/actions-clever-cloud
+      - uses: 47ng/actions-clever-cloud@0.1.0-alpha.1
         name: Deploy to Clever Cloud (services/push)
         with:
-          alias: chiffre-push # if you have a .clever.json in your repository
+          alias: chiffre-push
         env:
           CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
           CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
@@ -67,7 +67,7 @@ jobs:
     needs: [ci, deploy-sentry-release]
     runs-on: ubuntu-latest
     steps:
-      - uses: 47ng/actions-clever-cloud
+      - uses: 47ng/actions-clever-cloud@0.1.0-alpha.1
         name: Deploy to Clever Cloud (services/api)
         with:
           alias: chiffre-api
