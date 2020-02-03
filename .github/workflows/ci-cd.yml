@@ -59,6 +59,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - run: git fetch --prune --unshallow
       - uses: 47ng/actions-clever-cloud@master
         name: Deploy to Clever Cloud (services/api)
         with:
@@ -73,6 +74,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - run: git fetch --prune --unshallow
       - uses: 47ng/actions-clever-cloud@master
         name: Deploy to Clever Cloud (services/push)
         with:
