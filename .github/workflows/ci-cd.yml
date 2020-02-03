@@ -17,23 +17,23 @@ jobs:
         name: Get Yarn cache path
         run: echo "::set-output name=dir::$(yarn cache dir)"
       - uses: actions/checkout@v2
-      # - uses: actions/setup-node@v1
-      #   with:
-      #     node-version: 12.x
-      # - uses: actions/cache@v1
-      #   name: Load Yarn cache
-      #   with:
-      #     path: ${{ steps.yarn-cache.outputs.dir }}
-      #     key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-yarn-
-      # - uses: actions/cache@v1
-      #   name: Load Next.js cache
-      #   with:
-      #     path: ${{ github.workspace }}/packages/web/.next/cache
-      #     key: ${{ runner.os }}-nextjs-${{ hashFiles('**/yarn.lock') }}
-      # - run: yarn install --ignore-scripts
-      # - run: yarn ci
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - uses: actions/cache@v1
+        name: Load Yarn cache
+        with:
+          path: ${{ steps.yarn-cache.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - uses: actions/cache@v1
+        name: Load Next.js cache
+        with:
+          path: ${{ github.workspace }}/packages/web/.next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/yarn.lock') }}
+      - run: yarn install --ignore-scripts
+      - run: yarn ci
 
   # Continuous Deployment --
 
@@ -60,8 +60,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: git fetch --prune --unshallow
-      - uses: 47ng/actions-clever-cloud@master
-        name: Deploy to Clever Cloud (services/api)
+      - uses: 47ng/actions-clever-cloud@0.1.0
         with:
           alias: chiffre-api
         env:
@@ -75,8 +74,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: git fetch --prune --unshallow
-      - uses: 47ng/actions-clever-cloud@master
-        name: Deploy to Clever Cloud (services/push)
+      - uses: 47ng/actions-clever-cloud@0.1.0
         with:
           alias: chiffre-push
         env:
