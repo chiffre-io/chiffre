@@ -7,7 +7,7 @@ import { FastifyRequest } from 'fastify'
 // Allow 1 period before and after the current one
 authenticator.options = {
   ...authenticator.allOptions(),
-  window: 1
+  window: 5
 }
 
 // --
@@ -28,15 +28,17 @@ export function verifyTwoFactorToken(
   app: App,
   req: FastifyRequest
 ) {
+  const now = Date.now()
   try {
     req.log.debug({
       msg: `2FA verification delta`,
       delta: authenticator.checkDelta(token, secret),
-      clientTime: clientTime
+      clientTime,
+      serverTime: now,
+      clockDelta: now - clientTime
     })
     return authenticator.check(token, secret)
   } catch (error) {
-    const now = Date.now()
     req.log.error({
       msg: 'Failed to verify 2FA token',
       error,
