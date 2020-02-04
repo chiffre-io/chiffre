@@ -74,11 +74,16 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: git fetch --prune --unshallow
-      - uses: docker://clevercloud/clever-tools
-        name: Log into Clever Cloud
+      - uses: 47ng/actions-clever-cloud@v0.5.0
         with:
-          args: login --token ${{ secrets.CLEVER_TOKEN }} --secret ${{ secrets.CLEVER_SECRET }}
-      - uses: docker://clevercloud/clever-tools
-        name: Deploy to Clever Cloud
-        with:
-          args: deploy --alias chiffre-push
+          alias: chiffre-push
+        env:
+          CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
+          CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
+      # Direct approach
+      # - uses: docker://clevercloud/clever-tools
+      #   with:
+      #     args: login --token ${{ secrets.CLEVER_TOKEN }} --secret ${{ secrets.CLEVER_SECRET }}
+      # - uses: docker://clevercloud/clever-tools
+      #   with:
+      #       args: deploy --alias chiffre-push
