@@ -44,15 +44,20 @@ export default async (app: App) => {
         )
       }
 
-      req.log.info({
-        token: req.body.twoFactorToken,
-        secret: user.twoFactorSecret
-      })
-      const verified = verifyTwoFactorToken(
-        req.body.twoFactorToken,
-        user.twoFactorSecret
-      )
-      if (!verified) {
+      try {
+        const verified = verifyTwoFactorToken(
+          req.body.twoFactorToken,
+          user.twoFactorSecret
+        )
+        if (!verified) {
+          throw app.httpErrors.unauthorized('Invalid two-factor code')
+        }
+      } catch (error) {
+        req.log.error({
+          msg: 'Failed to verify 2FA token',
+          error
+        })
+        app.sentry.report(error, req)
         throw app.httpErrors.unauthorized('Invalid two-factor code')
       }
 

@@ -20,11 +20,7 @@ export function generateTwoFactorToken(secret: string) {
 }
 
 export function verifyTwoFactorToken(token: string, secret: string) {
-  try {
-    return authenticator.check(token, secret)
-  } catch (error) {
-    return false
-  }
+  return authenticator.check(token, secret)
 }
 
 export function generateBackupCodes(
