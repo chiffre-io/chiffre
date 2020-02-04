@@ -4,20 +4,23 @@ import { authenticator } from 'otplib'
 import { App } from '../types'
 import { FastifyRequest } from 'fastify'
 
-// Allow 1 period before and after the current one
-authenticator.options = {
-  ...authenticator.allOptions(),
-  window: 5
+function configureAuthenticator() {
+  authenticator.options = {
+    epoch: Date.now(),
+    window: 3 // Allow some periods before and after the current one
+  }
 }
 
 // --
 
 export function generateTwoFactorSecret() {
   // 20 bytes base32-encoded for compatibility with Google Authenticator
+  configureAuthenticator()
   return authenticator.generateSecret(20)
 }
 
 export function generateTwoFactorToken(secret: string) {
+  configureAuthenticator()
   return authenticator.generate(secret)
 }
 
@@ -28,6 +31,7 @@ export function verifyTwoFactorToken(
   app: App,
   req: FastifyRequest
 ) {
+  configureAuthenticator()
   const now = Date.now()
   try {
     req.log.debug({
@@ -61,6 +65,7 @@ export function generateBackupCodes(
 }
 
 export function formatTwoFactorSecret(secret: string, username: string) {
+  configureAuthenticator()
   const issuer = 'Chiffre' // todo: Read from environment/config
   const uri = authenticator.keyuri(username, issuer, secret)
   return {
