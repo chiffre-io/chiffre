@@ -44,7 +44,8 @@ export default class TwoFactorSettings {
 
   public async verify(totpToken: string): Promise<TwoFactorVerifyResponse> {
     const params: TwoFactorVerifyParameters = {
-      twoFactorToken: totpToken
+      twoFactorToken: totpToken,
+      clientTime: Date.now()
     }
     const res = await this.#api.post('/auth/2fa/verify', params)
     this.#handleAuth(res)
@@ -53,7 +54,8 @@ export default class TwoFactorSettings {
 
   public async disable(totpToken: string) {
     const params: TwoFactorDisableParameters = {
-      twoFactorToken: totpToken
+      twoFactorToken: totpToken,
+      clientTime: Date.now()
     }
     const res = await this.#api.post('/auth/2fa/disable', params)
     this.#handleAuth(res)

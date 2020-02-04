@@ -316,7 +316,8 @@ export default class Client {
     }
     const [username, password] = credentials.split(':')
     const body: Login2FAParameters = {
-      twoFactorToken: token
+      twoFactorToken: token,
+      clientTime: Date.now()
     }
     const res = await this.#api.post('/auth/login/2fa', body)
     const responseBody: Login2FAResponseBody = res.data

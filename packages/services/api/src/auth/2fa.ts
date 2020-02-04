@@ -1,6 +1,8 @@
 import crypto from 'crypto'
 import { hex } from '@47ng/codec'
 import { authenticator } from 'otplib'
+import { App } from '../types'
+import { FastifyRequest } from 'fastify'
 
 // Allow 1 period before and after the current one
 authenticator.options = {
@@ -19,8 +21,32 @@ export function generateTwoFactorToken(secret: string) {
   return authenticator.generate(secret)
 }
 
-export function verifyTwoFactorToken(token: string, secret: string) {
-  return authenticator.check(token, secret)
+export function verifyTwoFactorToken(
+  token: string,
+  secret: string,
+  clientTime: number,
+  app: App,
+  req: FastifyRequest
+) {
+  try {
+    req.log.debug({
+      msg: `2FA verification delta`,
+      delta: authenticator.checkDelta(token, secret),
+      clientTime: clientTime
+    })
+    return authenticator.check(token, secret)
+  } catch (error) {
+    const now = Date.now()
+    req.log.error({
+      msg: 'Failed to verify 2FA token',
+      error,
+      clientTime,
+      serverTime: now,
+      clockDelta: now - clientTime
+    })
+    app.sentry.report(error)
+    return false
+  }
 }
 
 export function generateBackupCodes(
