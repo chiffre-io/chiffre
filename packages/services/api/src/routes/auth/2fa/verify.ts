@@ -44,6 +44,10 @@ export default async (app: App) => {
         )
       }
 
+      req.log.info({
+        token: req.body.twoFactorToken,
+        secret: user.twoFactorSecret
+      })
       const verified = verifyTwoFactorToken(
         req.body.twoFactorToken,
         user.twoFactorSecret
