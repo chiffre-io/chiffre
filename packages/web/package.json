@@ -1,6 +1,6 @@
 {
   "name": "@chiffre/web",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
@@ -16,8 +16,8 @@
   "dependencies": {
     "@47ng/check-env": "^2.0.0",
     "@chakra-ui/core": "^0.5.2",
-    "@chiffre/api-types": "^0.0.1",
-    "@chiffre/client": "^0.0.1",
+    "@chiffre/api-types": "^0.0.2",
+    "@chiffre/client": "^0.0.2",
     "@emotion/core": "^10.0.27",
     "@emotion/styled": "^10.0.27",
     "@nivo/line": "^0.61.1",

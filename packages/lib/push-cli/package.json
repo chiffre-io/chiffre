@@ -1,6 +1,6 @@
 {
   "name": "@chiffre/push-cli",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "license": "UNLICENSED",
   "main": "dist/index.js",
   "bin": {
@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@47ng/codec": "^0.4.0",
-    "@chiffre/crypto-box": "^0.0.1",
+    "@chiffre/crypto-box": "^0.0.2",
     "commander": "^4.1.0",
     "ws": "^7.2.1"
   }

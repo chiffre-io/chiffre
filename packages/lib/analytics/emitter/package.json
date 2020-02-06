@@ -1,6 +1,6 @@
 {
   "name": "@chiffre/analytics-emitter",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "dist/emitter.js",
   "license": "MIT",
   "scripts": {
@@ -12,8 +12,8 @@
     "deploy": "surge -p ./dist -d https://embed.chiffre.io"
   },
   "dependencies": {
-    "@chiffre/analytics-core": "^0.0.1",
-    "@chiffre/crypto-box": "^0.0.1"
+    "@chiffre/analytics-core": "^0.0.2",
+    "@chiffre/crypto-box": "^0.0.2"
   },
   "devDependencies": {
     "parcel-bundler": "^1.12.4"
