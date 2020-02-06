@@ -27,30 +27,31 @@ export function generateTwoFactorToken(secret: string) {
 export function verifyTwoFactorToken(
   token: string,
   secret: string,
-  clientTime: number,
-  app: App,
-  req: FastifyRequest
+  clientTime: number = 0,
+  app?: App,
+  req?: FastifyRequest
 ) {
   configureAuthenticator()
   const now = Date.now()
   try {
-    req.log.debug({
+    req?.log.debug({
       msg: `2FA verification delta`,
       delta: authenticator.checkDelta(token, secret),
       clientTime,
       serverTime: now,
-      clockDelta: now - clientTime
+      clockDelta: now - clientTime,
+      options: authenticator.options
     })
     return authenticator.check(token, secret)
   } catch (error) {
-    req.log.error({
+    req?.log.error({
       msg: 'Failed to verify 2FA token',
       error,
       clientTime,
       serverTime: now,
       clockDelta: now - clientTime
     })
-    app.sentry.report(error)
+    app?.sentry.report(error)
     return false
   }
 }
