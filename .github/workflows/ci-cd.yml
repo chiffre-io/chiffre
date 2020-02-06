@@ -34,7 +34,13 @@ jobs:
           path: ${{ github.workspace }}/packages/web/.next/cache
           key: ${{ runner.os }}-nextjs-${{ hashFiles('**/yarn.lock') }}
       - run: yarn install --ignore-scripts
-      - run: yarn ci
+      - run: yarn build
+        name: Build all packages
+      - run: yarn test:unit
+        name: Run unit tests
+      - run: yarn test:e2e
+        name: Run end-to-end tests
+        if: github.ref == 'refs/heads/master'
 
   # Continuous Deployment --
 
