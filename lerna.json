@@ -2,5 +2,10 @@
   "packages": ["packages/*"],
   "version": "independent",
   "npmClient": "yarn",
+  "command": {
+    "publish": {
+      "message": "chore(release): Publish"
+    }
+  },
   "useWorkspaces": true
 }
