@@ -9,10 +9,11 @@ require('env-alias').default()
 const checkEnv = require('@47ng/check-env').default
 
 checkEnv({
-  required: ['API_URL', 'APP_URL', 'CDN_URL']
+  required: ['API_URL', 'APP_URL', 'CDN_URL', 'PUSH_URL']
 })
 console.dir({
   NODE_ENV: process.env.NODE_ENV,
+  PUSH_URL: process.env.PUSH_URL,
   APP_URL: process.env.APP_URL,
   API_URL: process.env.API_URL,
   CDN_URL: process.env.CDN_URL
@@ -35,7 +36,13 @@ const loadFromEnv = names => {
 module.exports = withBundleAnalyzer(
   withSourceMaps({
     // Will be available both in the client and server
-    env: loadFromEnv(['API_URL', 'APP_URL', 'CDN_URL', 'SENTRY_DSN']),
+    env: loadFromEnv([
+      'API_URL',
+      'APP_URL',
+      'CDN_URL',
+      'PUSH_URL',
+      'SENTRY_DSN'
+    ]),
 
     webpack: (config, { isServer, buildId }) => {
       // Fixes npm packages that depend on `fs` module

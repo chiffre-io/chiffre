@@ -80,7 +80,7 @@ const NewPage: NextPage = () => {
               `<script id="chiffre:analytics-config" type="application/json">
   {
     "publicKey": "${project.publicKey}",
-    "pushURL":   "${process.env.API_URL}/v1/push/${project.id}"
+    "pushURL":   "${process.env.PUSH_URL}/${project.id}"
   }
 </script>
 <script

@@ -11,6 +11,7 @@ jobs:
       APP_URL: https://chiffre.io
       API_URL: https://api.chiffre.io
       CDN_URL: https://embed.chiffre.io
+      PUSH_URL: https://push.chiffre.io
     steps:
       # Continuous Integration
       - id: yarn-cache
