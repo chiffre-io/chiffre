@@ -1,9 +1,8 @@
-import { Server, IncomingMessage, ServerResponse } from 'http'
-import { FastifyInstance } from 'fastify'
 import Knex from 'knex'
-import { Authenticate } from './plugins/auth'
-import type { SentryReporter } from './plugins/sentry'
-import type { RedisInstances } from './plugins/redis'
+import { FastifyRequest } from 'fastify'
+import { Server } from 'fastify-micro'
+import { Authenticate, AuthenticatedRequest } from './plugins/auth'
+import { RedisInstances } from './plugins/redis'
 
 export interface Route {
   path: string
@@ -11,10 +10,11 @@ export interface Route {
   auth: boolean
 }
 
-export type App = FastifyInstance<Server, IncomingMessage, ServerResponse> & {
+export interface App extends Server {
   routes: Route[]
   db: Knex
   redis: RedisInstances
   authenticate: Authenticate
-  sentry: SentryReporter
 }
+
+export type Request = FastifyRequest & Partial<AuthenticatedRequest>

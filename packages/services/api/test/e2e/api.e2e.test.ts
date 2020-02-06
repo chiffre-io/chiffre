@@ -20,8 +20,8 @@ afterAll(async () => {
 
 // -----------------------------------------------------------------------------
 
-test('/_health', async () => {
-  const res = await ctx.api.get('/_health')
+test('Health check', async () => {
+  const res = await ctx.api.get('/')
   expect(res.status).toEqual(200)
 })
 

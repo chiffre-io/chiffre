@@ -1,55 +1,22 @@
 import path from 'path'
 import checkEnv from '@47ng/check-env'
-import Fastify from 'fastify'
-import { getLoggerOptions, genReqId } from './logger'
-import sensible from 'fastify-sensible'
-import gracefulShutdown from 'fastify-graceful-shutdown'
+import readPkg from 'read-pkg'
+import { createServer as createMicroServer } from 'fastify-micro'
+import fp from 'fastify-plugin'
 import cors from 'fastify-cors'
 import swagger from 'fastify-swagger'
 import rateLimit from 'fastify-rate-limit'
-import underPressure from 'under-pressure'
-import { App, Route } from './types'
-import fp from 'fastify-plugin'
+import { App, Route, Request } from './types'
 import { AuthenticatedRequest } from './plugins/auth'
 import { Plans } from './exports/defs'
+import { User, findUser } from './db/models/auth/Users'
+import { checkRedisHealth } from './plugins/redis'
 
-export function createServer(): App {
+export { startServer } from 'fastify-micro'
+
+function configurePlugins(app: App) {
   const runningInProduction = process.env.NODE_ENV === 'production'
 
-  checkEnv({
-    required: [
-      'API_URL',
-      runningInProduction ? 'APP_URL' : null,
-      'DATABASE_URI',
-      'DATABASE_MAX_CONNECTIONS',
-      'REDIS_URI',
-      'INSTANCE_ID',
-      'CLOAK_MASTER_KEY',
-      'CLOAK_KEYCHAIN',
-      'CLOAK_CURRENT_KEY',
-      'JWT_SECRET',
-      'JWT_ISSUER'
-    ].filter(x => !!x),
-    unsafe: [
-      'DEBUG',
-      'CHIFFRE_API_DISABLE_CLOAK',
-      'CHIFFRE_API_DISABLE_GRACEFUL_SHUTDOWN',
-      'CHIFFRE_API_INSECURE_COOKIES'
-    ]
-  })
-
-  const app = Fastify({
-    logger: getLoggerOptions(),
-    // todo: Fix type when switching to Fastify 3.x
-    genReqId: genReqId as any,
-    trustProxy: process.env.TRUSTED_PROXY_IPS || false
-  }) as App
-
-  // Plugins
-  app.register(sensible)
-  if (process.env.CHIFFRE_API_DISABLE_GRACEFUL_SHUTDOWN !== 'true') {
-    app.register(gracefulShutdown)
-  }
   app.register(cors, {
     origin: runningInProduction
       ? /https:\/\/(.+\.)?chiffre\.io$/
@@ -65,34 +32,14 @@ export function createServer(): App {
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
-    maxAge: 600 // 10 minutes
+    maxAge: 3600 // 1h
   })
-
-  if (process.env.ENABLE_SWAGGER === 'true') {
-    app.register(swagger, {
-      routePrefix: '/documentation',
-      swagger: {
-        info: {
-          title: 'Chiffre API',
-          description: 'API for the Chiffre.io service',
-          version: '0.0.1' // todo: Read from package.json
-        },
-        host: (process.env.API_URL || '')
-          .replace('https://', '')
-          .replace('http://', ''),
-        schemes: [runningInProduction ? 'https' : 'http'],
-        consumes: ['application/json'],
-        produces: ['application/json']
-      },
-      exposeRoute: true
-    })
-  }
 
   // Local plugins
   app.register(require('./plugins/database').default)
   app.register(require('./plugins/redis').default)
   app.register(require('./plugins/auth').default)
-  app.register(require('./plugins/sentry').default)
+
   app.register(
     fp((app: App, _, next) => {
       const routes: Route[] = []
@@ -124,63 +71,114 @@ export function createServer(): App {
       next()
     })
   )
+}
 
-  app.register(underPressure, {
-    maxEventLoopDelay: 1000, // 1s
-    // maxHeapUsedBytes: 100 * (1 << 20), // 100 MiB
-    // maxRssBytes: 100 * (1 << 20), // 100 MiB
-    healthCheckInterval: 5000, // 5 seconds
-    exposeStatusRoute: {
-      url: '/_health',
-      routeOpts: {
-        logLevel: 'warn'
+// --
+
+export function createServer(): App {
+  const runningInProduction = process.env.NODE_ENV === 'production'
+
+  checkEnv({
+    required: [
+      'API_URL',
+      runningInProduction ? 'APP_URL' : null,
+      'DATABASE_URI',
+      'DATABASE_MAX_CONNECTIONS',
+      'REDIS_URI',
+      'INSTANCE_ID',
+      'CLOAK_MASTER_KEY',
+      'CLOAK_KEYCHAIN',
+      'CLOAK_CURRENT_KEY',
+      'JWT_SECRET',
+      'JWT_ISSUER'
+    ].filter(x => !!x),
+    unsafe: [
+      'DEBUG',
+      'CHIFFRE_API_DISABLE_CLOAK',
+      'CHIFFRE_API_DISABLE_GRACEFUL_SHUTDOWN',
+      'CHIFFRE_API_INSECURE_COOKIES'
+    ]
+  })
+
+  const pkg = readPkg.sync({
+    cwd: path.resolve(__dirname, '..')
+  })
+
+  const app = createMicroServer({
+    name: `api@${pkg.version}`,
+    configure: configurePlugins,
+    sentry: {
+      release: process.env.COMMIT_ID,
+      getUser: async function getSentryUser(app: App, req: Request) {
+        let user: User
+        if (req?.auth) {
+          try {
+            user = await findUser(app.db, req.auth.userID)
+          } catch {}
+        }
+        return {
+          id: req?.auth?.userID || 'no auth provided',
+          username: user?.username || 'no auth provided'
+        }
+      },
+      getExtras: async function getSentryExtras(_app: App, req?: Request) {
+        return {
+          'token ID': req?.auth?.tokenID || 'no auth provided',
+          '2FA': req?.auth?.twoFactorStatus || 'no auth provided',
+          plan: req?.auth?.plan || 'no auth provided'
+        }
       }
     },
-    healthCheck: async () => {
-      try {
-        await app.db.raw('select 1')
-        if (app.redis.srpChallenges.status !== 'ready') {
-          throw new Error(
-            `Redis status (SRP): ${app.redis.srpChallenges.status}`
-          )
+    underPressure: {
+      exposeStatusRoute: {
+        url: '/',
+        routeOpts: {
+          logLevel: 'silent'
         }
-        if (app.redis.tokenBlacklist.status !== 'ready') {
-          throw new Error(
-            `Redis status (Token Blacklist): ${app.redis.tokenBlacklist.status}`
-          )
+      },
+      healthCheck: async function healthCheck(app: App) {
+        try {
+          await app.db.raw('select 1')
+          checkRedisHealth(app.redis.srpChallenges, 'SRP')
+          checkRedisHealth(app.redis.tokenBlacklist, 'Token Blacklist')
+          checkRedisHealth(app.redis.rateLimiting, 'Rate Limit')
+          return true
+        } catch (error) {
+          app.log.error(error)
+          app.sentry.report(error)
+          return false
         }
-        if (app.redis.rateLimiting.status !== 'ready') {
-          throw new Error(
-            `Redis status (Rate Limit): ${app.redis.rateLimiting.status}`
-          )
-        }
-        return true
-      } catch (error) {
-        app.log.error(error)
-        app.sentry.report(error)
-        return false
       }
     }
   })
 
-  app.get('/', { logLevel: 'silent' }, (req, res) => {
-    // Handle Clever Cloud health checks (no logging)
-    // https://github.com/influxdata/telegraf/tree/master/plugins/outputs/health
-    if (req.headers['X-CleverCloud-Monitoring'] === 'telegraf') {
-      res.send()
-      return
-    }
-    // For all other calls to /, redirect to Swagger docs
-    res.redirect('/documentation')
-  })
+  // Plugins
+  if (process.env.ENABLE_SWAGGER === 'true') {
+    app.register(swagger, {
+      routePrefix: '/documentation',
+      swagger: {
+        info: {
+          title: 'Chiffre API',
+          description: 'API for the Chiffre.io service',
+          version: pkg.version
+        },
+        host: (process.env.API_URL || '')
+          .replace('https://', '')
+          .replace('http://', ''),
+        schemes: [runningInProduction ? 'https' : 'http'],
+        consumes: ['application/json'],
+        produces: ['application/json']
+      },
+      exposeRoute: true
+    })
+  }
 
+  // Load routes
   app.register(require('./routes').default)
 
-  if (process.env.NODE_ENV === 'development') {
-    app.ready(() => console.info(app.printRoutes()))
-  } else {
+  if (runningInProduction) {
     app.ready(() =>
-      app.log.info({
+      app.log.debug({
         msg: 'Routes loaded',
         routes: app.routes
       })
@@ -205,20 +203,4 @@ export function createServer(): App {
     done()
   })
   return app
-}
-
-// --
-
-export async function startServer(app: App, port: number) {
-  await new Promise(resolve => {
-    app.listen({ port, host: '0.0.0.0' }, (error, address) => {
-      if (error) {
-        app.log.fatal({ msg: `Application startup error`, error, address })
-        process.exit(1)
-      } else {
-        resolve()
-      }
-    })
-  })
-  return await app.ready()
 }
