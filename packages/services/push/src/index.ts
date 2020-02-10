@@ -38,7 +38,9 @@ export default function createApp() {
       healthCheck: async (app: App) => {
         try {
           if (
-            !['ready', 'connecting', 'reconnecting'].includes(app.redis.status)
+            !['connect', 'ready', 'connecting', 'reconnecting'].includes(
+              app.redis.status
+            )
           ) {
             throw new Error(`Redis status: ${app.redis.status}`)
           }

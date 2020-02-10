@@ -19,7 +19,7 @@ export default fp((app, _, next) => {
 })
 
 export function checkRedisHealth(instance: Redis.Redis, name: string) {
-  const whitelist = ['ready', 'connecting', 'reconnecting']
+  const whitelist = ['ready', 'connecting', 'reconnecting', 'connect']
   if (!whitelist.includes(instance.status)) {
     throw new Error(`Redis status (${name}): ${instance.status}`)
   }
