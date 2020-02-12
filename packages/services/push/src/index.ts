@@ -6,6 +6,8 @@ import { createServer, Server } from 'fastify-micro'
 import Redis from 'ioredis'
 import readPkg from 'read-pkg'
 
+export * from './types'
+
 export interface App extends Server {
   websocketServer: WebSocket.Server // this should be exposed by fastify-websocket
   gracefulShutdown: (f: (signal: string, next: () => void) => void) => void

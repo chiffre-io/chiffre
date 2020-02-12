@@ -1,0 +1,10 @@
+{
+  "name": "@chiffre/push-types",
+  "version": "0.0.1",
+  "private": true,
+  "license": "UNLICENSED",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "clean": "rm -rf ./coverage ./dist ./node_modules"
+  }
+}
