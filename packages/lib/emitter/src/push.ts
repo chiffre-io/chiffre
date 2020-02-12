@@ -11,7 +11,7 @@ export const pushEvent = async (
   const message = encryptMessage(json, config)
   const tock = performance.now()
   let blob = new Blob([message], {
-    type: `text/plain;charset=UTF-8;perf=${tock - tick}`
+    type: `text/plain;charset=UTF-8;perf=${Math.round(tock - tick)}`
   })
   const sent = navigator.sendBeacon(config.pushURL, blob)
   if (!sent) {
