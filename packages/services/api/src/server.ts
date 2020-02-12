@@ -75,7 +75,7 @@ function configurePlugins(app: App) {
 
 // --
 
-export function createServer(): App {
+export default function createServer(): App {
   const runningInProduction = process.env.NODE_ENV === 'production'
 
   checkEnv({
@@ -142,6 +142,7 @@ export function createServer(): App {
           checkRedisHealth(app.redis.srpChallenges, 'SRP')
           checkRedisHealth(app.redis.tokenBlacklist, 'Token Blacklist')
           checkRedisHealth(app.redis.rateLimiting, 'Rate Limit')
+          checkRedisHealth(app.redis.ingress, 'Ingress')
           return true
         } catch (error) {
           app.log.error(error)
@@ -197,6 +198,7 @@ export function createServer(): App {
       app.redis.rateLimiting.quit(),
       app.redis.srpChallenges.quit(),
       app.redis.tokenBlacklist.quit(),
+      app.redis.ingress.quit(),
       app.db.destroy()
     ])
     app.log.info('Closed all connections to the datastores')

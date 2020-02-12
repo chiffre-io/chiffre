@@ -5,6 +5,7 @@ export type RedisInstances = {
   rateLimiting: Redis.Redis
   srpChallenges: Redis.Redis
   tokenBlacklist: Redis.Redis
+  ingress: Redis.Redis
 }
 
 export default fp((app, _, next) => {
@@ -12,14 +13,15 @@ export default fp((app, _, next) => {
   const instances: RedisInstances = {
     rateLimiting: new Redis(uri, { db: 0 }),
     srpChallenges: new Redis(uri, { db: 1 }),
-    tokenBlacklist: new Redis(uri, { db: 2 })
+    tokenBlacklist: new Redis(uri, { db: 2 }),
+    ingress: new Redis(uri, { db: 3 })
   }
   app.decorate('redis', instances)
   next()
 })
 
 export function checkRedisHealth(instance: Redis.Redis, name: string) {
-  const whitelist = ['ready', 'connecting', 'reconnecting', 'connect']
+  const whitelist = ['connect', 'ready', 'connecting', 'reconnecting']
   if (!whitelist.includes(instance.status)) {
     throw new Error(`Redis status (${name}): ${instance.status}`)
   }

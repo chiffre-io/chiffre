@@ -1,6 +1,6 @@
 import dotenv from 'dotenv'
 import envAlias from 'env-alias'
-import { createServer, startServer } from './server'
+import createServer, { startServer } from './server'
 
 // -----------------------------------------------------------------------------
 
