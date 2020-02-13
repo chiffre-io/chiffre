@@ -12,8 +12,8 @@
     "build": "yarn wsrun -mt build",
     "test:unit": "yarn wsrun -mt test",
     "test:e2e": "yarn wsrun -mt e2e:test",
-    "build:services:api": "yarn wsrun -srp @chiffre/api -c build",
-    "build:services:push": "yarn wsrun -srp @chiffre/push -c build",
+    "build:services:api": "yarn wsrun -msrp @chiffre/api -c build",
+    "build:services:push": "yarn wsrun -msrp @chiffre/push -c build",
     "ci": "run-s build test:unit test:e2e",
     "install": "echo 'Use CC_POST_BUILD_HOOK to build the appropriate service'"
   },
