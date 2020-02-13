@@ -1,7 +1,7 @@
 import fs from 'fs'
 import dotenv from 'dotenv'
 import axios, { AxiosInstance } from 'axios'
-import { createServer, startServer } from '../../src/server'
+import createServer, { startServer } from '../../src/server'
 import { App } from '../../src/types'
 import path from 'path'
 

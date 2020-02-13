@@ -1,7 +1,7 @@
 import fs from 'fs'
 import dotenv from 'dotenv'
 import checkEnv from '@47ng/check-env'
-import { createServer, startServer } from '@chiffre/api/dist/server'
+import createServer, { startServer } from '@chiffre/api/dist/server'
 import { App } from '@chiffre/api/dist/types'
 import path from 'path'
 import Client from '../../src/index'
