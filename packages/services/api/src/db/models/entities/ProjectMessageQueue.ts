@@ -8,6 +8,7 @@ export interface ProjectMessageInput {
   message: string
   country?: string
   performance: number
+  receivedAt: Date
 }
 
 export interface ProjectMessage extends ProjectMessageInput {
@@ -18,19 +19,10 @@ export interface ProjectMessage extends ProjectMessageInput {
 
 export async function pushMessage(
   db: Knex,
-  projectID: string,
-  message: string,
-  performance: number,
-  country?: string
+  message: ProjectMessageInput
 ): Promise<ProjectMessage> {
-  const msg: ProjectMessageInput = {
-    projectID,
-    message,
-    country,
-    performance
-  }
   const result = await db
-    .insert(msg)
+    .insert(message)
     .into(PROJECT_MESSAGE_QUEUE_TABLE)
     .returning<ProjectMessage[]>('*')
   return result[0]
@@ -67,5 +59,6 @@ export async function createInitialProjectMessageQueueTable(db: Knex) {
 
     // Migration log:
     // 20200131140113_addCountryToMessage.ts
+    // 20200213083738_addReceptionDateToMessage.ts
   })
 }

@@ -46,7 +46,12 @@ export default async (app: App) => {
       try {
         const message = req.body
         const performance = getPerformance()
-        await pushMessage(app.db, projectID, message, performance)
+        await pushMessage(app.db, {
+          projectID,
+          message,
+          performance,
+          receivedAt: new Date()
+        })
         return res.status(204).send()
       } catch (error) {
         req.log.error(error)

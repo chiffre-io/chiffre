@@ -62,6 +62,11 @@ export const seed = async (knex: Knex) => {
       value: Math.random() * 100
     })
     const message = boxString(JSON.stringify(event), pk)
-    await pushMessage(knex, projectID, message, Math.random() * 30 + 12)
+    await pushMessage(knex, {
+      projectID,
+      message,
+      performance: Math.random() * 30 + 12,
+      receivedAt: new Date()
+    })
   }
 }

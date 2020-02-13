@@ -15,7 +15,13 @@ async function processProjectIngress(app: App, projectID: string) {
       const { msg, perf, country, received }: SerializedMessage = JSON.parse(
         item
       )
-      await pushMessage(app.db, projectID, msg, perf, country)
+      await pushMessage(app.db, {
+        projectID,
+        message: msg,
+        performance: perf,
+        receivedAt: new Date(received),
+        country
+      })
       await redis.lrem(projectID, 1, item)
       metrics.push({
         processingTime: Date.now() - received,
