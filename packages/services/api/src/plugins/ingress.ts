@@ -75,7 +75,7 @@ async function processIngress(app: App) {
 
 // --
 
-const INGRESS_TIMEOUT_MS = 5000
+const INGRESS_TIMEOUT_MS = 10000
 
 export default fp((app: App, _, next) => {
   const decoration: IngressDecoration = {
@@ -90,7 +90,7 @@ export default fp((app: App, _, next) => {
         const tock = performance.now()
         const time = tock - tick
         const usage = time / INGRESS_TIMEOUT_MS
-        app.log.trace({
+        app.log.info({
           msg: 'processIngress performance',
           time,
           usage
