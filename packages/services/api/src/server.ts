@@ -39,6 +39,7 @@ function configurePlugins(app: App) {
   app.register(require('./plugins/database').default)
   app.register(require('./plugins/redis').default)
   app.register(require('./plugins/auth').default)
+  app.register(require('./plugins/ingress').default)
 
   app.register(
     fp((app: App, _, next) => {
@@ -194,6 +195,7 @@ export default function createServer(): App {
 
   app.addHook('onClose', async (app: App, done) => {
     app.log.info('Closing connections to the datastores')
+    clearInterval(app.ingress.intervalID)
     await Promise.all([
       app.redis.rateLimiting.quit(),
       app.redis.srpChallenges.quit(),

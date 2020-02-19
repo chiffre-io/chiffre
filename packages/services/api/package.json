@@ -27,14 +27,14 @@
     "e2e:teardown": "../../../scripts/e2e-stop.sh",
     "e2e:run": "jest e2e --runInBand --coverage --colors",
     "e2e:test": "run-s e2e:setup e2e:run e2e:teardown",
-    "task:rotateCloak": "node ./dist/tasks/rotateCloak.js",
-    "task:processIngress": "node ./dist/tasks/processIngress.js"
+    "task:rotateCloak": "node ./dist/tasks/rotateCloak.js"
   },
   "dependencies": {
     "@47ng/check-env": "^2.0.0",
     "@47ng/cloak": "^0.15.0",
     "@47ng/codec": "^0.4.0",
     "@chiffre/crypto-client": "^0.0.1",
+    "@chiffre/push": "^1.2.1",
     "@sentry/node": "^5.11.1",
     "base32-decode": "^1.0.0",
     "base32-encode": "^1.1.1",
@@ -63,8 +63,7 @@
   },
   "devDependencies": {
     "@chiffre/analytics-core": "^0.0.1",
-    "@chiffre/push": "^0.0.1",
-    "@chiffre/push-types": "^0.0.1",
+    "@chiffre/push": "^1.0.5",
     "@types/ioredis": "^4.14.4",
     "@types/jsonwebtoken": "^8.3.6",
     "@types/nanoid": "^2.1.0",
