@@ -1,6 +1,4 @@
-import path from 'path'
 import checkEnv from '@47ng/check-env'
-import readPkg from 'read-pkg'
 import { createServer as createMicroServer } from 'fastify-micro'
 import fp from 'fastify-plugin'
 import cors from 'fastify-cors'
@@ -101,12 +99,8 @@ export default function createServer(): App {
     ]
   })
 
-  const pkg = readPkg.sync({
-    cwd: path.resolve(__dirname, '..')
-  })
-
   const app = createMicroServer({
-    name: `api@${pkg.version}`,
+    name: 'api',
     configure: configurePlugins,
     sentry: {
       release: process.env.COMMIT_ID,
@@ -143,7 +137,8 @@ export default function createServer(): App {
           checkRedisHealth(app.redis.srpChallenges, 'SRP')
           checkRedisHealth(app.redis.tokenBlacklist, 'Token Blacklist')
           checkRedisHealth(app.redis.rateLimiting, 'Rate Limit')
-          checkRedisHealth(app.redis.ingress, 'Ingress')
+          checkRedisHealth(app.redis.ingressData, 'Ingress Data')
+          checkRedisHealth(app.redis.ingressDataSub, 'Ingress Sub')
           return true
         } catch (error) {
           app.log.error(error)
@@ -162,7 +157,7 @@ export default function createServer(): App {
         info: {
           title: 'Chiffre API',
           description: 'API for the Chiffre.io service',
-          version: pkg.version
+          version: '1'
         },
         host: (process.env.API_URL || '')
           .replace('https://', '')
@@ -194,13 +189,16 @@ export default function createServer(): App {
   })
 
   app.addHook('onClose', async (app: App, done) => {
+    // Shut down the subscription first to avoid retriggering ingress processing
+    await app.redis.ingressDataSub.quit()
+    app.log.info('Waiting for ingress to finish its current batch')
+    await app.ingress.promise
     app.log.info('Closing connections to the datastores')
-    clearInterval(app.ingress.intervalID)
     await Promise.all([
       app.redis.rateLimiting.quit(),
       app.redis.srpChallenges.quit(),
       app.redis.tokenBlacklist.quit(),
-      app.redis.ingress.quit(),
+      app.redis.ingressData.quit(),
       app.db.destroy()
     ])
     app.log.info('Closed all connections to the datastores')

@@ -1086,12 +1086,13 @@
     toasted-notes "3.0.0"
     use-dark-mode "2.3.1"
 
-"@chiffre/push@^1.2.1":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@chiffre/push/-/push-1.2.1.tgz#927920d4846e0c470958c3c6f68fa71dda007050"
-  integrity sha512-Mikm8R6wbC0wh3qzklDCc2XRlfPahF4MxB3P5couysyFr4+fO6XlwILrISSyqdtVd+vVb3CrF24cTyMuqnmbjg==
+"@chiffre/push@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@chiffre/push/-/push-2.0.0.tgz#20b5b47686c20e85850b20229971b20ed14ee1cf"
+  integrity sha512-mq1mqRmeK4wuoGfFX7B/BV1hTMp17zx8SFxCHJEcpIh1JoHybZAaVIQ3TUM0yIjvr+5fJ9j3fHlegflbhv1F6g==
   dependencies:
     "@47ng/check-env" "^2.0.0"
+    dayjs "^1.8.20"
     dotenv "^8.2.0"
     env-alias "^1.0.0"
     fastify-micro "^0.3.0"
@@ -4791,6 +4792,11 @@ data-urls@^1.1.0:
     abab "^2.0.0"
     whatwg-mimetype "^2.2.0"
     whatwg-url "^7.0.0"
+
+dayjs@^1.8.20:
+  version "1.8.20"
+  resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.8.20.tgz#724a5cb6ad1f6fc066b0bd9a800dedcc7886f19e"
+  integrity sha512-mH0MCDxw6UCGJYxVN78h8ugWycZAO8thkj3bW6vApL5tS0hQplIDdAQcmbvl7n35H0AKdCJQaArTrIQw2xt4Qg==
 
 deasync@^0.1.14:
   version "0.1.19"
@@ -11348,7 +11354,7 @@ read-pkg-up@^3.0.0:
     find-up "^2.0.0"
     read-pkg "^3.0.0"
 
-read-pkg@5.2.0, read-pkg@^5.2.0:
+read-pkg@5.2.0:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/read-pkg/-/read-pkg-5.2.0.tgz#7bf295438ca5a33e56cd30e053b34ee7250c93cc"
   integrity sha512-Ug69mNOpfvKDAc2Q8DRpMjjzdtrnv9HcSMX+4VsZxD1aZ6ZzrIE7rlzXBtWTyhULSMKg076AW6WR5iZpD0JiOg==

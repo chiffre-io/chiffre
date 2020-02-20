@@ -3,26 +3,30 @@ import { performance } from 'perf_hooks'
 import { App } from '../types'
 import { pushMessage } from '../db/models/entities/ProjectMessageQueue'
 import {
+  KeyIDs,
+  PubSubChannels,
   SerializedMessage,
-  getProjectDataKey,
-  getProjectIDFromDataKey
+  getProjectKey,
+  getProjectIDFromKey
 } from '@chiffre/push'
 
 export interface IngressDecoration {
-  intervalID: NodeJS.Timeout
+  pending: boolean
+  promise: Promise<number>
 }
 
+// --
+
 async function processProjectIngress(app: App, projectID: string) {
-  const redis = app.redis.ingress
+  const redis = app.redis.ingressData
   const metrics = []
-  const dataKey = getProjectDataKey(projectID)
+  const dataKey = getProjectKey(projectID, KeyIDs.data)
 
   // Read up to 32 items
   const items = (await redis.lrange(dataKey, 0, 31)).reverse()
   while (items.length > 0) {
     try {
       const item = items.pop()
-
       const {
         payload,
         perf,
@@ -63,56 +67,81 @@ async function processProjectIngress(app: App, projectID: string) {
     metrics,
     task: 'processIngress'
   })
+
+  return await redis.llen(dataKey)
 }
 
+// --
+
 async function processIngress(app: App) {
-  const projectDataKeys = await app.redis.ingress.keys(getProjectDataKey('*'))
-  const projectIDs = projectDataKeys.map(k => getProjectIDFromDataKey(k))
-  for (const projectID of projectIDs) {
-    await processProjectIngress(app, projectID)
+  try {
+    const tick = performance.now()
+    const projectDataKeys = await app.redis.ingressData.keys(
+      getProjectKey('*', KeyIDs.data)
+    )
+    const projectIDs = projectDataKeys.map(k => getProjectIDFromKey(k))
+    let messagesRemaining = 0
+    for (const projectID of projectIDs) {
+      messagesRemaining += await processProjectIngress(app, projectID)
+    }
+    const tock = performance.now()
+    const time = tock - tick
+    app.log.info({
+      msg: 'processIngress performance',
+      time
+    })
+    return messagesRemaining
+  } catch (err) {
+    app.log.error({
+      err,
+      task: 'processIngress'
+    })
+    app.sentry.report(err)
+    return null
   }
 }
 
 // --
 
-const INGRESS_TIMEOUT_MS = 10000
-
 export default fp((app: App, _, next) => {
   const decoration: IngressDecoration = {
-    intervalID: null
+    pending: false,
+    promise: Promise.resolve(0)
   }
   app.decorate('ingress', decoration)
+
   app.ready().then(() => {
-    app.ingress.intervalID = setInterval(async () => {
-      try {
-        const tick = performance.now()
-        await processIngress(app)
-        const tock = performance.now()
-        const time = tock - tick
-        const usage = time / INGRESS_TIMEOUT_MS
+    app.redis.ingressDataSub.subscribe(PubSubChannels.newDataAvailable)
+
+    function startIngressProcessing() {
+      if (app.ingress.pending) {
+        // Ignore re-entrance to avoid buildup
+        // todo: Count up to check for buildup and report
         app.log.info({
-          msg: 'processIngress performance',
-          time,
-          usage
-        })
-        if (usage >= 0.75) {
-          app.log.warn({
-            msg: 'processIngress performance warning',
-            time,
-            usage
-          })
-        }
-        if (usage >= 0.99) {
-          app.sentry.report(new Error('Process Ingress: high usage detected'))
-        }
-      } catch (err) {
-        app.log.error({
-          err,
+          msg: 're-entrance',
           task: 'processIngress'
         })
-        app.sentry.report(err)
+        return
       }
-    }, INGRESS_TIMEOUT_MS)
+      app.ingress.pending = true
+      app.ingress.promise = processIngress(app).finally(() => {
+        app.ingress.pending = false
+      })
+      // Re-trigger if there are still messages to process
+      app.ingress.promise.then(messagesRemaining => {
+        if (!messagesRemaining) {
+          return
+        }
+        app.log.info({
+          msg: 'More messages remaining',
+          messagesRemaining,
+          task: 'processIngress'
+        })
+        startIngressProcessing()
+      })
+    }
+
+    app.redis.ingressDataSub.on('message', () => startIngressProcessing())
   })
   next()
 })

@@ -34,7 +34,7 @@
     "@47ng/cloak": "^0.15.0",
     "@47ng/codec": "^0.4.0",
     "@chiffre/crypto-client": "^0.0.1",
-    "@chiffre/push": "^1.2.1",
+    "@chiffre/push": "^2.0.0",
     "@sentry/node": "^5.11.1",
     "base32-decode": "^1.0.0",
     "base32-encode": "^1.1.1",
@@ -56,14 +56,12 @@
     "nanoid": "^2.1.9",
     "otplib": "^12.0.1",
     "pg": "^7.17.0",
-    "read-pkg": "^5.2.0",
     "redact-env": "^0.2.0",
     "sonic-boom": "^0.7.6",
     "under-pressure": "^3.2.1"
   },
   "devDependencies": {
     "@chiffre/analytics-core": "^0.0.1",
-    "@chiffre/push": "^1.0.5",
     "@types/ioredis": "^4.14.4",
     "@types/jsonwebtoken": "^8.3.6",
     "@types/nanoid": "^2.1.0",

@@ -5,7 +5,8 @@ export type RedisInstances = {
   rateLimiting: Redis.Redis
   srpChallenges: Redis.Redis
   tokenBlacklist: Redis.Redis
-  ingress: Redis.Redis
+  ingressData: Redis.Redis
+  ingressDataSub: Redis.Redis
 }
 
 export default fp((app, _, next) => {
@@ -14,7 +15,8 @@ export default fp((app, _, next) => {
     rateLimiting: new Redis(uri, { db: 0 }),
     srpChallenges: new Redis(uri, { db: 1 }),
     tokenBlacklist: new Redis(uri, { db: 2 }),
-    ingress: new Redis(uri, { db: 3 })
+    ingressData: new Redis(uri, { db: 3 }),
+    ingressDataSub: new Redis(uri, { db: 3 })
   }
   app.decorate('redis', instances)
   next()
