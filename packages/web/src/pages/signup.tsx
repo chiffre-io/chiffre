@@ -13,9 +13,9 @@ const SignupPage = () => {
   const redirectUrl = useQueryString('redirect')
 
   const onSubmit = async (values: Values) => {
-    const { email: username, password } = values
+    const { email: username, displayName, password } = values
     try {
-      await client.signup(username, password)
+      await client.signup(username, password, displayName)
       return await router.push(redirectUrl || '/dashboard')
     } catch (error) {
       showErrorToast(error)

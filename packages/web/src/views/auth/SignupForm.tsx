@@ -23,7 +23,7 @@ import ErrorText from '../../components/form/ErrorText'
 import useQueryString from '../../hooks/useQueryString'
 
 export interface Values {
-  name: string
+  displayName: string
   email: string
   password: string
   passwordConfirmation: string
@@ -119,7 +119,7 @@ const SignupForm: React.FC<Props> = ({ onSubmit }) => {
   const loginUrl = `/login${redirectQuery ? '?redirect=' + redirectQuery : ''}`
 
   const initialValues: Values = {
-    name: '',
+    displayName: '',
     email: '',
     password: '',
     passwordConfirmation: '',
@@ -183,9 +183,9 @@ const SignupForm: React.FC<Props> = ({ onSubmit }) => {
           </Box>
           <Box mb="4">
             <LabelWithAside
-              htmlFor="name"
+              htmlFor="displayName"
               aside={() => (
-                <FieldHelpText id="name-help-text" fontSize="xs">
+                <FieldHelpText id="displayName-help-text" fontSize="xs">
                   What shall we call you ?
                 </FieldHelpText>
               )}
@@ -193,8 +193,8 @@ const SignupForm: React.FC<Props> = ({ onSubmit }) => {
               Display Name
             </LabelWithAside>
             <InputField
-              name="name"
-              aria-describedby="name-help-text"
+              name="displayName"
+              aria-describedby="displayName-help-text"
               placeholder="enter your name"
               autoComplete="name"
             />
