@@ -7,7 +7,7 @@ export const PROJECTS_TABLE = 'projects'
 export interface ProjectInput {
   name: string
   description?: string
-  url?: string
+  url: string
   vaultID: string
   publicKey: string // In clear-text
   secretKey: string // Encrypted with the vault key

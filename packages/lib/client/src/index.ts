@@ -52,7 +52,7 @@ export { TwoFactorSettings }
 export interface Project {
   id: string
   name: string
-  url?: string
+  url: string
   description?: string
   vaultID: string
   publicKey: string
@@ -62,7 +62,7 @@ export interface Project {
 
 export interface CreateProjectArgs {
   name: string
-  url?: string
+  url: string
   description?: string
   vaultID?: string
 }
@@ -242,11 +242,14 @@ export default class Client {
 
   // --
 
-  public async signup(username: string, password: string) {
-    const signupParams: SignupParameters = await createSignupEntities(
-      username,
-      password
-    )
+  public async signup(username: string, password: string, displayName: string) {
+    const signupParams: SignupParameters = {
+      displayName,
+      ...await createSignupEntities(
+        username,
+        password
+      )
+    }
     const masterKey = await deriveMasterKey(
       username,
       password,

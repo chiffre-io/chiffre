@@ -29,10 +29,10 @@ test('Health check', async () => {
 
 describe('Signup flow', () => {
   test('Signup a new user', async () => {
-    const body: SignupParameters = await createSignupEntities(
-      'test.user@example.com',
-      'password'
-    )
+    const body: SignupParameters = {
+      displayName: 'Test User',
+      ...(await createSignupEntities('test.user@example.com', 'password'))
+    }
     const res = await ctx.api.post('/v1/auth/signup', body)
     expect(res.status).toEqual(201) // Created
     expect(res.headers['set-cookie']).toHaveLength(2)
@@ -41,10 +41,10 @@ describe('Signup flow', () => {
   })
 
   test('Username already in use', async () => {
-    const body: SignupParameters = await createSignupEntities(
-      'test.user@example.com',
-      'password'
-    )
+    const body: SignupParameters = {
+      displayName: 'Test User',
+      ...(await createSignupEntities('test.user@example.com', 'password'))
+    }
     const res = await ctx.api.post('/v1/auth/signup', body)
     expect(res.status).toEqual(409) // Conflict
     expect(res.data.message).toEqual('This username is not available')

@@ -60,6 +60,8 @@ export default async (app: App) => {
       // ie: They have a link to the vaultID with their keychain.
       const input: ProjectInput = {
         name: req.body.name,
+        url: req.body.url,
+        description: req.body.description,
         vaultID: req.body.vaultID,
         publicKey: req.body.publicKey,
         secretKey: req.body.secretKey

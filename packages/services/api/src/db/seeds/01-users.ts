@@ -13,6 +13,7 @@ import { generateKey, encryptString } from '@47ng/cloak'
 
 export const testUserCredentials = {
   username: 'admin@example.com',
+  displayName: 'Test User',
   password: 'password',
   userID: '___testUserId___'
 }
@@ -23,7 +24,7 @@ export const seed = async (knex: Knex) => {
     return
   }
   try {
-    const { username, userID, password } = testUserCredentials
+    const { username, displayName, userID, password } = testUserCredentials
     const { srpSalt, srpVerifier } = await generateSrpSignupEntities(
       username,
       password
@@ -33,6 +34,7 @@ export const seed = async (knex: Knex) => {
       id: userID,
       ...(await cloakUser({
         username,
+        displayName,
         srpSalt,
         srpVerifier,
         masterSalt,

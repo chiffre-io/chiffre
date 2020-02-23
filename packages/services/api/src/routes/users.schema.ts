@@ -14,6 +14,7 @@ export const getUserQuerySchema = S.object().prop(
 export interface UserResponse {
   userID: string
   username: string
+  displayName: string
   signaturePublicKey: string
   sharingPublicKey: string
 }
@@ -21,5 +22,6 @@ export interface UserResponse {
 export const userResponseSchema = S.object()
   .prop('userID', S.string())
   .prop('username', S.string())
+  .prop('displayName', S.string())
   .prop('signaturePublicKey', S.string())
   .prop('sharingPublicKey', S.string())

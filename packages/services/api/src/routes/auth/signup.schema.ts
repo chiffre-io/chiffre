@@ -3,6 +3,7 @@ import { Keychain } from '@chiffre/crypto-client'
 
 export interface SignupParameters {
   username: string
+  displayName: string
   srpSalt: string
   srpVerifier: string
   masterSalt: string
@@ -12,6 +13,7 @@ export interface SignupParameters {
 
 export const signupParametersSchema = S.object()
   .prop('username', S.string().required())
+  .prop('displayName', S.string().required())
   .prop('srpSalt', S.string().required())
   .prop('srpVerifier', S.string().required())
   .prop('masterSalt', S.string().required())

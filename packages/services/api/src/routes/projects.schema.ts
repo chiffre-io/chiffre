@@ -6,7 +6,7 @@ export interface CreateProjectParameters {
   vaultID: string
   publicKey: string
   secretKey: string
-  url?: string
+  url: string
   description?: string
 }
 
@@ -39,7 +39,7 @@ export const projectURLParamsSchema = S.object().prop('projectID', S.string())
 
 export interface Project extends LockedProject {
   id: string
-  url?: string
+  url: string
   name: string
   vaultID: string
   vaultKey: string

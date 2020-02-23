@@ -36,7 +36,9 @@ export const seed = async (knex: Knex) => {
     name: 'Test Project',
     publicKey,
     secretKey: await encryptString(secretKey, vaultKey),
-    vaultID
+    vaultID,
+    url: 'https://example.com',
+    description: 'Lorem ipsum dolor sit amet'
   }
   try {
     await knex.insert(project).into(PROJECTS_TABLE)

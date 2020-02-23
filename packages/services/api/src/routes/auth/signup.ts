@@ -25,6 +25,7 @@ At signup time, we register the SRP salt and verifier, along with a few other
 local entities that will be needed later for authenticating on other devices:
 
 • Username, that identifies the user (must be unique)
+• Display name, to show in the UI
 • Master salt, used to derive the master key (with PBKDF2)
 • Keychain info`
       }
@@ -32,6 +33,7 @@ local entities that will be needed later for authenticating on other devices:
     async function createUserHandler(req, res) {
       const {
         username,
+        displayName,
         srpSalt,
         srpVerifier,
         masterSalt,
@@ -53,6 +55,7 @@ local entities that will be needed later for authenticating on other devices:
         const userID = await app.db.transaction(async transaction => {
           const { id: userID } = await createUser(transaction, {
             username,
+            displayName,
             srpSalt,
             srpVerifier,
             masterSalt

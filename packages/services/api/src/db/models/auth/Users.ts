@@ -7,6 +7,7 @@ export const USERS_TABLE = 'users'
 
 interface UserInput {
   username: string
+  displayName: string
 
   // Auth - SRP
   masterSalt: string
@@ -229,6 +230,9 @@ export async function createInitialUsersTable(db: Knex) {
       .text('twoFactorBackupCodes')
       .nullable()
       .defaultTo(null)
+
+    // Migration log:
+    // 20200220175543_addDisplayNameToUsers.ts
   })
   await updatedAtFieldAutoUpdate(db, USERS_TABLE)
 }

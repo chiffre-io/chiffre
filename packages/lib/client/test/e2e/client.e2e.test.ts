@@ -29,7 +29,7 @@ test('Identity should be null before logging in', () => {
 })
 
 test('Signup', async () => {
-  const p = ctx.client.signup('test.user@example.com', 'password')
+  const p = ctx.client.signup('test.user@example.com', 'password', 'Test User')
   await expect(p).resolves.toBeUndefined()
   expect(ctx.client.isLocked).toBeFalse()
 })
@@ -49,9 +49,13 @@ test('Identity', () => {
 })
 
 test('Create projects', async () => {
-  const project1 = await ctx.client.createProject({ name: 'foo' })
+  const project1 = await ctx.client.createProject({
+    name: 'foo',
+    url: 'https://example.com'
+  })
   const project2 = await ctx.client.createProject({
     name: 'bar',
+    url: 'https://example.com',
     vaultID: project1.vaultID
   })
   expect(project2.vaultID).toEqual(project1.vaultID)
