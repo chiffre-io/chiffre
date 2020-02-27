@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "noEmit": true,
     "lib": ["DOM"],
-    "declaration": false,
+    "declaration": true,
+    "outDir": "./lib",
     "rootDir": "./src",
     "preserveSymlinks": true,
     "esModuleInterop": true,

@@ -2,6 +2,7 @@
   "name": "@chiffre/analytics-emitter",
   "version": "0.0.1",
   "main": "dist/emitter.js",
+  "types": "lib/types.d.ts",
   "license": "MIT",
   "scripts": {
     "build": "run-s build:tsc build:bundle build:cors",

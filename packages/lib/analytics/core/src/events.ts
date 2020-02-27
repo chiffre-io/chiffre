@@ -52,3 +52,13 @@ export const createGenericEvent = eventFactory<GenericEvents>()
 export const createBrowserEvent = eventFactory<BrowserEvents>()
 
 export type EventSender = <T>(event: Event<T, keyof T>) => void
+
+export type AllEvents =
+  | Event<
+      GenericEvents,
+      | 'generic:number'
+      | 'generic:numbers'
+      | 'generic:string'
+      | 'generic:strings'
+    >
+  | Event<BrowserEvents, 'session:start' | 'session:end' | 'page:visit'>

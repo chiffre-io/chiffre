@@ -3,24 +3,9 @@ import {
   Event,
   setupSessionListeners,
   setupPageVisitListeners,
-  createGenericEvent,
-  GenericDataPoint
+  createGenericEvent
 } from '@chiffre/analytics-core'
-
-interface Config {
-  publicKey: Uint8Array
-  pushURL: string
-}
-
-declare global {
-  interface Window {
-    chiffre: {
-      // Generic events
-      trackNumber: (data: GenericDataPoint<number>) => void
-      trackNumbers: (data: GenericDataPoint<number>[]) => void
-    }
-  }
-}
+import { Config } from './types'
 
 function readConfig() {
   try {
@@ -52,8 +37,9 @@ function sendEvent(event: Event<any, any>, config: Config) {
 
 function setup() {
   window.chiffre = {
-    trackNumber: () => {},
-    trackNumbers: () => {}
+    sendNumber: () => {},
+    sendNumbers: () => {},
+    sendString: () => {}
   }
   const config = readConfig()
   if (!config) {
@@ -61,12 +47,16 @@ function setup() {
   }
   setupSessionListeners(event => sendEvent(event, config))
   setupPageVisitListeners(event => sendEvent(event, config))
-  window.chiffre.trackNumber = data => {
+  window.chiffre.sendNumber = data => {
     const event = createGenericEvent('generic:number', data)
     sendEvent(event, config)
   }
-  window.chiffre.trackNumbers = data => {
+  window.chiffre.sendNumbers = data => {
     const event = createGenericEvent('generic:numbers', data)
+    sendEvent(event, config)
+  }
+  window.chiffre.sendString = data => {
+    const event = createGenericEvent('generic:string', data)
     sendEvent(event, config)
   }
 }
