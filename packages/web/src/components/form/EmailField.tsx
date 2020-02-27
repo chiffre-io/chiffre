@@ -41,6 +41,7 @@ interface Props extends InputProps {
 const EmailField: React.FC<Props> = ({
   colorValidation = false,
   name = 'email',
+  w,
   ...props
 }) => {
   const [{ onBlur: _, ...field }, meta] = useField(name)
@@ -48,7 +49,7 @@ const EmailField: React.FC<Props> = ({
   const atSignColor = colorValidation ? getAtSignColor(meta) : 'gray'
   return (
     <>
-      <InputGroup>
+      <InputGroup w={w}>
         <InputLeftElement
           children={
             <Icon

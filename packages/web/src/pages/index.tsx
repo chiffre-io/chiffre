@@ -9,12 +9,13 @@ import {
   Alert,
   AlertIcon
 } from '@chakra-ui/core'
-import { Formik, Form, FormikHelpers } from 'formik'
+import { Formik, Form, FormikHelpers, FormikErrors } from 'formik'
 import Body from '../components/primitives/Body'
 import Logo from '../components/Logo'
 import SvgBox from '../components/primitives/SvgBox'
 import { OutgoingLink } from '../components/primitives/Links'
 import EmailField from '../components/form/EmailField'
+import InputField from '../components/form/InputField'
 
 const DecorativeSide = ({ ...props }) => {
   return (
@@ -36,9 +37,11 @@ const DecorativeSide = ({ ...props }) => {
 
 interface FormValues {
   email: string
+  name: string
 }
 
 const NewsletterForm = ({ ...props }) => {
+  const tick = React.useMemo(() => Date.now(), [])
   const [subscribed, setSubscribed] = React.useState(false)
 
   const subscribeToNewsletter = React.useCallback(
@@ -46,7 +49,8 @@ const NewsletterForm = ({ ...props }) => {
       if (typeof window === 'undefined') {
         return
       }
-      if (process.env.NODE_ENV === 'production') {
+      const send = values.name === '' && Date.now() - tick > 2000
+      if (process.env.NODE_ENV === 'production' && send) {
         window.chiffre.sendString({
           name: 'landing:newsletter:email',
           value: values.email
@@ -62,7 +66,8 @@ const NewsletterForm = ({ ...props }) => {
   )
 
   const initialValues: FormValues = {
-    email: ''
+    email: '',
+    name: ''
   }
 
   if (subscribed) {
@@ -91,7 +96,21 @@ const NewsletterForm = ({ ...props }) => {
   }
 
   return (
-    <Formik initialValues={initialValues} onSubmit={subscribeToNewsletter}>
+    <Formik
+      initialValues={initialValues}
+      onSubmit={subscribeToNewsletter}
+      validate={values => {
+        const errors: FormikErrors<FormValues> = {}
+        if (!values.email) {
+          errors.email = 'Email address is required'
+        } else if (
+          !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)
+        ) {
+          errors.email = 'Invalid email address'
+        }
+        return errors
+      }}
+    >
       {({ isSubmitting }) => (
         <Form>
           <Flex justifyContent="center" wrap={['wrap', 'nowrap']} {...props}>
@@ -99,6 +118,11 @@ const NewsletterForm = ({ ...props }) => {
               placeholder="enter your email address"
               w={['100%', 'xs']}
               mr={[0, 4]}
+            />
+            <InputField
+              name="name"
+              display="none"
+              placeholder="enter your name"
             />
             <Button
               isLoading={isSubmitting}
