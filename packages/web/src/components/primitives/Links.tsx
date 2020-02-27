@@ -29,18 +29,19 @@ export const RouteLink: React.FC<RouteLinkProps> = ({
 
 // --
 
-export interface OutgoingLinkProps extends ChakraLinkProps {}
+export interface OutgoingLinkProps extends ChakraLinkProps {
+  hideExternalIcon?: boolean
+}
 
 export const OutgoingLink: React.FC<OutgoingLinkProps> = ({
   children,
+  hideExternalIcon = false,
   ...props
 }) => {
-  // You have to specify isExternal={false} to disable default behaviour
-  const external = props.isExternal ?? true
   return (
-    <ChakraLink isExternal={external} {...props}>
+    <ChakraLink {...props}>
       {children}
-      {external && (
+      {!hideExternalIcon && (
         <Icon name="external-link" mx="2px" aria-label="(external link)" />
       )}
     </ChakraLink>
