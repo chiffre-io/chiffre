@@ -20,6 +20,25 @@ class MyDocument extends Document {
         <body>
           <Main />
           <NextScript />
+          {process.env.NODE_ENV === 'production' && (
+            <>
+              <script
+                id="chiffre:analytics-config"
+                type="application/json"
+                dangerouslySetInnerHTML={{
+                  __html: `{
+                "publicKey": "pk.YAhelf4akcAuwNaJlLcnDOOVCf4Sg9rb4hF7eGpE7QA",
+                "pushURL": "https://push.chiffre.io/YhxIkmw8RaUP6fOJ"
+              }
+              `
+                }}
+              />
+              <script
+                src="https://embed.chiffre.io/analytics.js"
+                async
+              ></script>
+            </>
+          )}
         </body>
       </Html>
     )
