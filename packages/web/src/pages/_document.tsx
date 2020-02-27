@@ -3,6 +3,7 @@
 
 // ./pages/_document.js
 import Document, { Html, Head, Main, NextScript } from 'next/document'
+import Favicons from '../components/head/Favicons'
 
 class MyDocument extends Document {
   static async getInitialProps(ctx) {
@@ -13,7 +14,9 @@ class MyDocument extends Document {
   render() {
     return (
       <Html>
-        <Head />
+        <Head>
+          <Favicons />
+        </Head>
         <body>
           <Main />
           <NextScript />
