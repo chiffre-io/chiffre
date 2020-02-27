@@ -6,6 +6,7 @@ import theme from '../ui/theme'
 import { Global, css } from '@emotion/core'
 import { ChiffreClientProvider } from '../hooks/useChiffreClient'
 import useRedirectToLogin from '../hooks/useRedirectToLogin'
+import { setupDatabase } from '../engine/db'
 
 const globalCss = css`
   html {
@@ -41,6 +42,10 @@ const ChiffreContext: React.FC = ({ children }) => {
 }
 
 class MyApp extends App {
+  componentDidMount() {
+    setupDatabase()
+  }
+
   render() {
     const { Component, pageProps } = this.props
     return (
