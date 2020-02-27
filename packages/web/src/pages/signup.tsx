@@ -1,7 +1,7 @@
 import React from 'react'
 import { useRouter } from 'next/dist/client/router'
 import { useChiffreClient } from '../hooks/useChiffreClient'
-import AuthPage from '../views/auth/AuthPage'
+import AuthPage from '../layouts/AuthPage'
 import SignupForm, { Values } from '../views/auth/SignupForm'
 import useErrorToast from '../hooks/useErrorToast'
 import useQueryString from '../hooks/useQueryString'

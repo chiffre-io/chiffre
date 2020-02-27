@@ -3,7 +3,6 @@ import { NextPage } from 'next'
 import { Box } from '@chakra-ui/core'
 import { Project } from '@chiffre/client'
 import { useChiffreClient } from '../hooks/useChiffreClient'
-import Header from '../components/Header'
 import MainPage from '../layouts/MainPage'
 import { RouteLink } from '../components/primitives/Links'
 
@@ -24,7 +23,6 @@ const Dashboard: NextPage = () => {
   const client = useChiffreClient()
   return (
     <MainPage>
-      <Header />
       <Box>
         {client.projects.map(project => (
           <ProjectView key={project.id} project={project} />

@@ -1,8 +1,7 @@
 import React from 'react'
 import { NextPage } from 'next'
 import ActivityEvent from '../components/ActivityEvent'
-import { Stack, Heading, Box, Link } from '@chakra-ui/core'
-import Header from '../components/Header'
+import { Stack, Heading, Box } from '@chakra-ui/core'
 import { useChiffreClient } from '../hooks/useChiffreClient'
 import MainPage from '../layouts/MainPage'
 
@@ -22,7 +21,6 @@ const ActivityPage: NextPage = () => {
 
   return (
     <MainPage>
-      <Header />
       <Box
         maxW="xl"
         mx="auto"

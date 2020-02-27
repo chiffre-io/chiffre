@@ -14,7 +14,6 @@ import { useChiffreClient } from '../hooks/useChiffreClient'
 import Body from '../components/primitives/Body'
 import NewProjectForm, { Values } from '../views/new/NewProjectForm'
 import MainPage from '../layouts/MainPage'
-import Header from '../components/Header'
 import { ButtonRouteLink } from '../components/primitives/Links'
 
 const NewPage: NextPage = () => {
@@ -37,8 +36,6 @@ const NewPage: NextPage = () => {
 
   return (
     <MainPage>
-      <Header />
-      <Body shade={100} />
       <Box
         maxW="xl"
         mt={8}

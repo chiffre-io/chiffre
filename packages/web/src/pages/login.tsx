@@ -1,7 +1,7 @@
 import React from 'react'
 import { useRouter } from 'next/dist/client/router'
 import { useChiffreClient } from '../hooks/useChiffreClient'
-import AuthPage from '../views/auth/AuthPage'
+import AuthPage from '../layouts/AuthPage'
 import LoginForm from '../views/auth/LoginForm'
 import TwoFactorForm from '../views/auth/TwoFactorForm'
 import useQueryString from '../hooks/useQueryString'
