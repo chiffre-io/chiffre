@@ -27,7 +27,7 @@
     "surge": "^0.21.3",
     "ts-jest": "^24.3.0",
     "ts-node": "^8.6.2",
-    "typescript": "^3.8.0-beta",
+    "typescript": "^3.8.2",
     "wsrun": "^5.2.0"
   },
   "commitlint": {
