@@ -30,32 +30,39 @@ function readConfig(): Config {
 
 function sendEvent(event: Event<any, any>, config: Config) {
   const tick = performance.now()
-  const payload = JSON.stringify(event)
-  const message = encryptString(payload, config.publicKey)
+  const json = JSON.stringify(event)
+  const payload = encryptString(json, config.publicKey)
   const tock = performance.now()
   const perf = Math.round(tock - tick)
   const url = `${config.pushURL}?perf=${perf}`
   if (window.localStorage.getItem('chiffre:debug') === 'true') {
     console.dir({
       event,
-      message,
+      payload,
       perf,
       url
     })
   }
   if (window.localStorage.getItem('chiffre:no-send') === 'true') {
     console.info('[Chiffre] Skip sending message (chiffre:no-send is set)', {
-      payload: message,
+      payload,
       perf
     })
     return false
   }
 
-  const sent = navigator.sendBeacon(url, message)
-  if (!sent) {
-    console.warn('[Chiffre] Analytics message failed to send')
+  // Try sendBeacon first, if available
+  if (
+    typeof navigator.sendBeacon === 'function' &&
+    navigator.sendBeacon(url, payload)
+  ) {
+    return true
   }
-  return sent
+
+  // Fallback to img GET
+  const img = new Image()
+  img.src = `${url}&payload=${payload}`
+  return true
 }
 
 function setup() {
