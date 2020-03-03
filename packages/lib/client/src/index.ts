@@ -396,6 +396,7 @@ export default class Client {
     const res = await this.#api.get('/keychain')
     const responseBody: KeychainResponse = res.data
     const keychainKey = await decloakString(responseBody.key, masterKey)
+    this.#keychain = await unlockKeychain(responseBody, keychainKey)
     this.#keystore.set(
       'keychainKey',
       keychainKey,
