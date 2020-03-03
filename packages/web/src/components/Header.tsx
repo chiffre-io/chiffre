@@ -1,9 +1,18 @@
 import React from 'react'
 import { useChiffreClient } from '../hooks/useChiffreClient'
 import gravatarUrl from 'gravatar-url'
-import { Avatar, Stack, Box, SelectProps, Text, Select } from '@chakra-ui/core'
+import {
+  Avatar,
+  Stack,
+  Box,
+  SelectProps,
+  Text,
+  Select,
+  Button
+} from '@chakra-ui/core'
 import Logo from './Logo'
 import { RouteLink } from './primitives/Links'
+import { useRedirectToLoginUrl } from '../hooks/useRedirectToLogin'
 
 export interface HeaderProps {}
 
@@ -20,11 +29,11 @@ const Header: React.FC<HeaderProps> = ({}) => {
         fontWeight="semibold"
         spacing={6}
       >
-        <RouteLink to="/analytics">Analytics</RouteLink>
-        <RouteLink to="/logs">Logs</RouteLink>
+        <RouteLink to="/dashboard">Dashboard</RouteLink>
+        <RouteLink to="/new">New Project</RouteLink>
       </Stack>
       {/* <ProjectSelector
-        project={project}
+        project={'47ng.com'}
         projects={['francoisbest.com', '47ng.com', 'penelopebuckley.com']}
         onProjectChange={setProject}
         mx="auto"
@@ -77,7 +86,21 @@ const UserAvatar = ({ ...props }) => {
   const client = useChiffreClient()
   const username = client.identity?.username
   const url = username ? gravatarUrl(username, { default: 'robohash' }) : ''
-  return (
+  const redirectToLoginUrl = useRedirectToLoginUrl()
+  return client.isLocked ? (
+    <Stack {...props} isInline align="center" spacing={4}>
+      <RouteLink to={redirectToLoginUrl}>
+        <Button size="sm" variantColor="blue" variant="ghost">
+          Log in
+        </Button>
+      </RouteLink>
+      <RouteLink to="/signup">
+        <Button size="sm" variantColor="green">
+          Sign up
+        </Button>
+      </RouteLink>
+    </Stack>
+  ) : (
     <Stack {...props} isInline align="center" spacing={4}>
       <Stack spacing={0}>
         <Text fontSize="sm">{client.identity?.username}</Text>
@@ -89,7 +112,9 @@ const UserAvatar = ({ ...props }) => {
           <RouteLink to="/settings/auth">Settings</RouteLink>
         </Box>
       </Stack>
-      <Avatar size="sm" src={url} />
+      <RouteLink to={'/profile'}>
+        <Avatar size="sm" src={url} />
+      </RouteLink>
     </Stack>
   )
 }

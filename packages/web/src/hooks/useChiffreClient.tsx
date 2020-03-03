@@ -1,6 +1,7 @@
 import React from 'react'
 import Client from '@chiffre/client'
 import { ClientOptions, TwoFactorSettings } from '@chiffre/client'
+import useRedirectToLogin from './useRedirectToLogin'
 
 interface ContextState {
   client: Client
@@ -18,7 +19,8 @@ const stubClient = {
     } as unknown) as TwoFactorSettings
   },
   projects: [],
-  getProject: (id: string) => undefined
+  getProject: (id: string) => undefined,
+  getProjectMessages: async (projectID: string) => []
 }
 
 let client: Client = null
@@ -81,4 +83,14 @@ export function useChiffreClient() {
 export function useProject(projectID: string) {
   const client = useChiffreClient()
   return client.getProject(projectID)
+}
+
+export function useRedirectToLoginWhenLocked() {
+  const client = useChiffreClient()
+  const redirectToLogin = useRedirectToLogin()
+  React.useEffect(() => {
+    if (client.isLocked) {
+      redirectToLogin()
+    }
+  }, [client.isLocked, redirectToLogin])
 }

@@ -1,13 +1,17 @@
 import Dexie from 'dexie'
 import { AllEvents } from '@chiffre/analytics-core'
 
+export type EventRow = AllEvents & {
+  projectID: string
+}
+
 export class Database extends Dexie {
-  events: Dexie.Table<AllEvents, number>
+  events: Dexie.Table<EventRow, number>
 
   constructor() {
     super('chiffre')
     this.version(1).stores({
-      events: '++id,type'
+      events: '&id,projectID,type,time'
     })
     this.events = this.table('events') // Just informing Typescript what Dexie has already done...
   }
@@ -24,6 +28,17 @@ export function setupDatabase() {
   })
 }
 
-export function saveEvent<E extends AllEvents>(event: E) {
-  return db.events.add(event)
+export function saveEvent<E extends AllEvents>(
+  db: Database,
+  projectID: string,
+  event: E
+) {
+  return db.events.add({
+    projectID,
+    ...event
+  } as EventRow)
+}
+
+export function useDatabase() {
+  return db
 }

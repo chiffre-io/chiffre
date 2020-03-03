@@ -10,13 +10,16 @@ import {
   Stack
 } from '@chakra-ui/core'
 import { Project } from '@chiffre/client'
-import { useChiffreClient } from '../hooks/useChiffreClient'
-import Body from '../components/primitives/Body'
+import {
+  useChiffreClient,
+  useRedirectToLoginWhenLocked
+} from '../hooks/useChiffreClient'
 import NewProjectForm, { Values } from '../views/new/NewProjectForm'
 import MainPage from '../layouts/MainPage'
 import { ButtonRouteLink } from '../components/primitives/Links'
 
 const NewPage: NextPage = () => {
+  useRedirectToLoginWhenLocked()
   const client = useChiffreClient()
   const [project, setProject] = React.useState<Project>(null)
 
@@ -42,8 +45,8 @@ const NewPage: NextPage = () => {
         mx="auto"
         backgroundColor="white"
         p={4}
-        boxShadow="sm"
-        borderRadius="5px"
+        shadow="md"
+        borderRadius={4}
         overflow="auto"
       >
         <Collapse isOpen={!project}>

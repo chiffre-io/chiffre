@@ -42,7 +42,13 @@ export const OutgoingLink: React.FC<OutgoingLinkProps> = ({
     <ChakraLink {...props}>
       {children}
       {!hideExternalIcon && (
-        <Icon name="external-link" mx="2px" aria-label="(external link)" />
+        <Icon
+          name="external-link"
+          mx="2px"
+          aria-label="(external link)"
+          mt="-0.25em"
+          fontSize="0.8em"
+        />
       )}
     </ChakraLink>
   )

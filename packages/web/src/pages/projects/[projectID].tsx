@@ -1,71 +1,125 @@
 import React from 'react'
 import { NextPage } from 'next'
-import { useChiffreClient } from '../../hooks/useChiffreClient'
+import { useChiffreClient, useProject } from '../../hooks/useChiffreClient'
 import useQueryString from '../../hooks/useQueryString'
 import MainPage from '../../layouts/MainPage'
-import Header from '../../components/Header'
-import { MessageQueueResponse } from '@chiffre/api-types'
-import { Box } from '@chakra-ui/core'
+import {
+  Box,
+  Flex,
+  Stack,
+  Icon,
+  Text,
+  Heading,
+  StatGroup,
+  Stat,
+  StatLabel,
+  StatNumber,
+  StatHelpText,
+  StatArrow
+} from '@chakra-ui/core'
 import { ResponsiveLine } from '@nivo/line'
-import { retrieveProjectMessages } from '../../engine/chiffre'
+import useLoadProjectMessages, {
+  retrieveProjectMessages
+} from '../../engine/chiffre'
+import TimeSpanSelector, {
+  TimeSpanOption
+} from '../../components/TimeSpanSelector'
+import { useDatabase } from '../../engine/db'
+import { AllEvents } from '@chiffre/analytics-core'
+import dayjs from 'dayjs'
 
-const ProjectPage: NextPage = ({}) => {
-  const projectID = useQueryString('projectID')
-  const client = useChiffreClient()
-  const project = client.getProject(projectID)
-
-  console.dir({
-    projectID,
-    client,
-    project
+function useData(projectID: string) {
+  const [timeSpanOption, onTimeSpanChange] = React.useState<TimeSpanOption>()
+  const db = useDatabase()
+  const [data, setData] = React.useState<AllEvents[]>([])
+  const [timeSpan, setTimeSpan] = React.useState({
+    before: dayjs(),
+    after: dayjs()
   })
 
   React.useEffect(() => {
-    if (!client.getProjectMessages) {
+    if (!timeSpanOption) {
       return
     }
-    retrieveProjectMessages(client, projectID)
-  }, [client.getProjectMessages, projectID])
+    setTimeSpan(timeSpanOption.getRange())
+  }, [timeSpanOption])
+
+  React.useEffect(() => {
+    if (!timeSpan || !db) {
+      return
+    }
+    db.events
+      .where('time')
+      .between(timeSpan.after.valueOf(), timeSpan.before.valueOf(), true, false)
+      .and(evt => evt.projectID === projectID)
+      .toArray()
+      .then(setData)
+  }, [timeSpan, db, projectID])
+
+  return {
+    data,
+    onTimeSpanChange,
+    timeSpanText: `${timeSpan.after.format()} - ${timeSpan.before.format()}`
+  }
+}
+
+const ProjectPage: NextPage = ({}) => {
+  const projectID = useQueryString('projectID')
+  const project = useProject(projectID)
+  useLoadProjectMessages(projectID)
+
+  const { data, onTimeSpanChange, timeSpanText } = useData(projectID)
+
+  const eventTypes = React.useMemo(() => {
+    return Array.from(new Set(data.map(evt => evt.type)))
+  }, [data])
 
   return (
     <MainPage>
+      <Flex px={4} my={4}>
+        {project && (
+          <Heading as="h2" fontSize="lg" fontWeight="medium">
+            {project.name}
+          </Heading>
+        )}
+        <Stack isInline alignItems="center" ml="auto">
+          <Text fontSize="sm" color="gray.600">
+            {timeSpanText}
+          </Text>
+          <Icon name="repeat-clock" />
+          <TimeSpanSelector onChange={onTimeSpanChange} size="sm" w="auto" />
+        </Stack>
+      </Flex>
+      <StatGroup maxW="xl" mx="auto">
+        <Stat>
+          <StatLabel>Visits</StatLabel>
+          <StatNumber fontSize="4xl">
+            {data.filter(evt => evt.type === 'session:start').length}
+          </StatNumber>
+        </Stat>
+        <Stat>
+          <StatLabel>Page views</StatLabel>
+          <StatNumber fontSize="4xl">
+            {
+              data.filter(evt =>
+                ['session:start', 'page:visit'].includes(evt.type)
+              ).length
+            }
+          </StatNumber>
+        </Stat>
+        <Stat>
+          <StatLabel>Events</StatLabel>
+          <StatNumber>{data.length}</StatNumber>
+        </Stat>
+        <Stat>
+          <StatLabel>Event Types</StatLabel>
+          <StatNumber>{eventTypes.length}</StatNumber>
+        </Stat>
+      </StatGroup>
+
       <Box as="pre" fontSize="xs">
-        {JSON.stringify(project, null, 2)}
+        {JSON.stringify(data, null, 2)}
       </Box>
-      {/* <ResponsiveLine
-        curve="monotoneX"
-        data={[fooStream]}
-        // ----------------------
-        enableSlices="x"
-        xScale={{
-          type: 'time',
-          format: '%Y-%m-%d',
-          precision: 'day'
-        }}
-        xFormat="time:%Y-%m-%d"
-        yScale={{
-          type: 'linear'
-          //   stacked: boolean('stacked', false)
-        }}
-        axisLeft={{
-          legend: 'linear scale',
-          legendOffset: 12
-        }}
-        axisBottom={{
-          format: '%b %d',
-          tickValues: 'every 2 days',
-          legend: 'time scale',
-          legendOffset: -12
-        }}
-        enablePointLabel={true}
-        // pointSize={16}
-        pointBorderWidth={1}
-        pointBorderColor={{
-          from: 'color',
-          modifiers: [['darker', 0.3]]
-        }}
-        useMesh={true}
-      /> */}
     </MainPage>
   )
 }
