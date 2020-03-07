@@ -2,7 +2,7 @@ import { Transform } from 'stream'
 import WebSocket from 'ws'
 import commander from 'commander'
 import { b64 } from '@47ng/codec'
-import { encryptString, sha256 } from '@chiffre/crypto-box'
+import { encryptString } from '@chiffre/crypto-box'
 
 const defaultUrl = 'https://push.chiffre.io'
 
@@ -11,7 +11,8 @@ export default async function startApplication(args: string[]) {
 
   const app = program
     .option('-f, --forward-stdin', 'Forward stdin to stdout', false)
-    .requiredOption('-p, --public-key <publicKey>', 'Public key')
+    .requiredOption('-k, --public-key <publicKey>', 'Public key')
+    .requiredOption('-p, --project <projectID>', 'Project ID')
   app.parse(args)
   process.stdin.setEncoding('utf8')
   if (app.forwardStdin) {
@@ -19,8 +20,7 @@ export default async function startApplication(args: string[]) {
   }
 
   const publicKey = b64.decode(app.publicKey as string)
-  const roomID = await sha256(publicKey)
-  const url = `${app.url || defaultUrl}/publish/${roomID}`
+  const url = `${app.url || defaultUrl}/${app.projectID}`
 
   const splitLines = new Transform({
     encoding: 'utf8',

@@ -1,5 +1,5 @@
 import { CloakKey, encryptString, decryptString } from '@47ng/cloak'
-import { CryptoBoxKeys, generateKeys } from '@chiffre/crypto-box'
+import { CryptoBoxKeys, generateKeys, importKeys } from '@chiffre/crypto-box'
 
 export interface Project {
   keys: {
@@ -32,5 +32,5 @@ export async function unlockProject(
   project: Project,
   vaultKey: CloakKey
 ): Promise<UnlockedProject> {
-  return generateKeys(await decryptString(project.keys.secret, vaultKey))
+  return importKeys(await decryptString(project.keys.secret, vaultKey))
 }

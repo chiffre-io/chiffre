@@ -15,7 +15,7 @@
   "dependencies": {
     "@47ng/cloak": "^0.15.0",
     "@chiffre/api-types": "^0.0.1",
-    "@chiffre/crypto-box": "^0.0.1",
+    "@chiffre/crypto-box": "^1.0.0",
     "@chiffre/crypto-client": "^0.0.1",
     "axios": "^0.19.1",
     "session-keystore": "^0.6.0"
