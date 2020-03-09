@@ -20,7 +20,8 @@ const stubClient = {
   },
   projects: [],
   getProject: (id: string) => undefined,
-  getProjectMessages: async (projectID: string) => []
+  getProjectMessages: async (projectID: string) => [],
+  loadProjects: async () => {}
 }
 
 let client: Client = null
@@ -36,12 +37,14 @@ export const ChiffreClientProvider: React.FC<ClientOptions> = ({
   const [counter, setCounter] = React.useState(0)
 
   const onLocked = React.useCallback(() => {
+    console.log('onLocked')
     if (options.onLocked) {
       options.onLocked()
     }
     setCounter(c => c + 1)
   }, [])
   const onUpdate = React.useCallback(() => {
+    console.log('onUpdate')
     if (options.onUpdate) {
       options.onUpdate()
     }
@@ -67,7 +70,8 @@ export const ChiffreClientProvider: React.FC<ClientOptions> = ({
 
   const state = React.useMemo<ContextState>(
     () => ({
-      client: client === null ? (stubClient as Client) : client
+      client: client === null ? (stubClient as Client) : client,
+      counter
     }),
     [client, counter]
   )

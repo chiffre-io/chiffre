@@ -2,7 +2,9 @@ import Dexie from 'dexie'
 import { AllEvents } from '@chiffre/analytics-core'
 
 export type EventRow = AllEvents & {
+  id: string
   projectID: string
+  country?: string
 }
 
 export class Database extends Dexie {
@@ -28,17 +30,10 @@ export function setupDatabase() {
   })
 }
 
-export function saveEvent<E extends AllEvents>(
-  db: Database,
-  projectID: string,
-  event: E
-) {
-  return db.events.add({
-    projectID,
-    ...event
-  } as EventRow)
+export function saveEvent(db: Database, row: EventRow) {
+  return db.events.add(row)
 }
 
 export function useDatabase() {
-  return db
+  return db?.isOpen ? db : null
 }

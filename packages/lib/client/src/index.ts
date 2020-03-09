@@ -69,6 +69,7 @@ export interface CreateProjectArgs {
 
 export interface Identity {
   username: string
+  displayName: string
   userID: string
   plan: Plans
   publicKeys: {
@@ -112,7 +113,7 @@ export default class Client {
   public settings: Settings
 
   #api: AxiosInstance
-  #keystore: SessionKeystore<'keychainKey' | 'username' | 'credentials'>
+  #keystore: SessionKeystore<'keychainKey' | 'credentials' | 'username' | 'displayName'>
   #handleAuth: (res?: AxiosResponse) => void
   #handleBrowserAuth: () => void
   #handleNodeAuth: (res: AxiosResponse) => void
@@ -228,7 +229,6 @@ export default class Client {
     if (this.#keystore.get('keychainKey')) {
       try {
         this._hydrateKeychain()
-          .then(() => this.#onUpdate())
           .catch(() => {
             this.lock()
             options.onLocked()
@@ -258,12 +258,13 @@ export default class Client {
     const res = await this.#api.post('/auth/signup', signupParams)
     const keychainKey = await decloakString(signupParams.keychainKey, masterKey)
     this.#keychain = await unlockKeychain(signupParams.keychain, keychainKey)
-    this.#keystore.set('username', username)
     this.#keystore.set(
       'keychainKey',
       keychainKey,
       getExpirationDate(maxAgeInSeconds.session)
     )
+    this.#keystore.set('username', username)
+    this.#keystore.set('displayName', displayName)
     this.#handleAuth(res)
   }
 
@@ -289,9 +290,9 @@ export default class Client {
       response.ephemeral,
       response.session
     )
-    this.#handleAuth(res2)
     this.#keystore.set('username', username)
-
+    this.#keystore.set('displayName', responseBody.displayName)
+    this.#handleAuth(res2)
     if (responseBody.masterSalt) {
       const masterKey = await deriveMasterKey(
         username,
@@ -299,7 +300,7 @@ export default class Client {
         responseBody.masterSalt
       )
       await this._refreshKeychain(masterKey)
-      await this._refresh()
+      await this.loadProjects()
       return { requireTwoFactorAuthentication: false }
     } else {
       // Two factor is required
@@ -332,7 +333,7 @@ export default class Client {
     this.#keystore.delete('credentials')
     this.#handleAuth(res)
     await this._refreshKeychain(masterKey)
-    await this._refresh()
+    await this.loadProjects()
   }
 
   public async logout() {
@@ -352,6 +353,7 @@ export default class Client {
       this.#keychain &&
       this.#authClaims &&
       this.#keystore.get('username') &&
+      this.#keystore.get('displayName') &&
       this.#keystore.get('keychainKey')
     )
   }
@@ -362,6 +364,7 @@ export default class Client {
     }
     return {
       username: this.#keystore.get('username'),
+      displayName: this.#keystore.get('displayName'),
       userID: this.#authClaims.userID,
       plan: this.#authClaims.plan,
       publicKeys: {
@@ -385,9 +388,9 @@ export default class Client {
   public lock() {
     this.projects = []
     this.#keychain = undefined
-    this.#keystore.clear()
     this.#authClaims = undefined
     this.#token = undefined
+    this.#keystore.clear()
   }
 
   // --
@@ -415,7 +418,7 @@ export default class Client {
     this.#onUpdate()
   }
 
-  private async _refresh() {
+  async loadProjects() {
     const keychainKey = this.#keystore.get('keychainKey')
     if (!keychainKey) {
       throw new Error('Session expired, please log in again')

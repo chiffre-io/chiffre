@@ -1,5 +1,5 @@
 import React from 'react'
-import { useRouter } from 'next/dist/client/router'
+import { useRouter } from 'next/router'
 import { useChiffreClient } from '../hooks/useChiffreClient'
 import AuthPage from '../layouts/AuthPage'
 import SignupForm, { Values } from '../views/auth/SignupForm'

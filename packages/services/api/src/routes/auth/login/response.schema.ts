@@ -17,5 +17,6 @@ export const loginResponseParametersSchema = S.object()
 
 export interface LoginResponseResponseBody {
   proof: string
+  displayName: string
   masterSalt?: string
 }

@@ -7,10 +7,11 @@
     "dev": "next",
     "build": "next build",
     "start": "next start",
+    "clean:next": "rm -rf out .next",
     "clean": "rm -rf out .next node_modules",
     "export": "next export",
     "deploy": "surge -p ./out -d https://chiffre.io",
-    "release": "ENV_PRODUCTION=true run-s clean build export deploy",
+    "release": "ENV_PRODUCTION=true run-s clean:next build export deploy",
     "analyze": "ANALYZE=true next build"
   },
   "dependencies": {
@@ -18,6 +19,7 @@
     "@chakra-ui/core": "^0.5.2",
     "@chiffre/analytics-core": "^0.0.1",
     "@chiffre/analytics-emitter": "^0.0.1",
+    "@chiffre/analytics-processing": "^0.0.1",
     "@chiffre/api-types": "^0.0.1",
     "@chiffre/client": "^0.0.1",
     "@emotion/core": "^10.0.27",
@@ -32,6 +34,7 @@
     "hibp": "^8.0.0",
     "http-status-codes": "^1.4.0",
     "next": "^9.2.0",
+    "pretty-ms": "^6.0.1",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-qr-svg": "^2.2.1",

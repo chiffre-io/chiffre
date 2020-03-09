@@ -1,4 +1,4 @@
-import { useRouter } from 'next/dist/client/router'
+import { useRouter } from 'next/router'
 
 export default function useQueryString(key: string): string {
   const router = useRouter()

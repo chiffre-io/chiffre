@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { useRouter } from 'next/dist/client/router'
+import { useRouter } from 'next/router'
 
 export interface Props {
   to: string

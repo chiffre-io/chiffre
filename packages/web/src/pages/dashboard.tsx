@@ -3,12 +3,11 @@ import Head from 'next/head'
 import { NextPage } from 'next'
 import { Stack, Text, PseudoBox, PseudoBoxProps, Avatar } from '@chakra-ui/core'
 import { Project } from '@chiffre/client'
-import {
-  useChiffreClient,
-  useRedirectToLoginWhenLocked
-} from '../hooks/useChiffreClient'
+import { useChiffreClient } from '../hooks/useChiffreClient'
 import MainPage from '../layouts/MainPage'
-import { RouteLink } from '../components/primitives/Links'
+import { RouteLink, ButtonRouteLink } from '../components/primitives/Links'
+import useRedirectToLogin from '../hooks/useRedirectToLogin'
+import { StackContainer } from '../layouts/Container'
 
 interface ProjectViewProps extends PseudoBoxProps {
   project: Project
@@ -23,6 +22,7 @@ const ProjectView: React.FC<ProjectViewProps> = ({ project, ...props }) => {
       shadow="sm"
       transition="all 0.2s ease"
       overflow="hidden"
+      w="100%"
       {...props}
     >
       <Stack spacing={4}>
@@ -57,18 +57,34 @@ const ProjectView: React.FC<ProjectViewProps> = ({ project, ...props }) => {
 }
 
 const Dashboard: NextPage = () => {
-  // useRedirectToLoginWhenLocked()
   const client = useChiffreClient()
+  const redirectToLogin = useRedirectToLogin()
+  React.useEffect(() => {
+    ;(async () => {
+      try {
+        await client.loadProjects()
+      } catch (error) {
+        await redirectToLogin()
+      }
+    })()
+  }, [client])
+
   return (
     <MainPage>
       <Head>
         <title>Dashboard | Chiffre</title>
       </Head>
-      <Stack spacing={8} px={4} py={12} maxW="xl" mx="auto">
+      <StackContainer spacing={8} py={12} alignItems="center">
         {client.projects.map(project => (
           <ProjectView key={project.id} project={project} />
         ))}
-      </Stack>
+        {client.projects.length === 0 && (
+          <Text>Start by creating a project</Text>
+        )}
+        <ButtonRouteLink to="/new" w="auto" variantColor="green" leftIcon="add">
+          Create new project
+        </ButtonRouteLink>
+      </StackContainer>
     </MainPage>
   )
 }

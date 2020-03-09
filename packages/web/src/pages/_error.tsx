@@ -2,6 +2,7 @@ import React from 'react'
 import { useRouter } from 'next/router'
 import { Text, Stack, Heading, Code, Button } from '@chakra-ui/core'
 import MainPage from '../layouts/MainPage'
+import ClientOnly from '../components/ClientOnly'
 
 const Error = ({ ...props }) => {
   const router = useRouter()
@@ -32,15 +33,17 @@ const Error = ({ ...props }) => {
         <Code as="pre" fontSize="xs" p={2} bg="red.50">
           {JSON.stringify(props, null, 2)}
         </Code>
-        <a
-          href={`mailto:contact+report@chiffre.io?subject=Error%20report&body=${encodeURIComponent(
-            debugInfo
-          )}`}
-        >
-          <Button variantColor="red" mt={8}>
-            Report error
-          </Button>
-        </a>
+        <ClientOnly>
+          <a
+            href={`mailto:contact+report@chiffre.io?subject=Error%20report&body=${encodeURIComponent(
+              debugInfo
+            )}`}
+          >
+            <Button variantColor="red" mt={8}>
+              Report error
+            </Button>
+          </a>
+        </ClientOnly>
       </Stack>
     </MainPage>
   )

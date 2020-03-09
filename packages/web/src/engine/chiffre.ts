@@ -1,14 +1,9 @@
 import React from 'react'
 import ChiffreClient from '@chiffre/client'
 import { AllEvents } from '@chiffre/analytics-core'
-import { Database, saveEvent, useDatabase } from './db'
+import { Database, EventRow, saveEvent, useDatabase } from './db'
 import { useChiffreClient } from '../hooks/useChiffreClient'
 import dayjs from 'dayjs'
-
-export type LocalEvent = AllEvents & {
-  id: string
-  country?: string
-}
 
 export default function useLoadProjectMessages(projectID: string) {
   const client = useChiffreClient()
@@ -31,35 +26,38 @@ export async function retrieveProjectMessages(
     .where('projectID')
     .equals(projectID)
     .last()
+    .catch(console.error)
   const after = afterRow
     ? dayjs(afterRow.time)
         .subtract(1, 'hour')
         .valueOf()
     : undefined
 
-  const messages = await client.getProjectMessages(projectID, before, after)
-  if (messages.length === 0) {
-    return
-  }
   const project = client.getProject(projectID)
   if (!project) {
+    return
+  }
+
+  const messages = await client.getProjectMessages(projectID, before, after)
+  if (messages.length === 0) {
     return
   }
   const errors = []
   console.groupCollapsed(
     `Messages for ${projectID} (before: ${before}, after: ${after})`
   )
-  const events: LocalEvent[] = messages
+  const rows: EventRow[] = messages
     .map(msg => {
       try {
         const json = project.decryptMessage(msg.message)
         const event: AllEvents = JSON.parse(json)
-        const localEvent: LocalEvent = {
+        const row: EventRow = {
           ...event,
           id: msg.id,
+          projectID,
           country: msg.country
         }
-        return localEvent
+        return row
       } catch (error) {
         errors.push(`Error processing event: ${error}`)
         return null
@@ -68,9 +66,9 @@ export async function retrieveProjectMessages(
     .filter(Boolean)
     .sort((a, b) => a.time - b.time)
 
-  for (const event of events) {
+  for (const row of rows) {
     try {
-      await saveEvent(db, projectID, event)
+      await saveEvent(db, row)
     } catch (error) {
       // todo: Silently handle collision cases, they are expected (overlap)
       errors.push(`Error saving event: ${error}`)

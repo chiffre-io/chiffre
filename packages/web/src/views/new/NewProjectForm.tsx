@@ -1,6 +1,6 @@
 import React from 'react'
-import { Button, Box, Stack, FormControl } from '@chakra-ui/core'
-import { Formik, Form, FormikErrors } from 'formik'
+import { Button, Box, Stack, FormControl, Select } from '@chakra-ui/core'
+import { Formik, Form, FormikErrors, Field } from 'formik'
 import Label, { LabelWithAside } from '../../components/form/Label'
 import InputField from '../../components/form/InputField'
 import FieldHelpText from '../../components/form/FieldHelpText'
@@ -9,13 +9,20 @@ export interface Values {
   name: string
   description?: string
   deploymentURL: string
+  vaultID?: string
+}
+
+export interface VaultInfo {
+  id: string
+  name: string
 }
 
 export interface Props {
+  vaults: VaultInfo[]
   onSubmit: (v: Values) => void
 }
 
-const NewProjectForm: React.FC<Props> = ({ onSubmit }) => {
+const NewProjectForm: React.FC<Props> = ({ vaults, onSubmit }) => {
   const initialValues: Values = {
     name: '',
     description: '',
@@ -63,6 +70,26 @@ const NewProjectForm: React.FC<Props> = ({ onSubmit }) => {
                 placeholder="eg: example.com, blog.my-domain.io"
               />
             </FormControl>
+            <Box>
+              <Label htmlFor="vaultID">Vault ID</Label>
+              <FieldHelpText id="vault-id-help-text">
+                Vaults let you share projects between teams
+              </FieldHelpText>
+              <Field name="vaultID">
+                {({ field }) => (
+                  <Select aria-describedby="vault-id-help-text" {...field}>
+                    <>
+                      <option value="">Create new vault</option>
+                      {vaults.map(vault => (
+                        <option key={vault.id} value={vault.id}>
+                          {vault.name}
+                        </option>
+                      ))}
+                    </>
+                  </Select>
+                )}
+              </Field>
+            </Box>
             <Stack isInline spacing="2" mt={8}>
               <Button
                 variantColor="green"

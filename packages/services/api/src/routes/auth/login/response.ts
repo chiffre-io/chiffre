@@ -58,6 +58,7 @@ export default async (app: App) => {
         await cleanupSrpChallenge(app.redis.srpChallenges, userID, challengeID)
       } catch (error) {
         req.log.error({ msg: 'SRP login response failure', error })
+        app.sentry.report(error, req)
         throw app.httpErrors.unauthorized('Incorrect username or password')
       }
 
@@ -77,6 +78,7 @@ export default async (app: App) => {
 
       const body: LoginResponseResponseBody = {
         proof: srpSession.proof,
+        displayName: user.displayName,
         masterSalt
       }
       await logEvent(app.db, EventTypes.login, { ...req, auth: claims })

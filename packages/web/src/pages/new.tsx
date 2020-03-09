@@ -10,29 +10,33 @@ import {
   Stack
 } from '@chakra-ui/core'
 import { Project } from '@chiffre/client'
-import {
-  useChiffreClient,
-  useRedirectToLoginWhenLocked
-} from '../hooks/useChiffreClient'
-import NewProjectForm, { Values } from '../views/new/NewProjectForm'
+import { useChiffreClient } from '../hooks/useChiffreClient'
+import NewProjectForm, { Values, VaultInfo } from '../views/new/NewProjectForm'
 import MainPage from '../layouts/MainPage'
 import { ButtonRouteLink } from '../components/primitives/Links'
 
 const NewPage: NextPage = () => {
-  useRedirectToLoginWhenLocked()
   const client = useChiffreClient()
   const [project, setProject] = React.useState<Project>(null)
 
-  const availableVaults = React.useMemo(() => {
-    return Array.from(new Set(client.projects.map(p => p.vaultID)))
+  const availableVaults: VaultInfo[] = React.useMemo(() => {
+    return Array.from(new Set(client.projects.map(p => p.vaultID))).map(
+      vaultID => ({
+        id: vaultID,
+        name: `${vaultID.slice(0, 4)} - ${client.projects
+          .filter(p => p.vaultID === vaultID)
+          .map(p => p.name)
+          .join(', ')}`
+      })
+    )
   }, [client.projects])
 
   const submit = async (values: Values) => {
-    console.dir(values)
     const project = await client.createProject({
       name: values.name,
       description: values.description,
-      url: values.deploymentURL
+      url: values.deploymentURL,
+      vaultID: values.vaultID || undefined
     })
     setProject(project)
   }
@@ -57,7 +61,7 @@ const NewPage: NextPage = () => {
             A project collects analytics for a given website or webapp.
           </Text>
           <Divider />
-          <NewProjectForm onSubmit={submit} />
+          <NewProjectForm onSubmit={submit} vaults={availableVaults} />
         </Collapse>
         <Collapse isOpen={!!project}>
           <Heading as="h2" fontSize="xl" mb="1" fontWeight="normal">

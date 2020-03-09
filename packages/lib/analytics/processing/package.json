@@ -1,0 +1,14 @@
+{
+  "name": "@chiffre/analytics-processing",
+  "version": "0.0.1",
+  "private": true,
+  "license": "UNLICENSED",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf ./dist ./node_modules"
+  },
+  "dependencies": {
+    "@chiffre/analytics-core": "^0.0.1"
+  }
+}
