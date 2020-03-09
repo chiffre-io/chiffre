@@ -62,6 +62,7 @@
   },
   "devDependencies": {
     "@chiffre/analytics-core": "^0.0.1",
+    "@chiffre/analytics-faker": "^0.0.1",
     "@types/ioredis": "^4.14.4",
     "@types/jsonwebtoken": "^8.3.6",
     "@types/nanoid": "^2.1.0",

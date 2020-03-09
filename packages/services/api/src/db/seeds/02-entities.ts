@@ -11,6 +11,7 @@ import { findUser } from '../models/auth/Users'
 import { findKeychain } from '../models/entities/Keychains'
 import { pushMessage } from '../models/entities/ProjectMessageQueue'
 import { createGenericEvent } from '@chiffre/analytics-core'
+import generateFakePayloadStream from '@chiffre/analytics-faker'
 
 export const testProject = {
   projectID: 'testProjectID123',
@@ -67,6 +68,15 @@ export const seed = async (knex: Knex) => {
     await pushMessage(knex, {
       projectID,
       message,
+      performance: Math.random() * 30 + 12,
+      receivedAt: new Date()
+    })
+  }
+  const events = generateFakePayloadStream(100, publicKey)
+  for (const event of events) {
+    await pushMessage(knex, {
+      projectID,
+      message: event,
       performance: Math.random() * 30 + 12,
       receivedAt: new Date()
     })
