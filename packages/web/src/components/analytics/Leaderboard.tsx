@@ -53,6 +53,36 @@ const Leaderboard: React.FC<LeadeboardProps> = ({
     return 75 / max
   }, [data])
 
+  const _pieData = React.useMemo(() => {
+    if (!showPercent) {
+      return (
+        pieData ||
+        data.map(entry => ({
+          id: entry.key,
+          label: entry.key,
+          value: entry.score
+        }))
+      ).sort((a, b) => a.value - b.value)
+    }
+    if (pieData) {
+      const sum = pieData.reduce((sum, d) => sum + d.value, 0)
+      console.dir({ sum })
+      return pieData
+        .map(d => ({
+          ...d,
+          value: (100 * d.value) / sum
+        }))
+        .sort((a, b) => a.value - b.value)
+    }
+    return data
+      .map(entry => ({
+        id: entry.key,
+        label: entry.key,
+        value: entry.percent
+      }))
+      .sort((a, b) => a.value - b.value)
+  }, [pieData, data, showPercent])
+
   if (data.length === 0) {
     return (
       <Text textAlign="center" my={4} fontSize="sm" color="gray.600">
@@ -139,14 +169,10 @@ const Leaderboard: React.FC<LeadeboardProps> = ({
               right: 30
             }}
             sortByValue
-            data={(
-              pieData ||
-              data.map(entry => ({
-                id: entry.key,
-                label: entry.key,
-                value: entry.score
-              }))
-            ).sort((a, b) => a.value - b.value)}
+            data={_pieData}
+            sliceLabel={d =>
+              showPercent ? `${d.value.toFixed()}%` : `${d.value}`
+            }
           />
         </Box>
       )}
