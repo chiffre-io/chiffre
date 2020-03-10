@@ -186,9 +186,15 @@ const ProjectPage: NextPage = ({}) => {
           </Card>
           <Card>
             <Heading fontSize="lg" fontWeight="semibold" mb={4}>
-              Screen Sizes
+              Screen Widths
             </Heading>
-            <Leaderboard entries={analytics.viewPorts} />
+            <Leaderboard
+              entries={analytics.viewportWidths.map(({ key, ...entry }) => ({
+                key: `${key}px`,
+                ...entry
+              }))}
+              showPie
+            />
           </Card>
           <Card>
             <Heading fontSize="lg" fontWeight="semibold" mb={4}>

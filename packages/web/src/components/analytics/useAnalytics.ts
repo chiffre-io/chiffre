@@ -28,7 +28,7 @@ export interface Analytics {
   operatingSystemsWithVersion: LeaderboardEntry[]
   operatingSystems: LeaderboardEntry[]
   languages: LeaderboardEntry[]
-  viewPorts: LeaderboardEntry[]
+  viewportWidths: LeaderboardEntry[]
   browsers: LeaderboardEntry[]
 }
 
@@ -65,7 +65,7 @@ export default function useAnalytics(
       operatingSystemsWithVersion: bep.osWithVersion.leaderboard,
       operatingSystems: bep.os.leaderboard,
       languages: bep.lang.leaderboard,
-      viewPorts: bep.vp.leaderboard,
+      viewportWidths: bep.viewportWidth.leaderboard,
       browsers: bep.browsers.leaderboard
     }
   }, [data])

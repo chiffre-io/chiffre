@@ -68,7 +68,7 @@ export class BrowserEventsProcessor<E extends BrowserEvent> {
   lang: CounterMap
   os: CounterMap
   osWithVersion: CounterMap
-  vp: CounterMap
+  viewportWidth: CounterMap
 
   constructor() {
     this._sessionMap = new Map()
@@ -78,7 +78,7 @@ export class BrowserEventsProcessor<E extends BrowserEvent> {
     this.os = new CounterMap()
     this.osWithVersion = new CounterMap()
     this.lang = new CounterMap()
-    this.vp = new CounterMap()
+    this.viewportWidth = new CounterMap()
     this.browsers = new CounterMap()
   }
 
@@ -96,11 +96,13 @@ export class BrowserEventsProcessor<E extends BrowserEvent> {
     if (isSessionStartEvent(event)) {
       const ua = Bowser.parse(event.data.ua)
       this.referrers.count(event.data.ref)
-      this.userAgents.count(`${ua.browser.name} ${ua.browser.version}`)
-      this.osWithVersion.count(`${ua.os.name} ${ua.os.version}`)
+      this.userAgents.count(
+        `${ua.browser.name} ${ua.browser.version || '(unknown)'}`
+      )
+      this.osWithVersion.count(`${ua.os.name} ${ua.os.version || '(unknown)'}`)
       this.os.count(ua.os.name)
       this.lang.count(event.data.lang)
-      this.vp.count(`${event.data.vp.w}x${event.data.vp.h}`)
+      this.viewportWidth.count(event.data.vp.w.toFixed())
       this.browsers.count(ua.browser.name)
     }
   }
