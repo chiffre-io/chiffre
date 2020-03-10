@@ -56,7 +56,6 @@ export interface Project {
   description?: string
   vaultID: string
   publicKey: string
-  embedScript: string,
   decryptMessage: (message: string) => string
 }
 
@@ -437,7 +436,6 @@ export default class Client {
         description: project.description,
         vaultID: project.vaultID,
         publicKey: project.keys.public,
-        embedScript: project.embedScript,
         decryptMessage: buildMessageDecryptor(unlockedProject)
       })
     }
@@ -491,7 +489,6 @@ export default class Client {
       ...args,
       vaultID,
       publicKey: lockedProject.keys.public,
-      embedScript: responseBody.embedScript,
       decryptMessage: buildMessageDecryptor(unlockedProject)
     }
     this.projects.push(project)

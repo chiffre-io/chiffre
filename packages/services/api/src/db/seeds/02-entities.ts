@@ -1,5 +1,6 @@
 import Knex from 'knex'
 import dotenv from 'dotenv'
+import faker from 'faker'
 import { deriveMasterKey } from '@chiffre/crypto-client'
 import { encryptString as boxString, parsePublicKey } from '@chiffre/crypto-box'
 import { generateKey, encryptString, decryptString } from '@47ng/cloak'
@@ -69,7 +70,8 @@ export const seed = async (knex: Knex) => {
       projectID,
       message,
       performance: Math.random() * 30 + 12,
-      receivedAt: new Date()
+      receivedAt: new Date(),
+      country: faker.address.countryCode()
     })
   }
   const events = generateFakePayloadStream(100, publicKey)
@@ -78,7 +80,8 @@ export const seed = async (knex: Knex) => {
       projectID,
       message: event,
       performance: Math.random() * 30 + 12,
-      receivedAt: new Date()
+      receivedAt: new Date(),
+      country: faker.address.countryCode()
     })
   }
 }

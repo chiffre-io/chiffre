@@ -20,12 +20,12 @@ export const createProjectParametersSchema = S.object()
 
 export interface CreateProjectResponse {
   projectID: string
-  embedScript: string
 }
 
-export const createProjectResponseSchema = S.object()
-  .prop('projectID', S.string())
-  .prop('embedScript', S.string())
+export const createProjectResponseSchema = S.object().prop(
+  'projectID',
+  S.string()
+)
 
 // --
 
@@ -43,7 +43,6 @@ export interface Project extends LockedProject {
   name: string
   vaultID: string
   vaultKey: string
-  embedScript: string
   description?: string
 }
 
@@ -53,7 +52,6 @@ export const projectSchema = S.object()
   .prop('name', S.string())
   .prop('vaultID', S.string())
   .prop('vaultKey', S.string())
-  .prop('embedScript', S.string())
   .prop('description', S.string())
   .prop(
     'keys',

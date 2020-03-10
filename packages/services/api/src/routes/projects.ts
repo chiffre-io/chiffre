@@ -12,7 +12,6 @@ import {
   deleteProject,
   ProjectInput
 } from '../db/models/entities/Projects'
-import { formatEmitterEmbedScript } from '../emitterScript'
 import {
   CreateProjectParameters,
   CreateProjectResponse,
@@ -24,6 +23,8 @@ import {
   projectURLParamsSchema,
   ProjectURLParams
 } from './projects.schema'
+import { getProjectKey, KeyIDs, ProjectConfig } from '@chiffre/push'
+import { Plans } from '../exports/defs'
 
 // --
 
@@ -67,10 +68,16 @@ export default async (app: App) => {
         secretKey: req.body.secretKey
       }
       const project = await createProject(app.db, input)
-      const embedScript = await formatEmitterEmbedScript(project)
+
+      const projectConfig: ProjectConfig = {
+        origins: [input.url]
+      }
+      await app.redis.ingressData.set(
+        getProjectKey(project.id, KeyIDs.config),
+        JSON.stringify(projectConfig)
+      )
       const response: CreateProjectResponse = {
-        projectID: project.id,
-        embedScript
+        projectID: project.id
       }
       await logEvent(app.db, EventTypes.projectCreated, req, {
         projectID: project.id
@@ -108,8 +115,7 @@ export default async (app: App) => {
               secret: project.secretKey
             },
             vaultID,
-            vaultKey: vaultKey,
-            embedScript: await formatEmitterEmbedScript(project)
+            vaultKey: vaultKey
           })
         }
       }
@@ -151,8 +157,7 @@ export default async (app: App) => {
           secret: project.secretKey
         },
         vaultID: edge.vaultID,
-        vaultKey: edge.vaultKey,
-        embedScript: await formatEmitterEmbedScript(project)
+        vaultKey: edge.vaultKey
       }
       return res.send(response)
     }

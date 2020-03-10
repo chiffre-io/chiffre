@@ -62,7 +62,6 @@ test('Create projects', async () => {
   expect(project1.id).not.toEqual(project2.id)
   expect(project1.name).toEqual('foo')
   expect(project2.name).toEqual('bar')
-  expect(project1.embedScript).not.toEqual(project2.embedScript)
   expect(project1.publicKey).not.toEqual(project2.publicKey)
   // Access projects by ID
   expect(ctx.client.getProject(project1.id)).toEqual(project1)

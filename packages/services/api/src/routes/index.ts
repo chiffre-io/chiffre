@@ -23,7 +23,6 @@ export default async function loadRoutes(app: App) {
   loadRoute(app, './keychain')
   loadRoute(app, './vaults')
   loadRoute(app, './projects')
-  loadRoute(app, './embed')
   loadRoute(app, './users')
   loadRoute(app, './activity')
   loadRoute(app, './queues')
