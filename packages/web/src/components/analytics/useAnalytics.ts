@@ -7,10 +7,12 @@ import {
 import {
   LeaderboardEntry,
   NumericStats,
-  BrowserEventsProcessor
+  BrowserEventsProcessor,
+  CounterMap
 } from '@chiffre/analytics-processing'
 import { EventRow, useDatabase } from '../../engine/db'
 import { TimeRange } from '../../hooks/useTimeRange'
+import countriesMap from '../../ui/countries.json'
 
 export interface Analytics {
   data: EventRow[]
@@ -20,6 +22,12 @@ export interface Analytics {
   pageCount: LeaderboardEntry[]
   timeOnSite: NumericStats
   timeOnPage: LeaderboardEntry[]
+  countries: LeaderboardEntry[]
+  referrers: LeaderboardEntry[]
+  userAgents: LeaderboardEntry[]
+  operatingSystems: LeaderboardEntry[]
+  languages: LeaderboardEntry[]
+  viewPorts: LeaderboardEntry[]
 }
 
 export default function useAnalytics(
@@ -29,9 +37,12 @@ export default function useAnalytics(
   const data = useData(projectID, timeRange)
   const analytics: Analytics = React.useMemo(() => {
     const bep = new BrowserEventsProcessor()
+    const countries = new CounterMap()
     for (const event of data) {
       bep.process(event as BrowserEvent)
+      countries.count(event.country)
     }
+    console.dir(countries.leaderboard)
     return {
       data,
       sessions: Array.from(bep.sessions.entries()),
@@ -41,7 +52,18 @@ export default function useAnalytics(
       ).length,
       pageCount: bep.pageCountLeaderboard,
       timeOnSite: bep.timeOnSite,
-      timeOnPage: bep.timeOnPageLeaderboard
+      timeOnPage: bep.timeOnPageLeaderboard,
+      countries: countries.leaderboard.map(({ key: iso, ...entry }) => ({
+        key: !!countriesMap[iso]
+          ? `${countriesMap[iso].flag} ${countriesMap[iso].name}`
+          : 'N.A.',
+        ...entry
+      })),
+      referrers: bep.referrers,
+      userAgents: bep.userAgents,
+      operatingSystems: bep.operatingSystems,
+      languages: bep.languages,
+      viewPorts: bep.viewPorts
     }
   }, [data])
 

@@ -5,6 +5,7 @@ import AuthPage from '../layouts/AuthPage'
 import SignupForm, { Values } from '../views/auth/SignupForm'
 import useErrorToast from '../hooks/useErrorToast'
 import useQueryString from '../hooks/useQueryString'
+import Title from '../components/head/Title'
 
 const SignupPage = () => {
   const showErrorToast = useErrorToast()
@@ -23,9 +24,12 @@ const SignupPage = () => {
   }
 
   return (
-    <AuthPage>
-      <SignupForm onSubmit={onSubmit} />
-    </AuthPage>
+    <>
+      <Title>Sign up</Title>
+      <AuthPage>
+        <SignupForm onSubmit={onSubmit} />
+      </AuthPage>
+    </>
   )
 }
 

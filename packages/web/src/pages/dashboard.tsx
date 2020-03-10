@@ -8,6 +8,7 @@ import MainPage from '../layouts/MainPage'
 import { RouteLink, ButtonRouteLink } from '../components/primitives/Links'
 import useRedirectToLogin from '../hooks/useRedirectToLogin'
 import { StackContainer } from '../layouts/Container'
+import Title from '../components/head/Title'
 
 interface ProjectViewProps extends PseudoBoxProps {
   project: Project
@@ -70,22 +71,30 @@ const Dashboard: NextPage = () => {
   }, [client])
 
   return (
-    <MainPage>
-      <Head>
-        <title>Dashboard | Chiffre</title>
-      </Head>
-      <StackContainer spacing={8} py={12} alignItems="center">
-        {client.projects.map(project => (
-          <ProjectView key={project.id} project={project} />
-        ))}
-        {client.projects.length === 0 && (
-          <Text>Start by creating a project</Text>
-        )}
-        <ButtonRouteLink to="/new" w="auto" variantColor="green" leftIcon="add">
-          Create new project
-        </ButtonRouteLink>
-      </StackContainer>
-    </MainPage>
+    <>
+      <Title>Dashboard</Title>
+      <MainPage>
+        <Head>
+          <title>Dashboard | Chiffre</title>
+        </Head>
+        <StackContainer spacing={8} py={12} alignItems="center">
+          {client.projects.map(project => (
+            <ProjectView key={project.id} project={project} />
+          ))}
+          {client.projects.length === 0 && (
+            <Text>Start by creating a project</Text>
+          )}
+          <ButtonRouteLink
+            to="/new"
+            w="auto"
+            variantColor="green"
+            leftIcon="add"
+          >
+            Create new project
+          </ButtonRouteLink>
+        </StackContainer>
+      </MainPage>
+    </>
   )
 }
 

@@ -24,7 +24,7 @@ const HideableButton = styled(Button)<{ visible: boolean }>`
 `
 
 export interface OverviewProps extends BoxProps {
-  timeRange?: TimeRange
+  timeRange: TimeRange
   updateTimeRange?: (newRange: TimeRange) => void
   currentAnalytics: Analytics
   previousAnalytics?: Analytics
@@ -64,7 +64,7 @@ const IncrDecrIndicator: React.FC<IncrDecrIndicatorProps> = ({
 }
 
 const Overview: React.FC<OverviewProps> = ({
-  timeRange = {},
+  timeRange,
   updateTimeRange = () => {},
   currentAnalytics,
   previousAnalytics,

@@ -10,6 +10,9 @@ export default function useLoadProjectMessages(projectID: string) {
   const db = useDatabase()
 
   React.useEffect(() => {
+    if (!projectID) {
+      return
+    }
     retrieveProjectMessages(client, db, projectID)
   }, [projectID, client.getProjectMessages])
 }
@@ -22,16 +25,20 @@ export async function retrieveProjectMessages(
   const before = dayjs()
     .subtract(5, 'minute')
     .valueOf()
-  const afterRow = await db.events
-    .where('projectID')
-    .equals(projectID)
-    .last()
-    .catch(console.error)
-  const after = afterRow
-    ? dayjs(afterRow.time)
-        .subtract(1, 'hour')
-        .valueOf()
-    : undefined
+  let after = 0
+  try {
+    const afterRow = await db.events
+      .where('projectID')
+      .equals(projectID)
+      .last()
+    after = afterRow
+      ? dayjs(afterRow.time)
+          .subtract(1, 'hour')
+          .valueOf()
+      : after
+  } catch (error) {
+    console.error(error)
+  }
 
   const project = client.getProject(projectID)
   if (!project) {

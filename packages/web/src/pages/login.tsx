@@ -6,6 +6,7 @@ import LoginForm from '../views/auth/LoginForm'
 import TwoFactorForm from '../views/auth/TwoFactorForm'
 import useQueryString from '../hooks/useQueryString'
 import useErrorToast from '../hooks/useErrorToast'
+import Title from '../components/head/Title'
 
 const LoginPage = () => {
   const showErrorToast = useErrorToast()
@@ -15,40 +16,43 @@ const LoginPage = () => {
   const redirectUrl = useQueryString('redirect')
 
   return (
-    <AuthPage>
-      {!show2fa && (
-        <LoginForm
-          onSubmit={async values => {
-            try {
-              const { requireTwoFactorAuthentication } = await client.login(
-                values.email,
-                values.password
-              )
-              if (requireTwoFactorAuthentication) {
-                setShow2fa(true)
-              } else {
-                await router.push(redirectUrl || '/dashboard')
+    <>
+      <Title>Login</Title>
+      <AuthPage>
+        {!show2fa && (
+          <LoginForm
+            onSubmit={async values => {
+              try {
+                const { requireTwoFactorAuthentication } = await client.login(
+                  values.email,
+                  values.password
+                )
+                if (requireTwoFactorAuthentication) {
+                  setShow2fa(true)
+                } else {
+                  await router.push(redirectUrl || '/dashboard')
+                }
+              } catch (error) {
+                showErrorToast(error)
               }
-            } catch (error) {
-              showErrorToast(error)
-            }
-          }}
-        />
-      )}
-      {show2fa && (
-        <TwoFactorForm
-          autoFocus
-          onSubmit={async values => {
-            try {
-              await client.verifyTwoFactorToken(values.twoFactorToken)
-              return await router.push(redirectUrl || '/dashboard')
-            } catch (error) {
-              showErrorToast(error)
-            }
-          }}
-        />
-      )}
-    </AuthPage>
+            }}
+          />
+        )}
+        {show2fa && (
+          <TwoFactorForm
+            autoFocus
+            onSubmit={async values => {
+              try {
+                await client.verifyTwoFactorToken(values.twoFactorToken)
+                return await router.push(redirectUrl || '/dashboard')
+              } catch (error) {
+                showErrorToast(error)
+              }
+            }}
+          />
+        )}
+      </AuthPage>
+    </>
   )
 }
 

@@ -1,4 +1,5 @@
 import React from 'react'
+import ms from 'ms'
 import dayjs, { Dayjs } from 'dayjs'
 import { SelectProps, Select } from '@chakra-ui/core'
 import { TimeRange } from '../../hooks/useTimeRange'
@@ -17,7 +18,9 @@ const options: TimeRangeOption[] = [
   {
     id: 'all-time',
     label: 'All time',
-    getRange: () => ({})
+    getRange: () => ({
+      step: ms('1 day')
+    })
   },
   // Relative
   {
@@ -25,7 +28,8 @@ const options: TimeRangeOption[] = [
     label: 'Last 30 days',
     getRange: (ref = dayjs()) => ({
       before: ref,
-      after: ref.subtract(30, 'day')
+      after: ref.subtract(30, 'day'),
+      step: ms('1 day')
     })
   },
   {
@@ -33,7 +37,8 @@ const options: TimeRangeOption[] = [
     label: 'Last 7 days',
     getRange: (ref = dayjs()) => ({
       before: ref,
-      after: ref.subtract(7, 'day')
+      after: ref.subtract(7, 'day'),
+      step: ms('1 day')
     })
   },
   // Fixed reporting
@@ -44,7 +49,8 @@ const options: TimeRangeOption[] = [
       const startOfThisWeek = ref.startOf('week')
       return {
         before: startOfThisWeek,
-        after: startOfThisWeek.subtract(1, 'week')
+        after: startOfThisWeek.subtract(1, 'week'),
+        step: ms('1 day')
       }
     }
   },
@@ -55,7 +61,8 @@ const options: TimeRangeOption[] = [
       const startOfThisMonth = ref.startOf('month')
       return {
         before: startOfThisMonth,
-        after: startOfThisMonth.subtract(1, 'month')
+        after: startOfThisMonth.subtract(1, 'month'),
+        step: ms('1 day')
       }
     }
   },
@@ -66,7 +73,8 @@ const options: TimeRangeOption[] = [
       const startOfThisYear = ref.startOf('year')
       return {
         before: startOfThisYear,
-        after: startOfThisYear.subtract(1, 'year')
+        after: startOfThisYear.subtract(1, 'year'),
+        step: ms('1 month')
       }
     }
   },
@@ -77,7 +85,8 @@ const options: TimeRangeOption[] = [
       const startOfThisDay = ref.startOf('day')
       return {
         before: startOfThisDay.add(1, 'day'),
-        after: startOfThisDay
+        after: startOfThisDay,
+        step: ms('1 hour')
       }
     }
   },
@@ -88,7 +97,8 @@ const options: TimeRangeOption[] = [
       const startOfThisWeek = ref.startOf('week')
       return {
         before: startOfThisWeek.add(1, 'week'),
-        after: startOfThisWeek
+        after: startOfThisWeek,
+        step: ms('1 day')
       }
     }
   },
@@ -99,7 +109,8 @@ const options: TimeRangeOption[] = [
       const startOfThisMonth = ref.startOf('month')
       return {
         before: startOfThisMonth.add(1, 'month'),
-        after: startOfThisMonth
+        after: startOfThisMonth,
+        step: ms('1 day')
       }
     }
   },
@@ -110,7 +121,8 @@ const options: TimeRangeOption[] = [
       const startOfThisYear = ref.startOf('year')
       return {
         before: startOfThisYear.add(1, 'year'),
-        after: startOfThisYear
+        after: startOfThisYear,
+        step: ms('1 month')
       }
     }
   }

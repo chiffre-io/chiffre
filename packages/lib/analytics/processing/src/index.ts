@@ -61,10 +61,20 @@ export interface ReturningVisitorInfo<E> {
 export class BrowserEventsProcessor<E extends BrowserEvent> {
   private _sessionMap: Map<string, E[]>
   private _pageCount: CounterMap
+  private _referrers: CounterMap
+  private _userAgents: CounterMap
+  private _lang: CounterMap
+  private _os: CounterMap
+  private _vp: CounterMap
 
   constructor() {
     this._sessionMap = new Map()
     this._pageCount = new CounterMap()
+    this._referrers = new CounterMap()
+    this._userAgents = new CounterMap()
+    this._os = new CounterMap()
+    this._lang = new CounterMap()
+    this._vp = new CounterMap()
   }
 
   public process(event: E) {
@@ -78,6 +88,13 @@ export class BrowserEventsProcessor<E extends BrowserEvent> {
       [...sessionEvents, event].sort((a, b) => a.time - b.time)
     )
     this._pageCount.count(event.data?.path)
+    if (isSessionStartEvent(event)) {
+      this._referrers.count(event.data.ref)
+      this._userAgents.count(event.data.ua)
+      this._os.count(event.data.os)
+      this._lang.count(event.data.lang)
+      this._vp.count(`${event.data.vp.w}x${event.data.vp.h}`)
+    }
   }
 
   public get pageCountLeaderboard() {
@@ -222,6 +239,22 @@ export class BrowserEventsProcessor<E extends BrowserEvent> {
         percent: (100 * stats.avg) / sum
       }))
       .sort((a, b) => b.score - a.score)
+  }
+
+  public get referrers(): LeaderboardEntry[] {
+    return this._referrers.leaderboard
+  }
+  public get userAgents(): LeaderboardEntry[] {
+    return this._userAgents.leaderboard
+  }
+  public get operatingSystems(): LeaderboardEntry[] {
+    return this._os.leaderboard
+  }
+  public get languages(): LeaderboardEntry[] {
+    return this._lang.leaderboard
+  }
+  public get viewPorts(): LeaderboardEntry[] {
+    return this._vp.leaderboard
   }
 }
 

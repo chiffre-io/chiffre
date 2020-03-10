@@ -1,3 +1,4 @@
+import ms from 'ms'
 import dayjs, { Dayjs } from 'dayjs'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import dayOfYear from 'dayjs/plugin/dayOfYear'
@@ -8,6 +9,7 @@ dayjs.extend(dayOfYear)
 export interface TimeRange {
   before?: Dayjs
   after?: Dayjs
+  step: number
 }
 
 export interface UseTimeRangeReturn {
@@ -56,11 +58,13 @@ export default function useTimeRange(range: TimeRange): UseTimeRangeReturn {
           label: `${range.after.year()}`,
           previous: {
             before: range.before.subtract(1, 'year'),
-            after: range.after.subtract(1, 'year')
+            after: range.after.subtract(1, 'year'),
+            step: ms('1 month')
           },
           next: {
             before: range.before.add(1, 'year'),
-            after: range.after.add(1, 'year')
+            after: range.after.add(1, 'year'),
+            step: ms('1 month')
           }
         }
       }
@@ -68,11 +72,13 @@ export default function useTimeRange(range: TimeRange): UseTimeRangeReturn {
         label: `${range.after.year()} - ${range.before.year() - 1}`,
         previous: {
           before: range.before.subtract(deltaYears, 'year'),
-          after: range.after.subtract(deltaYears, 'year')
+          after: range.after.subtract(deltaYears, 'year'),
+          step: ms('1 month')
         },
         next: {
           before: range.before.add(deltaYears, 'year'),
-          after: range.after.add(deltaYears, 'year')
+          after: range.after.add(deltaYears, 'year'),
+          step: ms('1 month')
         }
       }
     }
@@ -86,11 +92,13 @@ export default function useTimeRange(range: TimeRange): UseTimeRangeReturn {
           label: `${range.after.format('MMMM YYYY')}`,
           previous: {
             before: range.before.subtract(1, 'month'),
-            after: range.after.subtract(1, 'month')
+            after: range.after.subtract(1, 'month'),
+            step: ms('1 day')
           },
           next: {
             before: range.before.add(1, 'month'),
-            after: range.after.add(1, 'month')
+            after: range.after.add(1, 'month'),
+            step: ms('1 day')
           }
         }
       }
@@ -104,11 +112,13 @@ export default function useTimeRange(range: TimeRange): UseTimeRangeReturn {
               .format('MMMM YYYY')}`,
         previous: {
           before: range.before.subtract(deltaMonths, 'month'),
-          after: range.after.subtract(deltaMonths, 'month')
+          after: range.after.subtract(deltaMonths, 'month'),
+          step: ms('1 day')
         },
         next: {
           before: range.before.add(deltaMonths, 'month'),
-          after: range.after.add(deltaMonths, 'month')
+          after: range.after.add(deltaMonths, 'month'),
+          step: ms('1 day')
         }
       }
     }
@@ -120,11 +130,13 @@ export default function useTimeRange(range: TimeRange): UseTimeRangeReturn {
       label: range.after.format('LL'),
       previous: {
         before: range.before.subtract(1, 'day'),
-        after: range.after.subtract(1, 'day')
+        after: range.after.subtract(1, 'day'),
+        step: ms('1 hour')
       },
       next: {
         before: range.before.add(1, 'day'),
-        after: range.after.add(1, 'day')
+        after: range.after.add(1, 'day'),
+        step: ms('1 hour')
       }
     }
   }
@@ -135,17 +147,23 @@ export default function useTimeRange(range: TimeRange): UseTimeRangeReturn {
         .format('LL')}`,
       previous: {
         before: range.before.subtract(deltaDays, 'day'),
-        after: range.after.subtract(deltaDays, 'day')
+        after: range.after.subtract(deltaDays, 'day'),
+        step: deltaDays >= 3 ? ms('1 day') : ms('1 hour')
       },
       next: {
         before: range.before.add(deltaDays, 'day'),
-        after: range.after.add(deltaDays, 'day')
+        after: range.after.add(deltaDays, 'day'),
+        step: deltaDays >= 3 ? ms('1 day') : ms('1 hour')
       }
     }
   }
   return {
     label: 'Implement me',
-    previous: {},
-    next: {}
+    previous: {
+      step: ms('15 min')
+    },
+    next: {
+      step: ms('15 min')
+    }
   }
 }
