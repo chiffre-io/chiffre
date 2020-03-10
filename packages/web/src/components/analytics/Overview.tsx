@@ -11,8 +11,7 @@ import {
   Icon,
   Button,
   StatHelpText,
-  StatArrow,
-  DarkMode
+  StatArrow
 } from '@chakra-ui/core'
 import styled from '@emotion/styled'
 import prettyMs from 'pretty-ms'

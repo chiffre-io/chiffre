@@ -9,6 +9,7 @@
     "clean": "rm -rf ./dist ./node_modules"
   },
   "dependencies": {
-    "@chiffre/analytics-core": "^0.0.1"
+    "@chiffre/analytics-core": "^0.0.1",
+    "bowser": "^2.9.0"
   }
 }

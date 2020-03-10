@@ -476,8 +476,13 @@ export default class Client {
     // Create the project and associate it with the vault
     const unlockedProject = await createProject()
     const lockedProject = await lockProject(unlockedProject, vaultKey)
+    const url = `https://${
+      args.url.replace(/^http:\/\//, '')
+              .replace(/^https:\/\//, '')
+    }`
     const createProjectParams: CreateProjectParameters = {
       ...args,
+      url,
       vaultID,
       publicKey: lockedProject.keys.public,
       secretKey: lockedProject.keys.secret
@@ -487,6 +492,7 @@ export default class Client {
     const project: Project = {
       id: responseBody.projectID,
       ...args,
+      url,
       vaultID,
       publicKey: lockedProject.keys.public,
       decryptMessage: buildMessageDecryptor(unlockedProject)

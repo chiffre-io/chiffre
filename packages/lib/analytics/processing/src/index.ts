@@ -10,6 +10,7 @@ import {
   isBrowserEvent,
   isSessionEndEvent
 } from '@chiffre/analytics-core'
+import Bowser from 'bowser'
 
 export interface LeaderboardEntry<K = string> {
   key: K
@@ -60,21 +61,25 @@ export interface ReturningVisitorInfo<E> {
 
 export class BrowserEventsProcessor<E extends BrowserEvent> {
   private _sessionMap: Map<string, E[]>
-  private _pageCount: CounterMap
-  private _referrers: CounterMap
-  private _userAgents: CounterMap
-  private _lang: CounterMap
-  private _os: CounterMap
-  private _vp: CounterMap
+  browsers: CounterMap
+  pageCount: CounterMap
+  referrers: CounterMap
+  userAgents: CounterMap
+  lang: CounterMap
+  os: CounterMap
+  osWithVersion: CounterMap
+  vp: CounterMap
 
   constructor() {
     this._sessionMap = new Map()
-    this._pageCount = new CounterMap()
-    this._referrers = new CounterMap()
-    this._userAgents = new CounterMap()
-    this._os = new CounterMap()
-    this._lang = new CounterMap()
-    this._vp = new CounterMap()
+    this.pageCount = new CounterMap()
+    this.referrers = new CounterMap()
+    this.userAgents = new CounterMap()
+    this.os = new CounterMap()
+    this.osWithVersion = new CounterMap()
+    this.lang = new CounterMap()
+    this.vp = new CounterMap()
+    this.browsers = new CounterMap()
   }
 
   public process(event: E) {
@@ -87,18 +92,17 @@ export class BrowserEventsProcessor<E extends BrowserEvent> {
       key,
       [...sessionEvents, event].sort((a, b) => a.time - b.time)
     )
-    this._pageCount.count(event.data?.path)
+    this.pageCount.count(event.data?.path)
     if (isSessionStartEvent(event)) {
-      this._referrers.count(event.data.ref)
-      this._userAgents.count(event.data.ua)
-      this._os.count(event.data.os)
-      this._lang.count(event.data.lang)
-      this._vp.count(`${event.data.vp.w}x${event.data.vp.h}`)
+      const ua = Bowser.parse(event.data.ua)
+      this.referrers.count(event.data.ref)
+      this.userAgents.count(`${ua.browser.name} ${ua.browser.version}`)
+      this.osWithVersion.count(`${ua.os.name} ${ua.os.version}`)
+      this.os.count(ua.os.name)
+      this.lang.count(event.data.lang)
+      this.vp.count(`${event.data.vp.w}x${event.data.vp.h}`)
+      this.browsers.count(ua.browser.name)
     }
-  }
-
-  public get pageCountLeaderboard() {
-    return this._pageCount.leaderboard
   }
 
   public get sessions(): Map<string, E[]> {
@@ -239,22 +243,6 @@ export class BrowserEventsProcessor<E extends BrowserEvent> {
         percent: (100 * stats.avg) / sum
       }))
       .sort((a, b) => b.score - a.score)
-  }
-
-  public get referrers(): LeaderboardEntry[] {
-    return this._referrers.leaderboard
-  }
-  public get userAgents(): LeaderboardEntry[] {
-    return this._userAgents.leaderboard
-  }
-  public get operatingSystems(): LeaderboardEntry[] {
-    return this._os.leaderboard
-  }
-  public get languages(): LeaderboardEntry[] {
-    return this._lang.leaderboard
-  }
-  public get viewPorts(): LeaderboardEntry[] {
-    return this._vp.leaderboard
   }
 }
 

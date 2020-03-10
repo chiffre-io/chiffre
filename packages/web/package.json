@@ -26,6 +26,7 @@
     "@emotion/styled": "^10.0.27",
     "@nivo/bar": "^0.61.1",
     "@nivo/line": "^0.61.1",
+    "@nivo/pie": "^0.61.1",
     "@zeit/next-source-maps": "^0.0.3",
     "dayjs": "^1.8.21",
     "dexie": "^2.0.4",

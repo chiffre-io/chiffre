@@ -62,12 +62,12 @@ const NewProjectForm: React.FC<Props> = ({ vaults, onSubmit }) => {
             <FormControl isRequired>
               <Label htmlFor="url">Deployment URL</Label>
               <FieldHelpText id="deployment-url-help-text">
-                The URL where your website or webapp can be accessed :
+                The URL where your website or webapp can be accessed:
               </FieldHelpText>
               <InputField
                 name="deploymentURL"
                 aria-describedby="deployment-url-help-text"
-                placeholder="eg: example.com, blog.my-domain.io"
+                placeholder="eg: https://example.com, https://blog.mydomain.io"
               />
             </FormControl>
             <Box>

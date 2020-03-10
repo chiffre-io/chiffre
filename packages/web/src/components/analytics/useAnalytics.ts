@@ -25,9 +25,11 @@ export interface Analytics {
   countries: LeaderboardEntry[]
   referrers: LeaderboardEntry[]
   userAgents: LeaderboardEntry[]
+  operatingSystemsWithVersion: LeaderboardEntry[]
   operatingSystems: LeaderboardEntry[]
   languages: LeaderboardEntry[]
   viewPorts: LeaderboardEntry[]
+  browsers: LeaderboardEntry[]
 }
 
 export default function useAnalytics(
@@ -42,7 +44,6 @@ export default function useAnalytics(
       bep.process(event as BrowserEvent)
       countries.count(event.country)
     }
-    console.dir(countries.leaderboard)
     return {
       data,
       sessions: Array.from(bep.sessions.entries()),
@@ -50,7 +51,7 @@ export default function useAnalytics(
       pageViews: data.filter(
         event => isSessionStartEvent(event) || isPageVisitEvent(event)
       ).length,
-      pageCount: bep.pageCountLeaderboard,
+      pageCount: bep.pageCount.leaderboard,
       timeOnSite: bep.timeOnSite,
       timeOnPage: bep.timeOnPageLeaderboard,
       countries: countries.leaderboard.map(({ key: iso, ...entry }) => ({
@@ -59,11 +60,13 @@ export default function useAnalytics(
           : 'N.A.',
         ...entry
       })),
-      referrers: bep.referrers,
-      userAgents: bep.userAgents,
-      operatingSystems: bep.operatingSystems,
-      languages: bep.languages,
-      viewPorts: bep.viewPorts
+      referrers: bep.referrers.leaderboard,
+      userAgents: bep.userAgents.leaderboard,
+      operatingSystemsWithVersion: bep.osWithVersion.leaderboard,
+      operatingSystems: bep.os.leaderboard,
+      languages: bep.lang.leaderboard,
+      viewPorts: bep.vp.leaderboard,
+      browsers: bep.browsers.leaderboard
     }
   }, [data])
 

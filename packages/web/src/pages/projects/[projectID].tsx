@@ -2,7 +2,7 @@ import React from 'react'
 import { NextPage } from 'next'
 import Head from 'next/head'
 import ms from 'ms'
-import { Stack, Icon, Heading, Box } from '@chakra-ui/core'
+import { Text, Stack, Icon, Heading, Box } from '@chakra-ui/core'
 import prettyMs from 'pretty-ms'
 import { useProject } from '../../hooks/useChiffreClient'
 import useQueryString from '../../hooks/useQueryString'
@@ -106,8 +106,20 @@ const ProjectPage: NextPage = ({}) => {
               <ResponsiveBar
                 margin={{ top: 10, right: 10, bottom: 10, left: 10 }}
                 enableGridY={false}
-                enableLabel={false}
-                colors={theme.colors.gray['600']}
+                colors={theme.colors.blue['700']}
+                labelSkipWidth={32}
+                labelTextColor={{
+                  from: 'color',
+                  modifiers: [['brighter', 2]]
+                }}
+                theme={{
+                  tooltip: {
+                    container: {
+                      background: theme.colors.gray['900']
+                    }
+                  }
+                }}
+                borderRadius={2}
                 padding={0.3}
                 keys={['count']}
                 data={graphData}
@@ -120,7 +132,7 @@ const ProjectPage: NextPage = ({}) => {
             <Heading fontSize="lg" fontWeight="semibold" mb={4}>
               Page views
             </Heading>
-            <Leaderboard entries={analytics.pageCount} />
+            <Leaderboard entries={analytics.pageCount} fontFamily="mono" />
           </Card>
           <Card>
             <Heading fontSize="lg" fontWeight="semibold" mb={4}>
@@ -129,6 +141,7 @@ const ProjectPage: NextPage = ({}) => {
             <Leaderboard
               entries={analytics.timeOnPage}
               formatScore={score => prettyMs(score, { unitCount: 2 })}
+              fontFamily="mono"
             />
           </Card>
           <Card>
@@ -141,19 +154,35 @@ const ProjectPage: NextPage = ({}) => {
             <Heading fontSize="lg" fontWeight="semibold" mb={4}>
               Countries
             </Heading>
-            <Leaderboard entries={analytics.countries} />
+            <Leaderboard entries={analytics.countries} showPie />
           </Card>
           <Card>
             <Heading fontSize="lg" fontWeight="semibold" mb={4}>
               User Agents
             </Heading>
-            <Leaderboard entries={analytics.userAgents} />
+            <Leaderboard
+              entries={analytics.userAgents}
+              showPie
+              pieData={analytics.browsers.map(entry => ({
+                id: entry.key,
+                label: entry.key,
+                value: entry.score
+              }))}
+            />
           </Card>
           <Card>
             <Heading fontSize="lg" fontWeight="semibold" mb={4}>
               Systems
             </Heading>
-            <Leaderboard entries={analytics.operatingSystems} />
+            <Leaderboard
+              entries={analytics.operatingSystemsWithVersion}
+              showPie
+              pieData={analytics.operatingSystems.map(entry => ({
+                id: entry.key,
+                label: entry.key,
+                value: entry.score
+              }))}
+            />
           </Card>
           <Card>
             <Heading fontSize="lg" fontWeight="semibold" mb={4}>
@@ -165,7 +194,7 @@ const ProjectPage: NextPage = ({}) => {
             <Heading fontSize="lg" fontWeight="semibold" mb={4}>
               Languages
             </Heading>
-            <Leaderboard entries={analytics.languages} />
+            <Leaderboard entries={analytics.languages} showPie />
           </Card>
         </StackContainer>
       </MainPage>
