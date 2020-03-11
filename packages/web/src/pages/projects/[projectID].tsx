@@ -148,20 +148,25 @@ const ProjectPage: NextPage = ({}) => {
             <Heading fontSize="lg" fontWeight="semibold" mb={4}>
               Referrers
             </Heading>
-            <Leaderboard entries={analytics.referrers} />
+            <Leaderboard entries={analytics.referrers} showPercentByDefault />
           </Card>
           <Card>
             <Heading fontSize="lg" fontWeight="semibold" mb={4}>
               Countries
             </Heading>
-            <Leaderboard entries={analytics.countries} showPie />
+            <Leaderboard
+              entries={analytics.countries}
+              showPie
+              showPercentByDefault
+            />
           </Card>
           <Card>
             <Heading fontSize="lg" fontWeight="semibold" mb={4}>
-              User Agents
+              Browsers
             </Heading>
             <Leaderboard
               entries={analytics.userAgents}
+              showPercentByDefault
               showPie
               pieData={analytics.browsers.map(entry => ({
                 id: entry.key,
@@ -176,6 +181,7 @@ const ProjectPage: NextPage = ({}) => {
             </Heading>
             <Leaderboard
               entries={analytics.operatingSystemsWithVersion}
+              showPercentByDefault
               showPie
               pieData={analytics.operatingSystems.map(entry => ({
                 id: entry.key,
@@ -189,18 +195,62 @@ const ProjectPage: NextPage = ({}) => {
               Screen Widths
             </Heading>
             <Leaderboard
+              showPercentByDefault
+              showPie
               entries={analytics.viewportWidths.map(({ key, ...entry }) => ({
                 key: `${key}px`,
                 ...entry
               }))}
-              showPie
+              pieData={Array.from(
+                analytics.viewportWidths
+                  .reduce((entries, entry) => {
+                    const buckets = {
+                      '< 480px': { min: 0, max: 480 },
+                      '480 - 768px': { min: 480, max: 767 },
+                      '768 - 992px': { min: 768, max: 992 },
+                      '992 - 1280px': { min: 992, max: 1280 },
+                      '≥ 1280px': { min: 1280, max: Infinity }
+                    }
+                    const [key] = Object.entries(buckets).find(
+                      ([_, bounds]) =>
+                        entry.key >= bounds.min && entry.key < bounds.max
+                    )
+                    const score = (entries.get(key) || 0) + entry.score
+                    entries.set(key, score)
+                    return entries
+                  }, new Map<string, number>())
+                  .entries()
+              ).map(([key, score]) => ({
+                id: key,
+                label: key,
+                value: score
+              }))}
             />
           </Card>
           <Card>
             <Heading fontSize="lg" fontWeight="semibold" mb={4}>
               Languages
             </Heading>
-            <Leaderboard entries={analytics.languages} showPie />
+            <Leaderboard
+              entries={analytics.languages}
+              showPercentByDefault
+              showPie
+              pieData={Array.from(
+                // Group from first two characters of lang (eg: en-GB & en-US => en)
+                analytics.languages
+                  .reduce((entries, entry) => {
+                    const key = entry.key.slice(0, 2)
+                    const score = (entries.get(key) || 0) + entry.score
+                    entries.set(key, score)
+                    return entries
+                  }, new Map())
+                  .entries()
+              ).map(([key, score]) => ({
+                id: key,
+                label: key,
+                value: score
+              }))}
+            />
           </Card>
         </StackContainer>
       </MainPage>

@@ -68,7 +68,7 @@ export class BrowserEventsProcessor<E extends BrowserEvent> {
   lang: CounterMap
   os: CounterMap
   osWithVersion: CounterMap
-  viewportWidth: CounterMap
+  viewportWidth: CounterMap<number>
 
   constructor() {
     this._sessionMap = new Map()
@@ -78,7 +78,7 @@ export class BrowserEventsProcessor<E extends BrowserEvent> {
     this.os = new CounterMap()
     this.osWithVersion = new CounterMap()
     this.lang = new CounterMap()
-    this.viewportWidth = new CounterMap()
+    this.viewportWidth = new CounterMap<number>()
     this.browsers = new CounterMap()
   }
 
@@ -102,7 +102,7 @@ export class BrowserEventsProcessor<E extends BrowserEvent> {
       this.osWithVersion.count(`${ua.os.name} ${ua.os.version || '(unknown)'}`)
       this.os.count(ua.os.name)
       this.lang.count(event.data.lang)
-      this.viewportWidth.count(event.data.vp.w.toFixed())
+      this.viewportWidth.count(event.data.vp.w)
       this.browsers.count(ua.browser.name)
     }
   }

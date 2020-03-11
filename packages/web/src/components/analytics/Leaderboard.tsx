@@ -11,6 +11,7 @@ export interface LeadeboardProps {
   formatScore?: (score: number) => string
   fontFamily?: 'mono' | 'body'
   showPie?: boolean
+  showPercentByDefault?: boolean
   pieData?: PieDatum[]
 }
 
@@ -21,9 +22,10 @@ const Leaderboard: React.FC<LeadeboardProps> = ({
   formatScore = score => score.toFixed(),
   fontFamily = 'body',
   showPie = false,
+  showPercentByDefault = false,
   pieData
 }) => {
-  const [showPercent, setShowPercent] = React.useState(false)
+  const [showPercent, setShowPercent] = React.useState(showPercentByDefault)
 
   const data = React.useMemo(() => {
     if (!limit || limit >= entries.length) {
@@ -66,7 +68,6 @@ const Leaderboard: React.FC<LeadeboardProps> = ({
     }
     if (pieData) {
       const sum = pieData.reduce((sum, d) => sum + d.value, 0)
-      console.dir({ sum })
       return pieData
         .map(d => ({
           ...d,

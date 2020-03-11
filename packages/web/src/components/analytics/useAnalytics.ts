@@ -28,7 +28,7 @@ export interface Analytics {
   operatingSystemsWithVersion: LeaderboardEntry[]
   operatingSystems: LeaderboardEntry[]
   languages: LeaderboardEntry[]
-  viewportWidths: LeaderboardEntry[]
+  viewportWidths: LeaderboardEntry<number>[]
   browsers: LeaderboardEntry[]
 }
 
