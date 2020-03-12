@@ -23,7 +23,7 @@ export async function retrieveProjectMessages(
   projectID: string
 ) {
   const before = dayjs()
-    .subtract(5, 'minute')
+    .add(1, 'hour')
     .valueOf()
   let after = 0
   try {
