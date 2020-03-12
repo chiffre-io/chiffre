@@ -63,6 +63,7 @@ export type BrowserDataPoint<T = {}> = BrowserEventData & T
 
 export type BrowserEvents = {
   'session:start': BrowserDataPoint<SessionData>
+  'session:dnt': never
   'session:end': BrowserDataPoint
   'page:visit': BrowserDataPoint<PageVisitData>
   'page:hide': BrowserDataPoint
@@ -83,6 +84,11 @@ export function isSessionStartEvent(
   event: AllEvents
 ): event is Event<BrowserEvents, 'session:start'> {
   return event.type === 'session:start'
+}
+export function isSessionDNTEvent(
+  event: AllEvents
+): event is Event<BrowserEvents, 'session:dnt'> {
+  return event.type === 'session:dnt'
 }
 export function isSessionEndEvent(
   event: AllEvents

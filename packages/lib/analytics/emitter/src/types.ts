@@ -12,6 +12,7 @@ declare global {
       sendNumber: (data: GenericDataPoint<number>) => void
       sendNumbers: (data: GenericDataPoint<number>[]) => void
       sendString: (data: GenericDataPoint<string>) => void
+      sendStrings: (data: GenericDataPoint<string>[]) => void
     }
   }
 }

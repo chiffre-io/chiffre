@@ -3,7 +3,8 @@ import {
   Event,
   setupSessionListeners,
   setupPageVisitListeners,
-  createGenericEvent
+  createGenericEvent,
+  createBrowserEvent
 } from '@chiffre/analytics-core'
 import { Config } from './types'
 
@@ -69,14 +70,21 @@ function setup() {
   window.chiffre = {
     sendNumber: () => {},
     sendNumbers: () => {},
-    sendString: () => {}
+    sendString: () => {},
+    sendStrings: () => {}
   }
   const config = readConfig()
   if (!config) {
     return
   }
-  setupSessionListeners(event => sendEvent(event, config))
-  setupPageVisitListeners(event => sendEvent(event, config))
+  if (navigator.doNotTrack === '1') {
+    // With DoNotTrack, we send a single event for page views, without
+    // any session tracking or other visitor information.
+    sendEvent(createBrowserEvent('session:dnt'), config)
+  } else {
+    setupSessionListeners(event => sendEvent(event, config))
+    setupPageVisitListeners(event => sendEvent(event, config))
+  }
   window.chiffre.sendNumber = data => {
     const event = createGenericEvent('generic:number', data)
     sendEvent(event, config)
@@ -87,6 +95,10 @@ function setup() {
   }
   window.chiffre.sendString = data => {
     const event = createGenericEvent('generic:string', data)
+    sendEvent(event, config)
+  }
+  window.chiffre.sendStrings = data => {
+    const event = createGenericEvent('generic:strings', data)
     sendEvent(event, config)
   }
 }
