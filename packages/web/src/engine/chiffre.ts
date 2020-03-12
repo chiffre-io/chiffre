@@ -1,9 +1,10 @@
 import React from 'react'
+import dayjs from 'dayjs'
 import ChiffreClient from '@chiffre/client'
 import { AllEvents } from '@chiffre/analytics-core'
+import { MessageQueueResponse } from '@chiffre/api-types'
 import { Database, EventRow, saveEvent, useDatabase } from './db'
 import { useChiffreClient } from '../hooks/useChiffreClient'
-import dayjs from 'dayjs'
 
 export default function useLoadProjectMessages(projectID: string) {
   const client = useChiffreClient()
@@ -14,6 +15,11 @@ export default function useLoadProjectMessages(projectID: string) {
       return
     }
     retrieveProjectMessages(client, db, projectID)
+    const t = setInterval(
+      () => retrieveProjectMessages(client, db, projectID),
+      5000
+    )
+    return () => clearInterval(t)
   }, [projectID, client.getProjectMessages])
 }
 
@@ -45,7 +51,12 @@ export async function retrieveProjectMessages(
     return
   }
 
-  const messages = await client.getProjectMessages(projectID, before, after)
+  let messages: MessageQueueResponse[] = []
+  try {
+    messages = await client.getProjectMessages(projectID, before, after)
+  } catch (error) {
+    console.error(error)
+  }
   if (messages.length === 0) {
     return
   }
