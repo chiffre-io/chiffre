@@ -25,7 +25,8 @@ export default async (app: App) => {
   app.get<QueryParams, UrlParams>(
     '/queues/:projectID',
     {
-      preValidation: [app.authenticate()]
+      preValidation: [app.authenticate()],
+      logLevel: 'warn'
     },
     async (req, res) => {
       const { projectID } = req.params
