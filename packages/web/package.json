@@ -19,7 +19,7 @@
     "@chakra-ui/core": "^0.5.2",
     "@chiffre/analytics-core": "^0.0.1",
     "@chiffre/analytics-emitter": "^0.0.1",
-    "@chiffre/analytics-processing": "^0.0.1",
+    "@chiffre/analytics-processing": "^1.0.0",
     "@chiffre/api-types": "^0.0.1",
     "@chiffre/client": "^0.0.1",
     "@emotion/core": "^10.0.27",
