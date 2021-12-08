@@ -1,27 +1,34 @@
-Open-source repositories:
+This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Templates
+## Getting Started
 
-- [Template Library](https://github.com/chiffre-io/template-library) - TypeScript + Node.js
-- [Template Website](https://github.com/chiffre-io/template-website) - TypeScript + Next.js + ChakraUI
+First, run the development server:
 
-## Cryptographic Libraries
+```bash
+npm run dev
+# or
+yarn dev
+```
 
-- [SealedBox](https://github.com/chiffre-io/crypto-box) - Serialized TweetNaCl sealed box pattern
-- [Signature](https://github.com/chiffre-io/crypto-sign) - Serialized TweetNaCl signatures
-- [Chiffre Crypto](https://github.com/chiffre-io/crypto) - Cryptographic constructs used by Chiffre
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## Analytics
+You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
 
-- [Analytics Core](https://github.com/chiffre-io/analytics-core) - Shared types and definitions
-- [Analytics Tracker](https://github.com/chiffre-io/analytics-tracker) - Source code for the tracker script
-- [Analytics Faker](https://github.com/chiffre-io/analytics-faker) - Generate fake analytics data for testing
-- [Analytics Processing](https://github.com/chiffre-io/analytics-processing) - Process raw data into insightful metrics
+[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
 
-## Web
+The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
 
-- [Design System](https://github.com/chiffre-io/design-system) - Shared UI elements
+## Learn More
 
-## Microservices
+To learn more about Next.js, take a look at the following resources:
 
-- [Push](https://github.com/chiffre-io/push) - Event aggregation endpoint
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.

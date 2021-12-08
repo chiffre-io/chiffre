@@ -1,0 +1,1 @@
+export const version = 'foo-local'

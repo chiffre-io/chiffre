@@ -1,0 +1,141 @@
+{
+  "name": "chiffre",
+  "version": "0.0.0-semantically-released",
+  "description": "End-to-end encrypted web analytics",
+  "private": true,
+  "scripts": {
+    "clean": "rm -rf .next/ build/ coverage/",
+    "dev": "ts-node ./src/server/main.ts",
+    "prestart": "run-s db:migrate",
+    "start": "TS_NODE_BASEURL=./build node -r tsconfig-paths/register ./build/server/main.js",
+    "test": "run-s test:*",
+    "test:lint": "next lint",
+    "test:types": "tsc",
+    "test:unit": "jest --coverage",
+    "generate": "run-p generate:*",
+    "generate:prisma": "prisma generate",
+    "prebuild": "run-s generate",
+    "build": "run-s build:app build:tracker",
+    "build:app": "run-s build:app:*",
+    "build:app:server": "swc ./src -C module.type=commonjs -d ./build",
+    "build:app:next": "next build",
+    "build:tracker": "run-s build:tracker:*",
+    "build:tracker:version": "ts-node ./src/modules/analytics/tracker/scripts/generateVersion.ts",
+    "build:tracker:esbuild": "ts-node ./src/modules/analytics/tracker/scripts/build.ts",
+    "build:tracker:sign": "ts-node ./src/modules/analytics/tracker/scripts/sign.ts",
+    "build:tracker:size": "echo $(cat ./public/analytics.js | wc -c) bytes unzipped && echo $(cat ./public/analytics.js | gzip -kc7 | wc -c) bytes gzipped",
+    "db:start": "./scripts/dev-start.sh",
+    "db:stop": "./scripts/dev-stop.sh",
+    "db:migrate": "prisma migrate deploy",
+    "db:seed": "prisma db seed",
+    "ci": "run-s test build"
+  },
+  "dependencies": {
+    "@47ng/chakra-next": "3.0.0-beta.4",
+    "@47ng/check-env": "^2.0.2",
+    "@47ng/cloak": "^1.0.1",
+    "@47ng/codec": "^1.0.1",
+    "@chakra-ui/react": "^1.7.2",
+    "@emotion/react": "^11",
+    "@emotion/styled": "^11",
+    "@nivo/pie": "^0.74.0",
+    "@prisma/client": "^3.6.0",
+    "@slack/webhook": "^6.0.0",
+    "@stablelib/tss": "^1.0.1",
+    "bowser": "^2.11.0",
+    "chalk": "^4.1.2",
+    "dayjs": "^1.10.7",
+    "dotenv": "^10.0.0",
+    "env-alias": "^1.0.2",
+    "esbuild": "^0.13.14",
+    "faker": "^5.5.3",
+    "fastify-cron": "^1.2.0",
+    "fastify-micro": "^3.0.0",
+    "fastify-plugin": "^3.0.0",
+    "formik": "^2.2.9",
+    "framer-motion": "^4",
+    "knex": "^0.95.14",
+    "mitt": "^3.0.0",
+    "ms": "^2.1.3",
+    "nanoid": "^3.1.30",
+    "next": "12.0.3",
+    "prisma": "^3.6.0",
+    "prisma-field-encryption": "^1.1.0",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "react-icons": "^4.3.1",
+    "react-query": "^3.32.3",
+    "secure-remote-password": "^0.3.1",
+    "slack-block-builder": "^2.3.1",
+    "tapers": "^0.1.0",
+    "tweetnacl": "^1.0.3",
+    "zod": "^3.11.6"
+  },
+  "devDependencies": {
+    "@swc/cli": "^0.1.51",
+    "@swc/core": "^1.2.110",
+    "@swc/helpers": "^0.2.14",
+    "@testing-library/jest-dom": "^5.15.0",
+    "@testing-library/react": "^12.1.2",
+    "@types/faker": "^5.5.9",
+    "@types/git-semver-tags": "^4.1.1",
+    "@types/jest": "^27.0.2",
+    "@types/ms": "^0.7.31",
+    "@types/node": "^16.11.7",
+    "@types/pino": "^7.0.5",
+    "@types/react": "17.0.34",
+    "eslint": "<8.0.0",
+    "eslint-config-next": "12.0.3",
+    "git-semver-tags": "^4.1.1",
+    "jest": "^27.3.1",
+    "npm-run-all": "^4.1.5",
+    "pretty-bytes": "^5.6.0",
+    "read-pkg": "^7.0.0",
+    "regenerator-runtime": "^0.13.9",
+    "ts-jest": "^27.0.7",
+    "ts-node": "^10.4.0",
+    "tsconfig-paths": "^3.11.0",
+    "typescript": "4.4.4",
+    "zod-prisma": "^0.3.0"
+  },
+  "prisma": {
+    "schema": "./src/server/database/prisma/schema.prisma"
+  },
+  "browser": {
+    "crypto": false,
+    "buffer": false,
+    "nanoid": "./node_modules/nanoid/index.browser.js"
+  },
+  "jest": {
+    "verbose": true,
+    "preset": "ts-jest/presets/js-with-ts",
+    "testEnvironment": "node",
+    "testMatch": [
+      "<rootDir>/src/**/*.test.[jt]s?(x)"
+    ],
+    "moduleNameMapper": {
+      "^modules/(.*)$": "<rootDir>/src/modules/$1",
+      "^server/(.*)$": "<rootDir>/src/server/$1",
+      "^client/(.*)$": "<rootDir>/src/client/$1",
+      "^pages/(.*)$": "<rootDir>/src/pages/$1",
+      "^tests/(.*)$": "<rootDir>/src/tests/$1",
+      "^schemas/(.*)$": "<rootDir>/src/server/database/prisma/schemas/$1"
+    },
+    "transformIgnorePatterns": [
+      "node_modules/(?!(@47ng/chakra-next)/)"
+    ],
+    "globals": {
+      "ts-jest": {
+        "tsconfig": "tsconfig.test.json"
+      }
+    }
+  },
+  "prettier": {
+    "arrowParens": "avoid",
+    "semi": false,
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "none",
+    "useTabs": false
+  }
+}

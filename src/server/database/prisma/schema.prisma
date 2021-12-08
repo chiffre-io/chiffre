@@ -1,0 +1,128 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URI")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// generator zod {
+//   provider      = "zod-prisma"
+//   output        = "../schemas"
+//   relationModel = true
+//   modelCase     = "camelCase"
+//   modelSuffix   = "Schema"
+// }
+
+model User {
+  created_at           DateTime           @default(now()) @db.Timestamptz(6)
+  updated_at           DateTime           @default(now()) @db.Timestamptz(6)
+  id                   String             @id @unique(map: "users_id_unique") @default(dbgenerated("generate_b64id()")) @db.VarChar(255)
+  username             String             @unique(map: "users_username_unique") @db.VarChar(255) /// @encrypted
+  usernameHash         String             @unique(map: "users_usernamehash_unique") @db.VarChar(255)
+  srpSalt              String /// @encrypted
+  srpVerifier          String /// @encrypted
+  masterSalt           String /// @encrypted
+  twoFactorStatus      String             @default("disabled")
+  twoFactorSecret      String? /// @encrypted
+  twoFactorBackupCodes String? /// @encrypted
+  displayName          String?
+  events               Event[]
+  keychain             Keychain?
+  user_vault_edges     user_vault_edges[]
+  vaults               Vault[]
+
+  @@index([username], map: "users_username_index")
+  @@index([usernameHash], map: "users_usernamehash_index")
+  @@map("users")
+}
+
+model Keychain {
+  created_at         DateTime @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime @default(now()) @db.Timestamptz(6)
+  userID             String   @id @db.VarChar(255)
+  key                String   @db.VarChar(255)
+  signaturePublicKey String   @db.VarChar(255)
+  sharingPublicKey   String   @db.VarChar(255)
+  signatureSecretKey String
+  sharingSecretKey   String
+  owner              User     @relation(fields: [userID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "keychains_userid_foreign")
+
+  @@map("keychains")
+}
+
+model Vault {
+  created_at       DateTime           @default(now()) @db.Timestamptz(6)
+  updated_at       DateTime           @default(now()) @db.Timestamptz(6)
+  id               String             @id @unique(map: "vaults_id_unique") @default(dbgenerated("generate_b64id()")) @db.VarChar(255)
+  createdBy        String             @db.VarChar(255)
+  owner            User               @relation(fields: [createdBy], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "vaults_createdby_foreign")
+  projects         Project[]
+  user_vault_edges user_vault_edges[]
+
+  @@index([createdBy], map: "vaults_createdby_index")
+  @@map("vaults")
+}
+
+model Project {
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime @default(now()) @db.Timestamptz(6)
+  id          String   @id @unique(map: "projects_id_unique") @default(dbgenerated("generate_b64id()")) @db.VarChar(255)
+  vaultID     String   @db.VarChar(255)
+  publicKey   String   @db.VarChar(255)
+  secretKey   String   @db.VarChar(255)
+  name        String   @default("Unnamed project") @db.VarChar(255)
+  url         String?  @db.VarChar(255)
+  description String?
+  logoUrl     String?  @db.VarChar(255)
+
+  vault    Vault     @relation(fields: [vaultID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "projects_vaultid_foreign")
+  messages Message[]
+
+  @@map("projects")
+}
+
+model Message {
+  id          String    @id @unique(map: "project_message_queue_id_unique") @default(dbgenerated("generate_b64id()")) @db.VarChar(255)
+  projectID   String    @db.VarChar(255)
+  created_at  DateTime? @default(now()) @db.Timestamptz(6)
+  performance Float     @db.Real
+  ciphertext  String    @map("message")
+  country     String?   @db.VarChar(255)
+  latencyMs   Float?    @db.Real
+  project     Project   @relation(fields: [projectID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "project_message_queue_projectid_foreign")
+
+  @@map("project_message_queue")
+}
+
+model Event {
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  id         String    @id @default(dbgenerated("generate_b64id()")) @db.VarChar(255)
+  type       String
+  meta       Json?     @db.Json
+  userID     String    @db.VarChar(255)
+  plan       String?
+  ip         String
+  requestID  String    @db.VarChar(255)
+  tokenID    String?   @db.VarChar(255)
+  user       User      @relation(fields: [userID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "events_userid_foreign")
+
+  @@index([type], map: "events_type_index")
+  @@index([userID], map: "events_userid_index")
+  @@map("events")
+}
+
+model user_vault_edges {
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @db.Timestamptz(6)
+  id         String   @id @unique(map: "user_vault_edges_id_unique") @default(dbgenerated("generate_b64id()")) @db.VarChar(255)
+  userID     String   @db.VarChar(255)
+  vaultID    String   @db.VarChar(255)
+  vaultKey   String   @db.VarChar(255)
+  user       User     @relation(fields: [userID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_vault_edges_userid_foreign")
+  vault      Vault    @relation(fields: [vaultID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_vault_edges_vaultid_foreign")
+
+  @@index([userID], map: "user_vault_edges_userid_index")
+  @@index([vaultID], map: "user_vault_edges_vaultid_index")
+}

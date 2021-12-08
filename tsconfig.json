@@ -1,0 +1,52 @@
+{
+  "compilerOptions": {
+    // Type checking
+    "strict": true,
+
+    // Modules
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "baseUrl": "./src",
+    "rootDir": "./src",
+    "paths": {
+      "modules/*": ["./modules/*"],
+      "server/*": ["./server/*"],
+      "client/*": ["./client/*"],
+      "pages/*": ["./pages/*"],
+      "tests/*": ["./tests/*"],
+      "schemas/*": ["./server/database/prisma/schemas/*"],
+    },
+
+    // Language & Environment
+    "target": "ES2020",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "jsx": "preserve",
+
+    // Emit
+    "noEmit": true,
+    "declaration": false,
+    "downlevelIteration": true,
+
+    // Interop
+    "allowJs": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+
+    // Misc
+    "skipLibCheck": true,
+    "incremental": true
+  },
+  "ts-node": {
+    "require": ["tsconfig-paths/register"],
+    "transpileOnly": true,
+    "logError": true, // Not logging silently skips fastify-autoload errors
+    "transpiler": "ts-node/transpilers/swc-experimental",
+    "compilerOptions": {
+      "module": "CommonJS"
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules"]
+}

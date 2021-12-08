@@ -1,0 +1,22 @@
+{
+  "title": "Chiffre.io",
+  "description": "End-to-end encrypted web analytics",
+  "additionalMetaTags": [{ "property": "author", "content": "François Best" }],
+  "twitter": {
+    "cardType": "summary_large_image",
+    "handle": "chiffre_io",
+    "site": "chiffre_io"
+  },
+  "openGraph": {
+    "type": "website",
+    "locale": "en-GB",
+    "site_name": "Chiffre.io",
+    "images": [
+      {
+        "url": "https://usefoggy.vercel.app/api/og?url=https://www.figma.com/file/KMv2DM7Fv705jZeipGDkv3/TweetLists?node-id=1%3A4",
+        "width": 1012,
+        "height": 506
+      }
+    ]
+  }
+}

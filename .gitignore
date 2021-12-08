@@ -1,25 +1,8 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-/**/node_modules/
-/.pnp
-.pnp.js
-/**/.next/
-/**/out/
-/**/dist/
-/**/build/
-/**/coverage/
-/**/.clinic/
-/**/.cache/
-.DS_Store
-.env*
-*.env
-
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Docker volumes
-/.volumes
-
-/**/*.ndjson
+.next/
+.volumes/
+.vscode/
+build/
+coverage/
+node_modules/
+public/analytics.js
+public/analytics.js.map

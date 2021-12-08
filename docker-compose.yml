@@ -1,0 +1,29 @@
+# Compose file for local development, external services only.
+
+version: '3'
+
+services:
+  db:
+    image: postgres:11.1
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=chiffre
+    volumes:
+      - .volumes/dev/db:/var/lib/postgresql/data
+
+  redis:
+    image: redis:5.0-alpine
+    ports:
+      - '6379:6379'
+    command: redis-server --appendonly yes
+    volumes:
+      - .volumes/dev/redis:/data
+
+  wait:
+    image: jwilder/dockerize
+    command: dockerize -wait tcp://db:5432 -wait tcp://redis:6379 -timeout 30s
+    links:
+      - db
+      - redis
