@@ -36,7 +36,8 @@
 
     // Misc
     "skipLibCheck": true,
-    "incremental": true
+    "incremental": true,
+    "tsBuildInfoFile": "./.cache/tsconfig.tsbuildinfo"
   },
   "ts-node": {
     "require": ["tsconfig-paths/register"],
